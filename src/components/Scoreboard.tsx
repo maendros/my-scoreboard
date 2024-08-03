@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import { useQuery, gql } from "@apollo/client";
 import LeagueTable from "./LeagueTable";
 import Fixtures from "./Fixtures";
+import Loader from "./Loader"; // Import the Loader component
+import ErrorMessage from "./ErrorMessage"; // Import the ErrorMessage component
 
 const LEAGUE_TABLE_QUERY = gql`
   query LeagueTable {
@@ -54,9 +56,11 @@ const Scoreboard: React.FC = () => {
     data: dataFixtures,
   } = useQuery(FIXTURES_QUERY);
 
-  if (loadingTable || loadingFixtures) return <p>Loading...</p>;
+  if (loadingTable || loadingFixtures) return <Loader />;
   if (errorTable || errorFixtures)
-    return <p>Error: {errorTable?.message || errorFixtures?.message}</p>;
+    return (
+      <ErrorMessage message={errorTable?.message || errorFixtures?.message} />
+    );
 
   return (
     <div className="container mx-auto p-4">
