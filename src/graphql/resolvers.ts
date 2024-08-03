@@ -113,6 +113,7 @@ const resolvers = {
       prisma.user.findUnique({ where: { id: parent.homeTeamId } }),
     awayTeam: (parent: any) =>
       prisma.user.findUnique({ where: { id: parent.awayTeamId } }),
+    playedAt: (parent: any) => new Date(parent.playedAt).toLocaleDateString(),
   },
 };
 
