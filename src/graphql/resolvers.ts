@@ -57,15 +57,73 @@ const resolvers = {
           goalDifference,
           points,
           winRatio, // Include the calculated win ratio
+          headToHeadPoints: 0, // Placeholder for head-to-head points
+          headToHeadGoalDifference: 0, // Placeholder for head-to-head goal difference
         };
       });
 
-      return table.sort(
-        (a, b) =>
-          b.points - a.points ||
-          b.goalDifference - a.goalDifference ||
-          b.goalsFor - a.goalsFor
-      );
+      // Calculate head-to-head stats for teams with the same points
+      const sortedTable = table.map((entry) => {
+        const opponents = table.filter(
+          (opponent) =>
+            opponent.points === entry.points &&
+            opponent.team.id !== entry.team.id
+        );
+        const headToHeadMatches = matches.filter(
+          (match) =>
+            (match.homeTeamId === entry.team.id &&
+              opponents.find((o) => o.team.id === match.awayTeamId)) ||
+            (match.awayTeamId === entry.team.id &&
+              opponents.find((o) => o.team.id === match.homeTeamId))
+        );
+
+        const headToHeadPoints = headToHeadMatches.reduce((points, match) => {
+          if (
+            match.homeTeamId === entry.team.id &&
+            match.homeScore > match.awayScore
+          ) {
+            return points + 3;
+          } else if (
+            match.awayTeamId === entry.team.id &&
+            match.awayScore > match.homeScore
+          ) {
+            return points + 3;
+          } else if (match.homeScore === match.awayScore) {
+            return points + 1;
+          }
+          return points;
+        }, 0);
+
+        const headToHeadGoalDifference = headToHeadMatches.reduce(
+          (diff, match) => {
+            if (match.homeTeamId === entry.team.id) {
+              return diff + (match.homeScore - match.awayScore);
+            } else if (match.awayTeamId === entry.team.id) {
+              return diff + (match.awayScore - match.homeScore);
+            }
+            return diff;
+          },
+          0
+        );
+
+        return {
+          ...entry,
+          headToHeadPoints,
+          headToHeadGoalDifference,
+        };
+      });
+
+      // Sort according to UEFA tiebreaker rules
+      return sortedTable.sort((a, b) => {
+        if (b.points !== a.points) return b.points - a.points;
+        if (b.headToHeadPoints !== a.headToHeadPoints)
+          return b.headToHeadPoints - a.headToHeadPoints;
+        if (b.headToHeadGoalDifference !== a.headToHeadGoalDifference)
+          return b.headToHeadGoalDifference - a.headToHeadGoalDifference;
+        if (b.goalDifference !== a.goalDifference)
+          return b.goalDifference - a.goalDifference;
+        return b.goalsFor - a.goalsFor;
+      });
     },
   },
   Mutation: {
