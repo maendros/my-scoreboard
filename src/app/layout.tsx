@@ -1,4 +1,7 @@
-// src/app/layout.tsx
+import React from "react";
+import { ApolloProvider } from "@/components/ApolloProvider";
+import "./globals.css";
+
 export default function RootLayout({
   children,
 }: {
@@ -6,7 +9,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <ApolloProvider>{children}</ApolloProvider>
+      </body>
     </html>
   );
 }

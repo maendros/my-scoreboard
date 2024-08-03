@@ -1,14 +1,13 @@
-// src/app/page.tsx
-import UserList from "@/components/UserList";
-import { ApolloProvider } from "@/components/ApolloProvider";
+import React from "react";
+import Scoreboard from "@/components/Scoreboard";
 
-export default function Home() {
+const Home: React.FC = () => {
   return (
-    <ApolloProvider>
-      <div>
-        <h1>Welcome to My Scoreboard</h1>
-        <UserList />
-      </div>
-    </ApolloProvider>
+    <div className="min-h-screen bg-gray-100">
+      <h1 className="text-center text-3xl font-bold my-4">My Scoreboard</h1>
+      <Scoreboard />
+    </div>
   );
-}
+};
+
+export default Home;

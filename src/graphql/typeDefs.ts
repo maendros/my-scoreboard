@@ -18,9 +18,22 @@ const typeDefs = gql`
     date: String!
   }
 
+  type LeagueTableEntry {
+    team: User!
+    played: Int!
+    won: Int!
+    drawn: Int!
+    lost: Int!
+    goalsFor: Int!
+    goalsAgainst: Int!
+    goalDifference: Int!
+    points: Int!
+  }
+
   type Query {
     users: [User!]!
     matches: [Match!]!
+    leagueTable: [LeagueTableEntry!]!
   }
 
   type Mutation {

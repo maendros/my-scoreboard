@@ -11,6 +11,58 @@ const resolvers = {
     users: () => prisma.user.findMany(),
     matches: () =>
       prisma.match.findMany({ include: { homeTeam: true, awayTeam: true } }),
+    leagueTable: async () => {
+      const users = await prisma.user.findMany();
+      const matches = await prisma.match.findMany();
+
+      const table = users.map((user) => {
+        const homeMatches = matches.filter(
+          (match) => match.homeTeamId === user.id
+        );
+        const awayMatches = matches.filter(
+          (match) => match.awayTeamId === user.id
+        );
+        const played = homeMatches.length + awayMatches.length;
+        const won =
+          homeMatches.filter((match) => match.homeScore > match.awayScore)
+            .length +
+          awayMatches.filter((match) => match.awayScore > match.homeScore)
+            .length;
+        const drawn =
+          homeMatches.filter((match) => match.homeScore === match.awayScore)
+            .length +
+          awayMatches.filter((match) => match.homeScore === match.awayScore)
+            .length;
+        const lost = played - won - drawn;
+        const goalsFor =
+          homeMatches.reduce((sum, match) => sum + match.homeScore, 0) +
+          awayMatches.reduce((sum, match) => sum + match.awayScore, 0);
+        const goalsAgainst =
+          homeMatches.reduce((sum, match) => sum + match.awayScore, 0) +
+          awayMatches.reduce((sum, match) => sum + match.homeScore, 0);
+        const goalDifference = goalsFor - goalsAgainst;
+        const points = won * 3 + drawn;
+
+        return {
+          team: user,
+          played,
+          won,
+          drawn,
+          lost,
+          goalsFor,
+          goalsAgainst,
+          goalDifference,
+          points,
+        };
+      });
+
+      return table.sort(
+        (a, b) =>
+          b.points - a.points ||
+          b.goalDifference - a.goalDifference ||
+          b.goalsFor - a.goalsFor
+      );
+    },
   },
   Mutation: {
     addUser: async (
