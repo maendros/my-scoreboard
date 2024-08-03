@@ -59,15 +59,19 @@ const AddMatch: React.FC = () => {
     field: string,
     value: string | number
   ) => {
+    if (typeof value === "number" && value < 0) return; // Prevent negative numbers
     const newRows = [...rows];
     newRows[index][field as keyof (typeof newRows)[0]] = value;
     setRows(newRows);
   };
 
+  const isSaveDisabled = rows.some((row) => !row.homeTeam || !row.awayTeam);
+  console.log(isSaveDisabled);
+
   const handleSave = async () => {
     const matches = rows.map((row) => ({
-      homeTeamId: parseInt(row.homeTeam), // Convert to integer
-      awayTeamId: parseInt(row.awayTeam), // Convert to integer
+      homeTeamId: Number(row.homeTeam), // Convert to integer
+      awayTeamId: Number(row.awayTeam), // Convert to integer
       homeScore: Number(row.homeScore),
       awayScore: Number(row.awayScore),
       playedAt: new Date().toISOString(), // Automatically set the date
@@ -91,7 +95,7 @@ const AddMatch: React.FC = () => {
         <div key={index} className="flex items-center mb-2">
           <select
             className="mr-2 p-2 border dark:bg-gray-700 bg-white text-gray-900 dark:text-gray-100"
-            value={row.homeTeam}
+            value={row.homeTeam || ""}
             onChange={(e) =>
               handleInputChange(index, "homeTeam", e.target.value)
             }
@@ -107,7 +111,7 @@ const AddMatch: React.FC = () => {
           </select>
           <select
             className="mr-2 p-2 border dark:bg-gray-700 bg-white text-gray-900 dark:text-gray-100"
-            value={row.awayTeam}
+            value={row.awayTeam || ""}
             onChange={(e) =>
               handleInputChange(index, "awayTeam", e.target.value)
             }
@@ -123,6 +127,7 @@ const AddMatch: React.FC = () => {
           </select>
           <input
             type="number"
+            min="0" // Prevent negative values
             className="mr-2 p-2 border dark:bg-gray-700 bg-white text-gray-900 dark:text-gray-100"
             value={row.homeScore}
             onChange={(e) =>
@@ -131,6 +136,7 @@ const AddMatch: React.FC = () => {
           />
           <input
             type="number"
+            min="0" // Prevent negative values
             className="mr-2 p-2 border dark:bg-gray-700 bg-white text-gray-900 dark:text-gray-100"
             value={row.awayScore}
             onChange={(e) =>
@@ -152,8 +158,11 @@ const AddMatch: React.FC = () => {
         Add Row
       </button>
       <button
-        className="mt-4 ml-4 p-2 bg-green-500 text-white"
+        className={`mt-4 ml-4 p-2 text-white ${
+          isSaveDisabled ? "bg-gray-500 cursor-not-allowed" : "bg-green-500"
+        }`}
         onClick={handleSave}
+        disabled={isSaveDisabled}
       >
         Save
       </button>
