@@ -21,9 +21,9 @@ interface LeagueTableProps {
 
 const LeagueTable: React.FC<LeagueTableProps> = ({ data }) => {
   return (
-    <table className="min-w-full bg-black border-collapse">
+    <table className="min-w-full bg-white dark:bg-gray-800 border-collapse">
       <thead>
-        <tr>
+        <tr className="text-gray-900 dark:text-gray-100">
           <th className="border px-4 py-2">Team</th>
           <th className="border px-4 py-2">Played</th>
           <th className="border px-4 py-2">Won</th>
@@ -37,7 +37,7 @@ const LeagueTable: React.FC<LeagueTableProps> = ({ data }) => {
       </thead>
       <tbody>
         {data.map((entry) => (
-          <tr key={entry.team.id}>
+          <tr key={entry.team.id} className="text-gray-800 dark:text-gray-200">
             <td className="border px-4 py-2">{entry.team.name}</td>
             <td className="border px-4 py-2">{entry.played}</td>
             <td className="border px-4 py-2">{entry.won}</td>

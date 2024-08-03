@@ -19,7 +19,7 @@ interface FixturesProps {
 
 const Fixtures: React.FC<FixturesProps> = ({ data }) => {
   return (
-    <table className="min-w-full bg-black border-collapse">
+    <table className="min-w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-collapse">
       <thead>
         <tr>
           <th className="border px-4 py-2">Home Team</th>

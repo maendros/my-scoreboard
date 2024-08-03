@@ -1,5 +1,6 @@
 import React from "react";
 import { ApolloProvider } from "@/components/ApolloProvider";
+import ThemeProvider from "@/components/ThemeProvider";
 import "./globals.css";
 
 export default function RootLayout({
@@ -10,7 +11,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <ApolloProvider>{children}</ApolloProvider>
+        <ApolloProvider>
+          <ThemeProvider>{children}</ThemeProvider>
+        </ApolloProvider>
       </body>
     </html>
   );
