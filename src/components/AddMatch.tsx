@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { useQuery, gql } from "@apollo/client";
+import { useMutation, useQuery, gql } from "@apollo/client";
 import Loader from "./Loader";
 import ErrorMessage from "./ErrorMessage";
 
@@ -14,8 +14,26 @@ const GET_USERS_QUERY = gql`
   }
 `;
 
+const ADD_MATCHES_MUTATION = gql`
+  mutation AddMatches($matches: [MatchInput!]!) {
+    addMatches(matches: $matches) {
+      id
+      homeTeam {
+        name
+      }
+      awayTeam {
+        name
+      }
+      homeScore
+      awayScore
+      playedAt
+    }
+  }
+`;
+
 const AddMatch: React.FC = () => {
   const { loading, error, data } = useQuery(GET_USERS_QUERY);
+  const [addMatches] = useMutation(ADD_MATCHES_MUTATION);
   const [rows, setRows] = useState([
     { homeTeam: "", awayTeam: "", homeScore: 0, awayScore: 0 },
   ]);
@@ -46,18 +64,33 @@ const AddMatch: React.FC = () => {
     setRows(newRows);
   };
 
-  const handleSave = () => {
-    console.log("Saving data:", rows);
-    // Here you could call a mutation to save the data to your server
+  const handleSave = async () => {
+    const matches = rows.map((row) => ({
+      homeTeamId: parseInt(row.homeTeam), // Convert to integer
+      awayTeamId: parseInt(row.awayTeam), // Convert to integer
+      homeScore: Number(row.homeScore),
+      awayScore: Number(row.awayScore),
+      playedAt: new Date().toISOString(), // Automatically set the date
+    }));
+    console.log({ matches });
+    try {
+      await addMatches({ variables: { matches } });
+      console.log("Matches added successfully");
+      setRows([{ homeTeam: "", awayTeam: "", homeScore: 0, awayScore: 0 }]); // Reset rows
+    } catch (error) {
+      console.error("Error adding matches:", error);
+    }
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 container mx-auto p-4">
-      <h2 className="text-2xl font-bold mb-4">Add Matches</h2>
+    <div className="container mx-auto p-4 dark:bg-gray-800 bg-white">
+      <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-100">
+        Add Matches
+      </h2>
       {rows.map((row, index) => (
         <div key={index} className="flex items-center mb-2">
           <select
-            className="mr-2 p-2 border dark:bg-gray-700 dark:text-gray-300"
+            className="mr-2 p-2 border dark:bg-gray-700 bg-white text-gray-900 dark:text-gray-100"
             value={row.homeTeam}
             onChange={(e) =>
               handleInputChange(index, "homeTeam", e.target.value)
@@ -73,7 +106,7 @@ const AddMatch: React.FC = () => {
             ))}
           </select>
           <select
-            className="mr-2 p-2 border dark:bg-gray-700 dark:text-gray-300"
+            className="mr-2 p-2 border dark:bg-gray-700 bg-white text-gray-900 dark:text-gray-100"
             value={row.awayTeam}
             onChange={(e) =>
               handleInputChange(index, "awayTeam", e.target.value)
@@ -90,7 +123,7 @@ const AddMatch: React.FC = () => {
           </select>
           <input
             type="number"
-            className="mr-2 p-2 border dark:bg-gray-700 dark:text-gray-300"
+            className="mr-2 p-2 border dark:bg-gray-700 bg-white text-gray-900 dark:text-gray-100"
             value={row.homeScore}
             onChange={(e) =>
               handleInputChange(index, "homeScore", Number(e.target.value))
@@ -98,7 +131,7 @@ const AddMatch: React.FC = () => {
           />
           <input
             type="number"
-            className="mr-2 p-2 border dark:bg-gray-700 dark:text-gray-300"
+            className="mr-2 p-2 border dark:bg-gray-700 bg-white text-gray-900 dark:text-gray-100"
             value={row.awayScore}
             onChange={(e) =>
               handleInputChange(index, "awayScore", Number(e.target.value))

@@ -18,6 +18,21 @@ const typeDefs = gql`
     playedAt: String! # Updated from date to playedAt
   }
 
+  input MatchInput {
+    homeTeamId: ID!
+    awayTeamId: ID!
+    homeScore: Int!
+    awayScore: Int!
+    playedAt: String!
+    userTeams: [UserTeamInput!] # Optional
+  }
+
+  input UserTeamInput {
+    userId: ID!
+    teamId: ID!
+    isWinner: Boolean!
+  }
+
   type LeagueTableEntry {
     team: User!
     played: Int!
@@ -39,17 +54,11 @@ const typeDefs = gql`
 
   type Mutation {
     addUser(name: String!, email: String!): User!
-    addMatch(
-      homeTeamId: ID!
-      awayTeamId: ID!
-      homeScore: Int!
-      awayScore: Int!
-      playedAt: String! # Ensure this is also updated
-    ): Match!
+    addMatches(matches: [MatchInput!]!): [Match!]!
   }
 
   type Subscription {
-    matchAdded: Match!
+    matchAdded: [Match!]!
   }
 `;
 

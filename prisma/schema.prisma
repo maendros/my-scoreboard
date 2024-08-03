@@ -34,18 +34,18 @@ model Match {
   awayTeam   User       @relation("MatchAway", fields: [awayTeamId], references: [id])
   homeScore  Int
   awayScore  Int
-  playedAt   DateTime   @default(now()) // New field for when the match was played
-  userTeams  UserTeam[] @relation("MatchUserTeams") // New relationship with UserTeam
+  playedAt   DateTime   @default(now())
+  userTeams  UserTeam[] @relation("MatchUserTeams")
 }
 
-// New UserTeam model to track user-team relationships
+// Updated UserTeam model with optional fields
 model UserTeam {
   id       Int     @id @default(autoincrement())
-  userId   Int
-  teamId   Int
-  matchId  Int
+  userId   Int? // Make userId optional
+  teamId   Int? // Make teamId optional
+  matchId  Int? // Make matchId optional
   isWinner Boolean
-  user     User    @relation("UserTeams", fields: [userId], references: [id])
-  team     Team    @relation("TeamUserTeams", fields: [teamId], references: [id])
-  match    Match   @relation("MatchUserTeams", fields: [matchId], references: [id])
+  user     User?   @relation("UserTeams", fields: [userId], references: [id])
+  team     Team?   @relation("TeamUserTeams", fields: [teamId], references: [id])
+  match    Match?  @relation("MatchUserTeams", fields: [matchId], references: [id])
 }

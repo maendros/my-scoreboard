@@ -71,8 +71,8 @@ const resolvers = {
             goalDifference,
             points,
             winRatio,
-            headToHeadPoints: 0, // Placeholder for head-to-head points
-            headToHeadGoalDifference: 0, // Placeholder for head-to-head goal difference
+            headToHeadPoints: 0,
+            headToHeadGoalDifference: 0,
           };
         });
 
@@ -144,52 +144,35 @@ const resolvers = {
     },
   },
   Mutation: {
-    addMatches: async (
-      _: any,
-      {
-        matches,
-      }: {
-        matches: {
-          homeTeamId: number;
-          awayTeamId: number;
-          homeScore: number;
-          awayScore: number;
-          playedAt: Date;
-          userTeamIds?: { userId: number; teamId: number; isWinner: boolean }[];
-        }[];
-      }
-    ) => {
+    addMatches: async (_: any, { matches }: { matches: any[] }) => {
       try {
         const createdMatches = await Promise.all(
-          matches.map((match) =>
-            prisma.match.create({
+          matches.map(async (match) => {
+            return await prisma.match.create({
               data: {
-                homeTeamId: match.homeTeamId,
-                awayTeamId: match.awayTeamId,
+                homeTeamId: parseInt(match.homeTeamId, 10), // Ensure integer type
+                awayTeamId: parseInt(match.awayTeamId, 10),
                 homeScore: match.homeScore,
                 awayScore: match.awayScore,
-                playedAt: match.playedAt,
-                userTeams: {
-                  create: match.userTeamIds?.map(
-                    ({ userId, teamId, isWinner }) => ({
-                      userId,
-                      teamId,
-                      isWinner,
-                    })
-                  ),
-                },
+                playedAt: new Date(match.playedAt),
+                userTeams: match.userTeams
+                  ? {
+                      create: match.userTeams.map((userTeam: any) => ({
+                        userId: parseInt(userTeam.userId, 10), // Ensure integer type
+                        teamId: parseInt(userTeam.teamId, 10),
+                        isWinner: userTeam.isWinner,
+                      })),
+                    }
+                  : undefined,
               },
-            })
-          )
+            });
+          })
         );
 
-        // Publish each match added event
-        createdMatches.forEach((match) => {
-          pubsub.publish(MATCH_ADDED, { matchAdded: match });
-        });
-
+        pubsub.publish(MATCH_ADDED, { matchAdded: createdMatches });
         return createdMatches;
       } catch (error) {
+        console.error("Error adding matches:", error);
         throw new Error("Error adding matches");
       }
     },
@@ -204,7 +187,7 @@ const resolvers = {
       prisma.user.findUnique({ where: { id: parent.homeTeamId } }),
     awayTeam: (parent: any) =>
       prisma.user.findUnique({ where: { id: parent.awayTeamId } }),
-    playedAt: (parent: any) => new Date(parent.playedAt).toLocaleDateString(),
+    playedAt: (parent: any) => new Date(parent.playedAt).toISOString(),
   },
 };
 
