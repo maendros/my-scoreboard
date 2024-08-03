@@ -28,6 +28,7 @@ const typeDefs = gql`
     goalsAgainst: Int!
     goalDifference: Int!
     points: Int!
+    winRatio: Float!
   }
 
   type Query {

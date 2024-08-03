@@ -14,6 +14,7 @@ const LeagueTable: React.FC<{ data: any[] }> = ({ data }) => {
     "Goals Against",
     "Goal Difference",
     "Points",
+    "Win Ratio (%)",
   ];
 
   return (
@@ -34,6 +35,7 @@ const LeagueTable: React.FC<{ data: any[] }> = ({ data }) => {
             <td className="border px-4 py-2">{entry.goalsAgainst}</td>
             <td className="border px-4 py-2">{entry.goalDifference}</td>
             <td className="border px-4 py-2">{entry.points}</td>
+            <td className="border px-4 py-2">{entry.winRatio.toFixed(2)}</td>
           </tr>
         ))}
       </tbody>

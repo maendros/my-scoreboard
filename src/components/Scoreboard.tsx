@@ -22,6 +22,7 @@ const LEAGUE_TABLE_QUERY = gql`
       goalsAgainst
       goalDifference
       points
+      winRatio
     }
   }
 `;

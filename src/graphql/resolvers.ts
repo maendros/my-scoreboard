@@ -43,6 +43,9 @@ const resolvers = {
         const goalDifference = goalsFor - goalsAgainst;
         const points = won * 3 + drawn;
 
+        // Calculate win ratio
+        const winRatio = ((won + 0.5 * drawn) / played) * 100;
+
         return {
           team: user,
           played,
@@ -53,6 +56,7 @@ const resolvers = {
           goalsAgainst,
           goalDifference,
           points,
+          winRatio, // Include the calculated win ratio
         };
       });
 
