@@ -38,7 +38,7 @@ const FIXTURES_QUERY = gql`
       }
       homeScore
       awayScore
-      date
+      playedAt
     }
   }
 `;

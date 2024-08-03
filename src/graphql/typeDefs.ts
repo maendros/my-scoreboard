@@ -15,7 +15,7 @@ const typeDefs = gql`
     awayTeam: User!
     homeScore: Int!
     awayScore: Int!
-    date: String!
+    playedAt: String! # Updated from date to playedAt
   }
 
   type LeagueTableEntry {
@@ -43,6 +43,7 @@ const typeDefs = gql`
       awayTeamId: ID!
       homeScore: Int!
       awayScore: Int!
+      playedAt: String! # Ensure this is also updated
     ): Match!
   }
 

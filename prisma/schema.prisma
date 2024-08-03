@@ -1,3 +1,4 @@
+// Define your schema and provider
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
@@ -7,20 +8,44 @@ generator client {
   provider = "prisma-client-js"
 }
 
+// Existing User model
 model User {
-  id          Int     @id @default(autoincrement())
+  id          Int        @id @default(autoincrement())
   name        String
-  email       String
-  matchesHome Match[] @relation("HomeMatches")
-  matchesAway Match[] @relation("AwayMatches")
+  email       String     @unique
+  matchesHome Match[]    @relation("MatchHome")
+  matchesAway Match[]    @relation("MatchAway")
+  userTeams   UserTeam[] @relation("UserTeams")
 }
 
+// New Team model
+model Team {
+  id        Int        @id @default(autoincrement())
+  name      String
+  userTeams UserTeam[] @relation("TeamUserTeams")
+}
+
+// Existing Match model with new fields
 model Match {
-  id         Int  @id @default(autoincrement())
+  id         Int        @id @default(autoincrement())
   homeTeamId Int
   awayTeamId Int
+  homeTeam   User       @relation("MatchHome", fields: [homeTeamId], references: [id])
+  awayTeam   User       @relation("MatchAway", fields: [awayTeamId], references: [id])
   homeScore  Int
   awayScore  Int
-  homeTeam   User @relation("HomeMatches", fields: [homeTeamId], references: [id])
-  awayTeam   User @relation("AwayMatches", fields: [awayTeamId], references: [id])
+  playedAt   DateTime   @default(now()) // New field for when the match was played
+  userTeams  UserTeam[] @relation("MatchUserTeams") // New relationship with UserTeam
+}
+
+// New UserTeam model to track user-team relationships
+model UserTeam {
+  id       Int     @id @default(autoincrement())
+  userId   Int
+  teamId   Int
+  matchId  Int
+  isWinner Boolean
+  user     User    @relation("UserTeams", fields: [userId], references: [id])
+  team     Team    @relation("TeamUserTeams", fields: [teamId], references: [id])
+  match    Match   @relation("MatchUserTeams", fields: [matchId], references: [id])
 }

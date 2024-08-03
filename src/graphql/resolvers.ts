@@ -65,17 +65,6 @@ const resolvers = {
     },
   },
   Mutation: {
-    addUser: async (
-      _: any,
-      { name, email }: { name: string; email: string }
-    ) => {
-      return prisma.user.create({
-        data: {
-          name,
-          email,
-        },
-      });
-    },
     addMatch: async (
       _: any,
       {
@@ -83,11 +72,15 @@ const resolvers = {
         awayTeamId,
         homeScore,
         awayScore,
+        playedAt,
+        userTeamIds, // New argument for user teams
       }: {
         homeTeamId: number;
         awayTeamId: number;
         homeScore: number;
         awayScore: number;
+        playedAt: Date;
+        userTeamIds?: { userId: number; teamId: number; isWinner: boolean }[]; // New argument for user teams
       }
     ) => {
       const match = await prisma.match.create({
@@ -96,6 +89,14 @@ const resolvers = {
           awayTeamId,
           homeScore,
           awayScore,
+          playedAt,
+          userTeams: {
+            create: userTeamIds?.map(({ userId, teamId, isWinner }) => ({
+              userId,
+              teamId,
+              isWinner,
+            })),
+          },
         },
       });
       pubsub.publish(MATCH_ADDED, { matchAdded: match });

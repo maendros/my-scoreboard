@@ -21,7 +21,7 @@ const Fixtures: React.FC<{ data: any[] }> = ({ data }) => {
               {match.homeScore} - {match.awayScore}
             </td>
             <td className="border px-4 py-2">
-              {new Date(match.date).toLocaleDateString()}
+              {new Date(match.playedAt).toLocaleDateString()}
             </td>
           </tr>
         ))}
