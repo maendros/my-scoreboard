@@ -83,8 +83,26 @@ const Scoreboard: React.FC = () => {
           Fixtures
         </button>
       </div>
-      {activeTab === "table" && <LeagueTable data={dataTable.leagueTable} />}
-      {activeTab === "fixtures" && <Fixtures data={dataFixtures.matches} />}
+
+      {activeTab === "table" && (
+        <>
+          {dataTable?.leagueTable.length > 0 ? (
+            <LeagueTable data={dataTable.leagueTable} />
+          ) : (
+            <p className="text-center text-gray-500">No league data available.</p>
+          )}
+        </>
+      )}
+
+      {activeTab === "fixtures" && (
+        <>
+          {dataFixtures?.matches.length > 0 ? (
+            <Fixtures data={dataFixtures.matches} />
+          ) : (
+            <p className="text-center text-gray-500">No fixtures available.</p>
+          )}
+        </>
+      )}
     </div>
   );
 };
