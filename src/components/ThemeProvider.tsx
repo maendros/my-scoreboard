@@ -6,11 +6,9 @@ const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   const [theme, setTheme] = useState("light");
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem("theme");
-    if (savedTheme) {
-      setTheme(savedTheme);
-      document.documentElement.classList.add(savedTheme);
-    }
+    const savedTheme = localStorage.getItem("theme") || "light";
+    setTheme(savedTheme);
+    document.documentElement.classList.add(savedTheme);
   }, []);
 
   const toggleTheme = () => {
@@ -23,7 +21,8 @@ const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <div>
-      <div className="flex justify-end p-4">
+      {/* Theme toggle button */}
+      <div className="fixed top-4 right-4 p-2 bg-gray-200 dark:bg-gray-700 rounded-full shadow-md" style={{zIndex:500}}>
         <button onClick={toggleTheme} className="text-xl">
           {theme === "light" ? "🌞" : "🌜"}
         </button>

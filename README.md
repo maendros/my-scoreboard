@@ -56,4 +56,4 @@ pnpm run seed
 pnpm run dev
 ```
 
-The app should now be running on http://localhost:3000.
+The app should now be running on http://localhost:5000.

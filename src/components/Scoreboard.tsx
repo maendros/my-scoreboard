@@ -68,7 +68,7 @@ const Scoreboard: React.FC = () => {
       <div className="mb-4">
         <button
           className={`px-4 py-2 ${
-            activeTab === "table" ? "bg-blue-500 text-white" : "bg-gray-200"
+            activeTab === "table" ? "bg-blue-500 text-white" : " dark:bg-gray-500 bg-gray-200"
           }`}
           onClick={() => setActiveTab("table")}
         >
@@ -76,7 +76,7 @@ const Scoreboard: React.FC = () => {
         </button>
         <button
           className={`px-4 py-2 ${
-            activeTab === "fixtures" ? "bg-blue-500 text-white" : "bg-gray-200"
+            activeTab === "fixtures" ? "bg-blue-500 text-white" : "dark:bg-gray-500 bg-gray-200"
           }`}
           onClick={() => setActiveTab("fixtures")}
         >

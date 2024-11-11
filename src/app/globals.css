@@ -4,15 +4,19 @@
 
 /* Custom styles */
 body {
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+html.dark body {
+  background-color: #1a202c; /* Dark mode background */
+  color: #f7fafc; /* Light text in dark mode */
 }
 
-.dark body {
-  background-color: #1a202c; /* Example dark mode background */
+html.light body {
+  background-color: #f7fafc; /* Light mode background */
+  color: #1a202c; /* Dark text in light mode */
 }
 
-body {
-  background-color: #f7fafc; /* Example light mode background */
-}
+
+
 
 
