@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { useMutation, useQuery, gql } from "@apollo/client";
 import Loader from "./Loader";
 import ErrorMessage from "./ErrorMessage";
+import { toast } from "react-toastify";
 
 const GET_USERS_QUERY = gql`
   query GetUsers {
@@ -76,13 +77,14 @@ const AddMatch: React.FC = () => {
       awayScore: Number(row.awayScore),
       playedAt: new Date().toISOString(), // Automatically set the date
     }));
-    console.log({ matches });
+
     try {
       await addMatches({ variables: { matches } });
-      console.log("Matches added successfully");
-      setRows([{ homeTeam: "", awayTeam: "", homeScore: 0, awayScore: 0 }]); // Reset rows
+      setRows([{ homeTeam: "", awayTeam: "", homeScore: 0, awayScore: 0 }]);
+      toast.success("ScoreBoard updated!");
     } catch (error) {
       console.error("Error adding matches:", error);
+      toast.error(`Scoreboard update failed: ${error}`);
     }
   };
 

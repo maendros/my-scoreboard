@@ -2,16 +2,15 @@
   "name": "my-scoreboard",
   "version": "0.1.0",
   "private": true,
-"scripts": {
-  "dev": "next dev -p 5000",
-  "build": "next build",
-  "start": "next start",
-  "lint": "next lint",
-  "seed": "npx tsx prisma/seed.ts",
-  "seedM": "tsx prisma/seedMatch.ts",
-  "migrate": "prisma migrate deploy"
-},
-
+  "scripts": {
+    "dev": "next dev -p 5000",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "seed": "npx tsx prisma/seed.ts",
+    "seedM": "tsx prisma/seedMatch.ts",
+    "migrate": "prisma migrate deploy"
+  },
   "dependencies": {
     "@apollo/client": "^3.11.1",
     "@apollo/server": "^4.10.5",
@@ -25,6 +24,7 @@
     "next": "14.2.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-toastify": "^10.0.6",
     "rimraf": "^6.0.1"
   },
   "devDependencies": {
