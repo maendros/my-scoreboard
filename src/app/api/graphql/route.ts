@@ -2,9 +2,10 @@ import { ApolloServer } from "@apollo/server";
 import { startServerAndCreateNextHandler } from "@as-integrations/next";
 import { PrismaClient } from "@prisma/client";
 import typeDefs from "@/graphql/typeDefs";
-import resolvers from "@/graphql/resolvers";
+//import resolvers from "@/graphql/resolvers";
 import { IncomingMessage } from "http";
 import { Context } from "@/types/context";
+import resolvers from "@/graphql/resolvers";
 
 const prisma = new PrismaClient();
 
