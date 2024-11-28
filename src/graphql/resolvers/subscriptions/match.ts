@@ -1,7 +1,4 @@
-import { PubSub } from "graphql-subscriptions";
-
-const pubsub = new PubSub();
-const MATCH_ADDED = "MATCH_ADDED";
+import { pubsub, MATCH_ADDED } from "@/graphql/pubsub";
 
 const matchSubscriptionResolvers = {
   Subscription: {

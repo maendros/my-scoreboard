@@ -1,10 +1,13 @@
+import dynamic from "next/dynamic";
 import React from "react";
-import Scoreboard from "@/components/Scoreboard";
+
+// Dynamically load Scoreboard without SSR
+const Scoreboard = dynamic(() => import("../components/Scoreboard"), {
+  ssr: false,
+});
 
 const Home: React.FC = () => {
-  return (
-      <Scoreboard />
-  );
+  return <Scoreboard />;
 };
 
 export default Home;

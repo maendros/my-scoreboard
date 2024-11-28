@@ -1,9 +1,7 @@
 import { PrismaClient } from "@prisma/client";
-import { PubSub } from "graphql-subscriptions";
+import { pubsub, MATCH_ADDED } from "@/graphql/pubsub";
 
 const prisma = new PrismaClient();
-const pubsub = new PubSub();
-const MATCH_ADDED = "MATCH_ADDED";
 
 const matchMutationResolvers = {
   Mutation: {
