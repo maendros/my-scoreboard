@@ -2,10 +2,12 @@ import { ApolloServer } from "@apollo/server";
 import { startServerAndCreateNextHandler } from "@as-integrations/next";
 import { PrismaClient } from "@prisma/client";
 import typeDefs from "@/graphql/typeDefs";
-//import resolvers from "@/graphql/resolvers";
+import resolvers from "@/graphql/resolvers";
 import { IncomingMessage } from "http";
 import { Context } from "@/types/context";
-import resolvers from "@/graphql/resolvers";
+
+// Optional: Ensure this route always fetches fresh data
+export const dynamic = "force-dynamic";
 
 const prisma = new PrismaClient();
 
@@ -23,10 +25,5 @@ const handler = startServerAndCreateNextHandler(server, {
   },
 });
 
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
-
+// Remove the config export; it's deprecated in the App Router
 export { handler as POST };
