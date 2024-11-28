@@ -1,12 +1,20 @@
 import { gql } from "graphql-tag";
 
 const typeDefs = gql`
+  scalar GraphQLJSON
   type User {
-    id: ID!
+    id: Int!
     name: String!
-    email: String!
+    email: String
     matchesHome: [Match!]!
     matchesAway: [Match!]!
+    profile: GraphQLJSON # JSON field for properties like color
+  }
+
+  input UserInput {
+    name: String!
+    email: String
+    profile: GraphQLJSON
   }
 
   type Match {
@@ -53,8 +61,10 @@ const typeDefs = gql`
   }
 
   type Mutation {
-    addUser(name: String!, email: String!): User!
+    addUser(user: UserInput!): User!
     addMatches(matches: [MatchInput!]!): [Match!]!
+    updateUser(id: Int!, user: UserInput!): User!
+    deleteUser(id: Int!): Boolean!
   }
 
   type Subscription {

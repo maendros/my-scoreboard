@@ -12,7 +12,8 @@ generator client {
 model User {
   id          Int        @id @default(autoincrement())
   name        String
-  email       String     @unique
+  email       String?    @unique
+  profile     Json? // Optional JSON field for custom properties
   matchesHome Match[]    @relation("MatchHome")
   matchesAway Match[]    @relation("MatchAway")
   userTeams   UserTeam[] @relation("UserTeams")

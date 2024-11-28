@@ -7,6 +7,7 @@ import Link from "next/link";
 const menuItems = [
   { name: "Main", path: "/" },
   { name: "Admin Panel", path: "/admin" },
+  { name: "Users Panel", path: "/users" },
 ];
 
 const Menu: React.FC = () => {
@@ -18,13 +19,13 @@ const Menu: React.FC = () => {
     <div className="fixed top-0 left-0 w-full z-50 bg-gray-100 dark:bg-gray-800 shadow-md">
       {/* Header with Burger Icon */}
       <div className="flex justify-between items-center p-4">
-
         <button
           className="p-2 rounded-md text-black dark:text-white focus:outline-none fixed top-4 left-4 md:static" // Keep it fixed top-left for mobile and reset to static for larger screens
           onClick={toggleMenu}
         >
           {/* Burger icon */}
-          <span className="text-2xl md:text-lg">☰</span> {/* Larger icon for mobile */}
+          <span className="text-2xl md:text-lg">☰</span>{" "}
+          {/* Larger icon for mobile */}
         </button>
       </div>
 

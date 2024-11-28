@@ -19,6 +19,7 @@
     "@typescript-eslint/parser": "^7.17.0",
     "glob": "^11.0.0",
     "graphql": "^16.9.0",
+    "graphql-scalars": "^1.24.0",
     "graphql-subscriptions": "^2.0.0",
     "graphql-tag": "^2.12.6",
     "next": "14.2.5",
