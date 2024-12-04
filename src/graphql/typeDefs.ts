@@ -5,7 +5,7 @@ const typeDefs = gql`
 
   type Team {
     id: Int!
-    name: String!
+    name: String
     profile: GraphQLJSON
     leagues: [League!]!
     homeMatches: [Match!]!
@@ -66,6 +66,7 @@ const typeDefs = gql`
     leagues: [League!]!
     matches: [Match!]!
     teams: [Team!]!
+    league(id: Int!): League!
     leagueTable(leagueId: Int!): [LeagueTableEntry!]!
   }
 
@@ -74,6 +75,7 @@ const typeDefs = gql`
     updateLeague(id: Int!, league: LeagueInput!): League!
     deleteLeague(id: Int!): Boolean!
     addTeamsToLeague(leagueId: Int!, teamIds: [Int!]!): League!
+    removeTeamFromLeague(leagueId: Int!, teamId: Int!): League!
 
     addTeam(team: TeamInput!): Team!
     updateTeam(id: Int!, team: TeamInput!): Team!

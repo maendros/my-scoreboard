@@ -80,6 +80,33 @@ const leagueQueryResolvers = {
         return [];
       }
     },
+    league: async (_: any, { id }: { id: number }) => {
+      try {
+        const league = await prisma.league.findUnique({
+          where: { id },
+          include: {
+            teams: {
+              include: {
+                team: true,
+              },
+            },
+          },
+        });
+
+        if (!league) {
+          throw new Error("League not found");
+        }
+
+        // Format the response to include teams directly
+        return {
+          ...league,
+          teams: league.teams.map((leagueTeam) => leagueTeam.team),
+        };
+      } catch (error) {
+        console.error("Error fetching league:", error);
+        throw new Error("Failed to fetch league");
+      }
+    },
     
   },
 };

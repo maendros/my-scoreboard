@@ -6,7 +6,7 @@ import Loader from "./Loader";
 import ErrorMessage from "./ErrorMessage";
 import { toast } from "react-toastify";
 import client from "@/lib/apolloClient";
-
+import { FaArrowRight } from "react-icons/fa";
 import Link from "next/link";
 
 // GraphQL Queries and Mutations for Leagues
@@ -204,9 +204,9 @@ const Leagues: React.FC = () => {
               </button>
 
               {/* Arrow Icon for Navigation */}
-              <Link href={`/leagues/${league.id}`}>
+              <Link href={`/leagues/${league.id}?name=${encodeURIComponent(league.name)}`}>
                 <button className="ml-2 p-2 bg-blue-500 text-white">
-                  ➡️
+                   <FaArrowRight />
                 </button>
               </Link>
             </div>

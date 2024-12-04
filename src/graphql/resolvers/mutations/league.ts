@@ -82,6 +82,36 @@ const leagueResolvers = {
         throw new Error("Failed to add teams to league");
       }
     },
+
+    removeTeamFromLeague: async (_: any, { leagueId, teamId }: { leagueId: number; teamId: number }) => {
+        try {
+          const leagueTeam = await prisma.leagueTeam.findFirst({
+            where: {
+              leagueId,
+              teamId,
+            },
+          });
+  
+          if (!leagueTeam) {
+            throw new Error("Team is not part of the league.");
+          }
+  
+          await prisma.leagueTeam.delete({
+            where: {
+              id: leagueTeam.id,
+            },
+          });
+  
+          // Optionally, fetch and return the updated league
+          return await prisma.league.findUnique({
+            where: { id: leagueId },
+            include: { teams: { include: { team: true } } },
+          });
+        } catch (error) {
+          console.error("Error removing team from league:", error);
+          throw new Error("Failed to remove team from league. backend");
+        }
+      },
   },
 };
 
