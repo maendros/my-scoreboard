@@ -8,8 +8,8 @@ const typeDefs = gql`
     name: String
     profile: GraphQLJSON
     leagues: [League!]!
-    homeMatches: [Match!]!
-    awayMatches: [Match!]!
+    homeFixture: [Fixture!]!
+    awayFixture: [Fixture!]!
   }
 
   type LeagueTableEntry {
@@ -30,10 +30,10 @@ const typeDefs = gql`
     name: String!
     profile: GraphQLJSON
     teams: [Team!]!
-    matches: [Match!]!
+    fixtures: [Fixture!]!
   }
 
-  type Match {
+  type Fixture {
     id: Int!
     league: League
     homeTeam: Team!
@@ -48,8 +48,8 @@ const typeDefs = gql`
     profile: GraphQLJSON
   }
 
-  input MatchInput {
-    leagueId: Int
+  input FixtureInput {
+    leagueId: Int! # Ensure leagueId is required
     homeTeamId: Int!
     awayTeamId: Int!
     homeScore: Int!
@@ -64,7 +64,7 @@ const typeDefs = gql`
 
   type Query {
     leagues: [League!]!
-    matches: [Match!]!
+    fixtures: [Fixture!]!
     teams: [Team!]!
     league(id: Int!): League!
     leagueTable(leagueId: Int!): [LeagueTableEntry!]!
@@ -81,13 +81,13 @@ const typeDefs = gql`
     updateTeam(id: Int!, team: TeamInput!): Team!
     deleteTeam(id: Int!): Boolean!
 
-    addMatch(match: MatchInput!): Match!
-    updateMatch(id: Int!, match: MatchInput!): Match!
-    deleteMatch(id: Int!): Boolean!
+    addFixtures(fixtures: [FixtureInput!]!): [Fixture!]!
+    updateFixture(id: Int!, fixture: FixtureInput!): Fixture!
+    deleteFixture(id: Int!): Boolean!
   }
 
   type Subscription {
-    matchAdded: Match! 
+    fixtureAdded: Fixture! 
   }
 `;
 

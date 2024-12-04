@@ -12,26 +12,26 @@ model Team {
   name         String
   profile      Json?         // Optional JSON field for properties like color, icon
   leagues      LeagueTeam[]  // Many-to-Many relationship with leagues
-  homeMatches  Match[]       @relation("HomeMatches")
-  awayMatches  Match[]       @relation("AwayMatches")
+  homeFixtures Fixture[]     @relation("HomeFixtures")
+  awayFixtures Fixture[]     @relation("AwayFixtures")
 }
 
 model League {
-  id       Int           @id @default(autoincrement())
-  name     String
-  profile  Json?         // Optional JSON field for properties like season, type
-  teams    LeagueTeam[]  // Many-to-Many relationship with teams
-  matches  Match[]       // Matches within the league
+  id        Int         @id @default(autoincrement())
+  name      String
+  profile   Json?       // Optional JSON field for properties like season, type
+  teams     LeagueTeam[]  // Many-to-Many relationship with teams
+  fixtures  Fixture[]     @relation("LeagueFixtures")
 }
 
-model Match {
+model Fixture {
   id          Int       @id @default(autoincrement())
-  leagueId    Int?
-  league      League?   @relation(fields: [leagueId], references: [id])
+  leagueId    Int
+  league      League    @relation("LeagueFixtures", fields: [leagueId], references: [id])
   homeTeamId  Int
-  homeTeam    Team      @relation("HomeMatches", fields: [homeTeamId], references: [id])
+  homeTeam    Team      @relation("HomeFixtures", fields: [homeTeamId], references: [id])
   awayTeamId  Int
-  awayTeam    Team      @relation("AwayMatches", fields: [awayTeamId], references: [id])
+  awayTeam    Team      @relation("AwayFixtures", fields: [awayTeamId], references: [id])
   homeScore   Int
   awayScore   Int
   playedAt    DateTime  @default(now())

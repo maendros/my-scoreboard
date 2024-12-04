@@ -14,28 +14,28 @@ const leagueQueryResolvers = {
 
         if (leagueTeams.length === 0) return []; // No teams in the league
 
-        const matches = await prisma.match.findMany({
+        const fixtures = await prisma.fixture.findMany({
           where: { leagueId },
         });
 
         const table = leagueTeams.map(({ team }) => {
-          const homeMatches = matches.filter(
-            (match) => match.homeTeamId === team.id
+          const homeMatches = fixtures.filter(
+            (fixture) => fixture.homeTeamId === team.id
           );
-          const awayMatches = matches.filter(
-            (match) => match.awayTeamId === team.id
+          const awayMatches = fixtures.filter(
+            (fixture) => fixture.awayTeamId === team.id
           );
 
           const played = homeMatches.length + awayMatches.length;
           const won =
-            homeMatches.filter((match) => match.homeScore > match.awayScore)
+            homeMatches.filter((fixture) => fixture.homeScore > fixture.awayScore)
               .length +
-            awayMatches.filter((match) => match.awayScore > match.homeScore)
+            awayMatches.filter((fixture) => fixture.awayScore > fixture.homeScore)
               .length;
           const drawn =
-            homeMatches.filter((match) => match.homeScore === match.awayScore)
+            homeMatches.filter((fixture) => fixture.homeScore === fixture.awayScore)
               .length +
-            awayMatches.filter((match) => match.homeScore === match.awayScore)
+            awayMatches.filter((fixture) => fixture.homeScore === fixture.awayScore)
               .length;
           const lost = played - won - drawn;
           const goalsFor =
@@ -73,7 +73,7 @@ const leagueQueryResolvers = {
       try {
         
         return  await prisma.league.findMany({
-          include: { teams: { include: { team: true } }, matches: true },
+          include: { teams: { include: { team: true } }, fixtures: true },
         });
       } catch (error) {
         console.error("Error fetching leagues:", error);

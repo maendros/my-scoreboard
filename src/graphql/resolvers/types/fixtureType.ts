@@ -2,8 +2,8 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-const matchTypeResolvers = {
-  Match: {
+const fixtureTypeResolvers = {
+  Fixture: {
     homeTeam: (parent: any) =>
       prisma.team.findUnique({ where: { id: parent.homeTeamId } }),
     awayTeam: (parent: any) =>
@@ -12,4 +12,4 @@ const matchTypeResolvers = {
   },
 };
 
-export default matchTypeResolvers;
+export default fixtureTypeResolvers;

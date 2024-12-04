@@ -6,18 +6,22 @@ import Loader from "./Loader";
 import ErrorMessage from "./ErrorMessage";
 import { toast } from "react-toastify";
 
-const GET_TEAMS_QUERY = gql`
-  query GetTeams {
-    teams {
+const GET_LEAGUE_TEAMS_QUERY = gql`
+  query GetLeagueTeams($leagueId: Int!) {
+    league(id: $leagueId) {
       id
       name
+      teams {
+        id
+        name
+      }
     }
   }
 `;
 
-const ADD_MATCHES_MUTATION = gql`
-  mutation AddMatches($matches: [MatchInput!]!) {
-    addMatches(matches: $matches) {
+const ADD_FIXTURES_MUTATION = gql`
+  mutation AddFixtures($fixtures: [FixtureInput!]!) {
+    addFixtures(fixtures: $fixtures) {
       id
       homeTeam {
         name
@@ -32,9 +36,11 @@ const ADD_MATCHES_MUTATION = gql`
   }
 `;
 
-const AddMatch: React.FC = () => {
-  const { loading, error, data } = useQuery(GET_TEAMS_QUERY);
-  const [addMatches] = useMutation(ADD_MATCHES_MUTATION);
+const AddFixture: React.FC<{ leagueId: number }> = ({ leagueId }) => {
+  const { loading, error, data: dataLeagueTeams } = useQuery(GET_LEAGUE_TEAMS_QUERY, {
+    variables: { leagueId },
+  });
+  const [addFixture] = useMutation(ADD_FIXTURES_MUTATION);
   const [rows, setRows] = useState([
     { homeTeam: "", awayTeam: "", homeScore: 0, awayScore: 0 },
   ]);
@@ -42,7 +48,7 @@ const AddMatch: React.FC = () => {
   if (loading) return <Loader />;
   if (error) return <ErrorMessage message={error.message} />;
 
-  const teams = data?.teams || [];
+  const teams = dataLeagueTeams?.league?.teams || [];
 
   const handleAddRow = () => {
     setRows([
@@ -67,31 +73,32 @@ const AddMatch: React.FC = () => {
   };
 
   const isSaveDisabled = rows.some((row) => !row.homeTeam || !row.awayTeam);
-  console.log(isSaveDisabled);
 
   const handleSave = async () => {
-    const matches = rows.map((row) => ({
-      homeTeamId: Number(row.homeTeam), // Convert to integer
-      awayTeamId: Number(row.awayTeam), // Convert to integer
+    const fixtures = rows.map((row) => ({
+      leagueId, // Use leagueId passed from the parent
+      homeTeamId: Number(row.homeTeam),
+      awayTeamId: Number(row.awayTeam),
       homeScore: Number(row.homeScore),
       awayScore: Number(row.awayScore),
-      playedAt: new Date().toISOString(), // Automatically set the date
+      playedAt: new Date().toISOString(),
     }));
-
+  
     try {
-      await addMatches({ variables: { matches } });
+      await addFixture({ variables: { fixtures } });
       setRows([{ homeTeam: "", awayTeam: "", homeScore: 0, awayScore: 0 }]);
-      toast.success("ScoreBoard updated!");
+      toast.success("Fixtures added to the league!");
     } catch (error) {
-      console.error("Error adding matches:", error);
-      toast.error(`Scoreboard update failed: ${error}`);
+      console.error("Error adding fixtures:", error);
+      toast.error(`Failed to add fixtures: ${error}`);
     }
   };
+  
 
   return (
-    <div className="container mx-auto p-4 dark:bg-gray-800 bg-white">
+    <>
       <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-100">
-        Add Matches
+        Add Fixtures
       </h2>
       {rows.map((row, index) => (
         <div key={index} className="flex items-center mb-2">
@@ -121,15 +128,17 @@ const AddMatch: React.FC = () => {
             <option value="" disabled>
               Select Away Team
             </option>
-            {teams.map((team: { id: number; name: string }) => (
-              <option key={team.id} value={team.id}>
-                {team.name}
-              </option>
-            ))}
+            {teams
+              .filter((team: { id: number }) => team.id !== Number(row.homeTeam)) // Exclude selected home team
+              .map((team: { id: number; name: string }) => (
+                <option key={team.id} value={team.id}>
+                  {team.name}
+                </option>
+              ))}
           </select>
           <input
             type="number"
-            min="0" // Prevent negative values
+            min="0"
             className="mr-2 p-2 border dark:bg-gray-700 bg-white text-gray-900 dark:text-gray-100"
             value={row.homeScore}
             onChange={(e) =>
@@ -138,7 +147,7 @@ const AddMatch: React.FC = () => {
           />
           <input
             type="number"
-            min="0" // Prevent negative values
+            min="0"
             className="mr-2 p-2 border dark:bg-gray-700 bg-white text-gray-900 dark:text-gray-100"
             value={row.awayScore}
             onChange={(e) =>
@@ -168,8 +177,8 @@ const AddMatch: React.FC = () => {
       >
         Save
       </button>
-    </div>
+    </>
   );
 };
 
-export default AddMatch;
+export default AddFixture;
