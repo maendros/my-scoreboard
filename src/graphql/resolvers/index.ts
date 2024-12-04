@@ -1,21 +1,23 @@
-import userQueryResolvers from "./queries/user";
+import teamQueryResolvers from "./queries/team";
 import matchQueryResolvers from "./queries/match";
-import leagueTableQueryResolvers from "./queries/leagueTable";
+import leagueQueryResolvers from "./queries/league";
 import matchMutationResolvers from "./mutations/match";
 import matchSubscriptionResolvers from "./subscriptions/match";
 import matchTypeResolvers from "./types/matchType";
-import userMutationResolvers from "./mutations/user";
+import userMutationResolvers from "./mutations/team";
 import { GraphQLJSON } from "graphql-scalars";
+import leagueResolvers from "./mutations/league";
 
 const resolvers = {
   Query: {
-    ...userQueryResolvers.Query,
+    ...teamQueryResolvers.Query,
     ...matchQueryResolvers.Query,
-    ...leagueTableQueryResolvers.Query,
+    ...leagueQueryResolvers.Query,
   },
   Mutation: {
     ...matchMutationResolvers.Mutation,
     ...userMutationResolvers.Mutation,
+    ...leagueResolvers.Mutation
   },
   Subscription: {
     ...matchSubscriptionResolvers.Subscription,

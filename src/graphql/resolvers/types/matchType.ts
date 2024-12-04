@@ -5,9 +5,9 @@ const prisma = new PrismaClient();
 const matchTypeResolvers = {
   Match: {
     homeTeam: (parent: any) =>
-      prisma.user.findUnique({ where: { id: parent.homeTeamId } }),
+      prisma.team.findUnique({ where: { id: parent.homeTeamId } }),
     awayTeam: (parent: any) =>
-      prisma.user.findUnique({ where: { id: parent.awayTeamId } }),
+      prisma.team.findUnique({ where: { id: parent.awayTeamId } }),
     playedAt: (parent: any) => new Date(parent.playedAt).toISOString(),
   },
 };

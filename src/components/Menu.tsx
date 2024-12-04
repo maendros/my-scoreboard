@@ -7,7 +7,8 @@ import Link from "next/link";
 const menuItems = [
   { name: "Main", path: "/" },
   { name: "Admin Panel", path: "/admin" },
-  { name: "Users Panel", path: "/users" },
+  { name: "Teams Panel", path: "/teams" },
+  { name: "League Panel", path: "/leagues" },
 ];
 
 const Menu: React.FC = () => {

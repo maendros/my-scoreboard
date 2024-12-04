@@ -1,8 +1,8 @@
 import React from "react";
-import Users from "@/components/Users";
+import Teams from "@/components/Teams";
 
 const Admin: React.FC = () => {
-  return <Users />;
+  return <Teams />;
 };
 
 export default Admin;

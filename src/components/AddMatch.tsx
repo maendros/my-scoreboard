@@ -6,9 +6,9 @@ import Loader from "./Loader";
 import ErrorMessage from "./ErrorMessage";
 import { toast } from "react-toastify";
 
-const GET_USERS_QUERY = gql`
-  query GetUsers {
-    users {
+const GET_TEAMS_QUERY = gql`
+  query GetTeams {
+    teams {
       id
       name
     }
@@ -33,7 +33,7 @@ const ADD_MATCHES_MUTATION = gql`
 `;
 
 const AddMatch: React.FC = () => {
-  const { loading, error, data } = useQuery(GET_USERS_QUERY);
+  const { loading, error, data } = useQuery(GET_TEAMS_QUERY);
   const [addMatches] = useMutation(ADD_MATCHES_MUTATION);
   const [rows, setRows] = useState([
     { homeTeam: "", awayTeam: "", homeScore: 0, awayScore: 0 },

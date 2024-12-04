@@ -2,47 +2,18 @@ import { gql } from "graphql-tag";
 
 const typeDefs = gql`
   scalar GraphQLJSON
-  type User {
+
+  type Team {
     id: Int!
     name: String!
-    email: String
-    matchesHome: [Match!]!
-    matchesAway: [Match!]!
-    profile: GraphQLJSON # JSON field for properties like color
-  }
-
-  input UserInput {
-    name: String!
-    email: String
     profile: GraphQLJSON
-  }
-
-  type Match {
-    id: ID!
-    homeTeam: User!
-    awayTeam: User!
-    homeScore: Int!
-    awayScore: Int!
-    playedAt: String! # Updated from date to playedAt
-  }
-
-  input MatchInput {
-    homeTeamId: ID!
-    awayTeamId: ID!
-    homeScore: Int!
-    awayScore: Int!
-    playedAt: String!
-    userTeams: [UserTeamInput!] # Optional
-  }
-
-  input UserTeamInput {
-    userId: ID!
-    teamId: ID!
-    isWinner: Boolean!
+    leagues: [League!]!
+    homeMatches: [Match!]!
+    awayMatches: [Match!]!
   }
 
   type LeagueTableEntry {
-    team: User!
+    team: Team!
     played: Int!
     won: Int!
     drawn: Int!
@@ -54,21 +25,67 @@ const typeDefs = gql`
     winRatio: Float!
   }
 
-  type Query {
-    users: [User!]!
+  type League {
+    id: Int!
+    name: String!
+    profile: GraphQLJSON
+    teams: [Team!]!
     matches: [Match!]!
-    leagueTable: [LeagueTableEntry!]!
+  }
+
+  type Match {
+    id: Int!
+    league: League
+    homeTeam: Team!
+    awayTeam: Team!
+    homeScore: Int!
+    awayScore: Int!
+    playedAt: String!
+  }
+
+  input LeagueInput {
+    name: String!
+    profile: GraphQLJSON
+  }
+
+  input MatchInput {
+    leagueId: Int
+    homeTeamId: Int!
+    awayTeamId: Int!
+    homeScore: Int!
+    awayScore: Int!
+    playedAt: String!
+  }
+
+  input TeamInput {
+    name: String!
+    profile: GraphQLJSON
+  }
+
+  type Query {
+    leagues: [League!]!
+    matches: [Match!]!
+    teams: [Team!]!
+    leagueTable(leagueId: Int!): [LeagueTableEntry!]!
   }
 
   type Mutation {
-    addUser(user: UserInput!): User!
-    addMatches(matches: [MatchInput!]!): [Match!]!
-    updateUser(id: Int!, user: UserInput!): User!
-    deleteUser(id: Int!): Boolean!
+    addLeague(league: LeagueInput!): League!
+    updateLeague(id: Int!, league: LeagueInput!): League!
+    deleteLeague(id: Int!): Boolean!
+    addTeamsToLeague(leagueId: Int!, teamIds: [Int!]!): League!
+
+    addTeam(team: TeamInput!): Team!
+    updateTeam(id: Int!, team: TeamInput!): Team!
+    deleteTeam(id: Int!): Boolean!
+
+    addMatch(match: MatchInput!): Match!
+    updateMatch(id: Int!, match: MatchInput!): Match!
+    deleteMatch(id: Int!): Boolean!
   }
 
   type Subscription {
-    matchAdded: [Match!]!
+    matchAdded: Match! 
   }
 `;
 

@@ -1,4 +1,3 @@
-// Define your schema and provider
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
@@ -8,45 +7,40 @@ generator client {
   provider = "prisma-client-js"
 }
 
-// Existing User model
-model User {
-  id          Int        @id @default(autoincrement())
-  name        String
-  email       String?    @unique
-  profile     Json? // Optional JSON field for custom properties
-  matchesHome Match[]    @relation("MatchHome")
-  matchesAway Match[]    @relation("MatchAway")
-  userTeams   UserTeam[] @relation("UserTeams")
-}
-
-// New Team model
 model Team {
-  id        Int        @id @default(autoincrement())
-  name      String
-  userTeams UserTeam[] @relation("TeamUserTeams")
+  id           Int           @id @default(autoincrement())
+  name         String
+  profile      Json?         // Optional JSON field for properties like color, icon
+  leagues      LeagueTeam[]  // Many-to-Many relationship with leagues
+  homeMatches  Match[]       @relation("HomeMatches")
+  awayMatches  Match[]       @relation("AwayMatches")
 }
 
-// Existing Match model with new fields
+model League {
+  id       Int           @id @default(autoincrement())
+  name     String
+  profile  Json?         // Optional JSON field for properties like season, type
+  teams    LeagueTeam[]  // Many-to-Many relationship with teams
+  matches  Match[]       // Matches within the league
+}
+
 model Match {
-  id         Int        @id @default(autoincrement())
-  homeTeamId Int
-  awayTeamId Int
-  homeTeam   User       @relation("MatchHome", fields: [homeTeamId], references: [id])
-  awayTeam   User       @relation("MatchAway", fields: [awayTeamId], references: [id])
-  homeScore  Int
-  awayScore  Int
-  playedAt   DateTime   @default(now())
-  userTeams  UserTeam[] @relation("MatchUserTeams")
+  id          Int       @id @default(autoincrement())
+  leagueId    Int?
+  league      League?   @relation(fields: [leagueId], references: [id])
+  homeTeamId  Int
+  homeTeam    Team      @relation("HomeMatches", fields: [homeTeamId], references: [id])
+  awayTeamId  Int
+  awayTeam    Team      @relation("AwayMatches", fields: [awayTeamId], references: [id])
+  homeScore   Int
+  awayScore   Int
+  playedAt    DateTime  @default(now())
 }
 
-// Updated UserTeam model with optional fields
-model UserTeam {
+model LeagueTeam {
   id       Int     @id @default(autoincrement())
-  userId   Int? // Make userId optional
-  teamId   Int? // Make teamId optional
-  matchId  Int? // Make matchId optional
-  isWinner Boolean
-  user     User?   @relation("UserTeams", fields: [userId], references: [id])
-  team     Team?   @relation("TeamUserTeams", fields: [teamId], references: [id])
-  match    Match?  @relation("MatchUserTeams", fields: [matchId], references: [id])
+  leagueId Int
+  league   League  @relation(fields: [leagueId], references: [id])
+  teamId   Int
+  team     Team    @relation(fields: [teamId], references: [id])
 }

@@ -5,36 +5,65 @@ const prisma = new PrismaClient();
 
 const matchMutationResolvers = {
   Mutation: {
-    addMatches: async (_: any, { matches }: { matches: any[] }) => {
+    addMatch: async (_: any, { match }: { match: any }) => {
       try {
-        const createdMatches = await Promise.all(
-          matches.map(async (match) => {
-            return await prisma.match.create({
-              data: {
-                homeTeamId: parseInt(match.homeTeamId, 10),
-                awayTeamId: parseInt(match.awayTeamId, 10),
-                homeScore: match.homeScore,
-                awayScore: match.awayScore,
-                playedAt: new Date(match.playedAt),
-                userTeams: match.userTeams
-                  ? {
-                      create: match.userTeams.map((userTeam: any) => ({
-                        userId: parseInt(userTeam.userId, 10),
-                        teamId: parseInt(userTeam.teamId, 10),
-                        isWinner: userTeam.isWinner,
-                      })),
-                    }
-                  : undefined,
-              },
-            });
-          })
-        );
+        const createdMatch = await prisma.match.create({
+          data: {
+            leagueId: match.leagueId || null, // Nullable league association
+            homeTeamId: match.homeTeamId,
+            awayTeamId: match.awayTeamId,
+            homeScore: match.homeScore,
+            awayScore: match.awayScore,
+            playedAt: new Date(match.playedAt),
+          },
+          include: {
+            league: true,
+            homeTeam: true,
+            awayTeam: true,
+          },
+        });
 
-        pubsub.publish(MATCH_ADDED, { matchAdded: createdMatches });
-        return createdMatches;
+        pubsub.publish(MATCH_ADDED, { matchAdded: createdMatch });
+        return createdMatch;
       } catch (error) {
-        console.error("Error adding matches:", error);
-        throw new Error("Error adding matches");
+        console.error("Error adding match:", error);
+        throw new Error("Failed to add match");
+      }
+    },
+
+    updateMatch: async (_: any, { id, match }: { id: number; match: any }) => {
+      try {
+        const updatedMatch = await prisma.match.update({
+          where: { id },
+          data: {
+            leagueId: match.leagueId || null,
+            homeTeamId: match.homeTeamId,
+            awayTeamId: match.awayTeamId,
+            homeScore: match.homeScore,
+            awayScore: match.awayScore,
+            playedAt: new Date(match.playedAt),
+          },
+          include: {
+            league: true,
+            homeTeam: true,
+            awayTeam: true,
+          },
+        });
+
+        return updatedMatch;
+      } catch (error) {
+        console.error("Error updating match:", error);
+        throw new Error("Failed to update match");
+      }
+    },
+
+    deleteMatch: async (_: any, { id }: { id: number }) => {
+      try {
+        await prisma.match.delete({ where: { id } });
+        return true;
+      } catch (error) {
+        console.error("Error deleting match:", error);
+        throw new Error("Failed to delete match");
       }
     },
   },

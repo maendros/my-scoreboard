@@ -2,22 +2,30 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-const leagueTableQueryResolvers = {
+const leagueQueryResolvers = {
   Query: {
-    leagueTable: async () => {
+    leagueTable: async (_: any, { leagueId }: { leagueId: number }) => {
       try {
-        const users = await prisma.user.findMany();
-        const matches = await prisma.match.findMany();
+        // Fetch teams in the league
+        const leagueTeams = await prisma.leagueTeam.findMany({
+          where: { leagueId },
+          include: { team: true }, // Include the team details
+        });
 
-        if (users.length === 0) return []; // No users
+        if (leagueTeams.length === 0) return []; // No teams in the league
 
-        const table = users.map((user) => {
+        const matches = await prisma.match.findMany({
+          where: { leagueId },
+        });
+
+        const table = leagueTeams.map(({ team }) => {
           const homeMatches = matches.filter(
-            (match) => match.homeTeamId === user.id
+            (match) => match.homeTeamId === team.id
           );
           const awayMatches = matches.filter(
-            (match) => match.awayTeamId === user.id
+            (match) => match.awayTeamId === team.id
           );
+
           const played = homeMatches.length + awayMatches.length;
           const won =
             homeMatches.filter((match) => match.homeScore > match.awayScore)
@@ -42,7 +50,7 @@ const leagueTableQueryResolvers = {
             played > 0 ? ((won + 0.5 * drawn) / played) * 100 : 0;
 
           return {
-            team: user,
+            team,
             played,
             won,
             drawn,
@@ -61,7 +69,19 @@ const leagueTableQueryResolvers = {
         return [];
       }
     },
+    leagues: async () => {
+      try {
+        
+        return  await prisma.league.findMany({
+          include: { teams: { include: { team: true } }, matches: true },
+        });
+      } catch (error) {
+        console.error("Error fetching leagues:", error);
+        return [];
+      }
+    },
+    
   },
 };
 
-export default leagueTableQueryResolvers;
+export default leagueQueryResolvers;

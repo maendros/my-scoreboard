@@ -7,9 +7,9 @@ import ErrorMessage from "./ErrorMessage";
 import { toast } from "react-toastify";
 import client from "@/lib/apolloClient";
 
-const GET_USERS_QUERY = gql`
-  query GetUsers {
-    users {
+const GET_TEAMS_QUERY = gql`
+  query GetTeams {
+    teams {
       id
       name
       profile
@@ -17,9 +17,9 @@ const GET_USERS_QUERY = gql`
   }
 `;
 
-const ADD_USER_MUTATION = gql`
-  mutation AddUser($user: UserInput!) {
-    addUser(user: $user) {
+const ADD_TEAM_MUTATION = gql`
+  mutation AddUTeam($team: TeamInput!) {
+    addTeam(team: $team) {
       id
       name
       profile
@@ -27,9 +27,9 @@ const ADD_USER_MUTATION = gql`
   }
 `;
 
-const UPDATE_USER_MUTATION = gql`
-  mutation UpdateUser($id: Int!, $user: UserInput!) {
-    updateUser(id: $id, user: $user) {
+const UPDATE_TEAM_MUTATION = gql`
+  mutation UpdateTeam($id: Int!, $team: TeamInput!) {
+    updateTeam(id: $id, team: $team) {
       id
       name
       profile
@@ -37,95 +37,94 @@ const UPDATE_USER_MUTATION = gql`
   }
 `;
 
-const DELETE_USER_MUTATION = gql`
-  mutation DeleteUser($id: Int!) {
-    deleteUser(id: $id)
+const DELETE_TEAM_MUTATION = gql`
+  mutation DeleteTeam($id: Int!) {
+    deleteTeam(id: $id)
   }
 `;
 
-const Users: React.FC = () => {
-  const { loading, error, data } = useQuery(GET_USERS_QUERY);
-  const [addUser] = useMutation(ADD_USER_MUTATION);
-  const [updateUser] = useMutation(UPDATE_USER_MUTATION);
-  const [deleteUser] = useMutation(DELETE_USER_MUTATION);
+const Teams: React.FC = () => {
+  const { loading, error, data } = useQuery(GET_TEAMS_QUERY);
+  const [addTeam] = useMutation(ADD_TEAM_MUTATION);
+  const [updateTeam] = useMutation(UPDATE_TEAM_MUTATION);
+  const [deleteTeam] = useMutation(DELETE_TEAM_MUTATION);
 
-  const [newUser, setNewUser] = useState({
+  const [newTeam, setNewTeam] = useState({
     name: "",
     profile: { color: "" },
   });
 
-  const [editedUsers, setEditedUsers] = useState<
+  const [editedTeams, setEditedTeams] = useState<
     Record<number, { name: string; color: string }>
   >({}); // Temporary state for edited users
 
   if (loading) return <Loader />;
   if (error) return <ErrorMessage message={error.message} />;
 
-  const users = data?.users || [];
+  const users = data?.teams || [];
 
   const handleAddUser = async () => {
     try {
-      await addUser({
-        variables: { user: newUser },
-        refetchQueries: [{ query: GET_USERS_QUERY }],
+      await addTeam({
+        variables: { team: newTeam },
+        refetchQueries: [{ query: GET_TEAMS_QUERY }],
       });
 
-      setNewUser({ name: "", profile: { color: "" } });
+      setNewTeam({ name: "", profile: { color: "" } });
 
       toast.success("User added successfully!");
     } catch (error) {
-      console.error("Error adding user:", error);
-      toast.error(`Failed to add user: ${error}`);
+      console.error("Error adding team:", error);
+      toast.error(`Failed to add team: ${error}`);
     }
   };
 
-  const handleUpdateUser = async (id: number) => {
-    const editedUser = editedUsers[id];
-    if (!editedUser) return;
+  const handleUpdateTeam = async (id: number) => {
+    const editedTeam = editedTeams[id];
+    if (!editedTeam) return;
 
     try {
-      await updateUser({
+      await updateTeam({
         variables: {
           id: Number(id),
-          user: {
-            name: editedUser.name,
-            email: null,
-            profile: { color: editedUser.color || "#ff0000" },
+          team: {
+            name: editedTeam.name,
+            profile: { color: editedTeam.color || "#ff0000" },
           },
         },
       });
-      setEditedUsers((prev) => {
+      setEditedTeams((prev) => {
         const updated = { ...prev };
         delete updated[id]; // Clear temporary state after saving
         return updated;
       });
       toast.success("User updated successfully!");
     } catch (error) {
-      console.error("Error updating user:", error);
-      toast.error(`Failed to update user: ${error}`);
+      console.error("Error updating team:", error);
+      toast.error(`Failed to update team: ${error}`);
     }
   };
 
   const handleDeleteUser = async (id: number) => {
     try {
-      await deleteUser({ variables: { id: Number(id) } });
-      client.cache.updateQuery({ query: GET_USERS_QUERY }, (existingData) => ({
-        users: (existingData?.users || []).filter(
-          (user: Record<string, unknown>) => user.id !== id
+      await deleteTeam({ variables: { id: Number(id)  }  });
+      client.cache.updateQuery({ query: GET_TEAMS_QUERY }, (existingData) => ({
+        teams: (existingData?.teams || []).filter(
+          (team: Record<string, unknown>) => team.id !== id
         ),
       }));
       toast.success("User deleted successfully!");
     } catch (error) {
-      console.error("Error deleting user:", error);
-      toast.error(`Failed to delete user: ${error}`);
+      console.error("Error deleting team:", error);
+      toast.error(`Failed to delete team: ${error}`);
     }
   };
 
   const handleInputChange = (id: number, field: string, value: string) => {
-    setEditedUsers((prev) => {
-      // Populate `editedUsers` for this user with existing data from `users` if not already edited
+    setEditedTeams((prev) => {
+      // Populate `editedTeams` for this team with existing data from `users` if not already edited
       const currentUser = users.find(
-        (user: Record<string, unknown>) => user.id === id
+        (team: Record<string, unknown>) => team.id === id
       );
       const existingEdit = prev[id] || {
         name: currentUser?.name || "",
@@ -142,7 +141,7 @@ const Users: React.FC = () => {
     });
   };
 
-  const isAddDisabled = !newUser.name;
+  const isAddDisabled = !newTeam.name;
 
   return (
     <div className="container mx-auto p-4 dark:bg-gray-800 bg-white">
@@ -152,50 +151,50 @@ const Users: React.FC = () => {
 
       {/* Existing Users */}
       <div>
-        {users.map((user: { id: number; name: string; profile: any }) => {
-          const editedUser = editedUsers[user.id] || {
-            name: user.name,
-            color: user.profile?.color || "#000000",
+        {users.map((team: { id: number; name: string; profile: any }) => {
+          const editedTeam = editedTeams[team.id] || {
+            name: team.name,
+            color: team.profile?.color || "#000000",
           };
 
           return (
             <div
-              key={user.id}
+              key={team.id}
               className="flex items-center mb-2 dark:text-gray-100 text-gray-900"
             >
               <input
                 type="text"
-                value={editedUser.name}
+                value={editedTeam.name}
                 onChange={(e) =>
-                  handleInputChange(user.id, "name", e.target.value)
+                  handleInputChange(team.id, "name", e.target.value)
                 }
                 className="mr-2 p-2 border dark:bg-gray-700 bg-white"
               />
 
               <input
                 type="color"
-                value={editedUser.color}
+                value={editedTeam.color}
                 onChange={(e) =>
-                  handleInputChange(user.id, "color", e.target.value)
+                  handleInputChange(team.id, "color", e.target.value)
                 }
                 className="mr-2 p-2 border"
               />
 
               <button
                 className={`ml-2 p-2 text-white ${
-                  editedUser.name
+                  editedTeam.name
                     ? "bg-green-500"
                     : "bg-gray-500 cursor-not-allowed"
                 }`}
-                onClick={() => handleUpdateUser(user.id)}
-                disabled={!editedUser.name}
+                onClick={() => handleUpdateTeam(team.id)}
+                disabled={!editedTeam.name}
               >
                 Save
               </button>
 
               <button
                 className="ml-2 p-2 bg-red-500 text-white"
-                onClick={() => handleDeleteUser(user.id)}
+                onClick={() => handleDeleteUser(team.id)}
               >
                 Delete
               </button>
@@ -210,15 +209,15 @@ const Users: React.FC = () => {
         <input
           type="text"
           placeholder="Name"
-          value={newUser.name}
-          onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
+          value={newTeam.name}
+          onChange={(e) => setNewTeam({ ...newTeam, name: e.target.value })}
           className="mr-2 p-2 border dark:bg-gray-700 bg-white"
         />
         <input
           type="color"
-          value={newUser.profile.color || "#000000"}
+          value={newTeam.profile.color || "#000000"}
           onChange={(e) =>
-            setNewUser({ ...newUser, profile: { color: e.target.value } })
+            setNewTeam({ ...newTeam, profile: { color: e.target.value } })
           }
           className="mr-2 p-2 border"
         />
@@ -229,11 +228,11 @@ const Users: React.FC = () => {
           onClick={handleAddUser}
           disabled={isAddDisabled}
         >
-          Add User
+          Add Team
         </button>
       </div>
     </div>
   );
 };
 
-export default Users;
+export default Teams;
