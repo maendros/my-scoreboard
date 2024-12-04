@@ -42,7 +42,7 @@ const AddMatch: React.FC = () => {
   if (loading) return <Loader />;
   if (error) return <ErrorMessage message={error.message} />;
 
-  const users = data?.users || [];
+  const teams = data?.teams || [];
 
   const handleAddRow = () => {
     setRows([
@@ -105,9 +105,9 @@ const AddMatch: React.FC = () => {
             <option value="" disabled>
               Select Home Team
             </option>
-            {users.map((user: { id: number; name: string }) => (
-              <option key={user.id} value={user.id}>
-                {user.name}
+            {teams.map((team: { id: number; name: string }) => (
+              <option key={team.id} value={team.id}>
+                {team.name}
               </option>
             ))}
           </select>
@@ -121,9 +121,9 @@ const AddMatch: React.FC = () => {
             <option value="" disabled>
               Select Away Team
             </option>
-            {users.map((user: { id: number; name: string }) => (
-              <option key={user.id} value={user.id}>
-                {user.name}
+            {teams.map((team: { id: number; name: string }) => (
+              <option key={team.id} value={team.id}>
+                {team.name}
               </option>
             ))}
           </select>

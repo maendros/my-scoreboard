@@ -7,6 +7,8 @@ import ErrorMessage from "./ErrorMessage";
 import { toast } from "react-toastify";
 import client from "@/lib/apolloClient";
 
+import Link from "next/link";
+
 // GraphQL Queries and Mutations for Leagues
 const GET_LEAGUES_QUERY = gql`
   query GetLeagues {
@@ -44,6 +46,8 @@ const DELETE_LEAGUE_MUTATION = gql`
   }
 `;
 
+
+
 const Leagues: React.FC = () => {
   const { loading, error, data } = useQuery(GET_LEAGUES_QUERY);
   const [addLeague] = useMutation(ADD_LEAGUE_MUTATION);
@@ -63,8 +67,6 @@ const Leagues: React.FC = () => {
   if (error) return <ErrorMessage message={error.message} />;
 
   const leagues = data?.leagues || [];
-  console.log(data);
-  
 
   const handleAddLeague = async () => {
     try {
@@ -200,6 +202,13 @@ const Leagues: React.FC = () => {
               >
                 Delete
               </button>
+
+              {/* Arrow Icon for Navigation */}
+              <Link href={`/leagues/${league.id}`}>
+                <button className="ml-2 p-2 bg-blue-500 text-white">
+                  ➡️
+                </button>
+              </Link>
             </div>
           );
         })}
