@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 import client from "@/lib/apolloClient";
 import { FaArrowRight } from "react-icons/fa";
 import Link from "next/link";
+import ColorPicker from "./ColorPicker";
 
 // GraphQL Queries and Mutations for Leagues
 const GET_LEAGUES_QUERY = gql`
@@ -45,8 +46,6 @@ const DELETE_LEAGUE_MUTATION = gql`
     deleteLeague(id: $id)
   }
 `;
-
-
 
 const Leagues: React.FC = () => {
   const { loading, error, data } = useQuery(GET_LEAGUES_QUERY);
@@ -113,11 +112,14 @@ const Leagues: React.FC = () => {
   const handleDeleteLeague = async (id: number) => {
     try {
       await deleteLeague({ variables: { id: Number(id) } });
-      client.cache.updateQuery({ query: GET_LEAGUES_QUERY }, (existingData) => ({
-        leagues: (existingData?.leagues || []).filter(
-          (league: Record<string, unknown>) => league.id !== id
-        ),
-      }));
+      client.cache.updateQuery(
+        { query: GET_LEAGUES_QUERY },
+        (existingData) => ({
+          leagues: (existingData?.leagues || []).filter(
+            (league: Record<string, unknown>) => league.id !== id
+          ),
+        })
+      );
       toast.success("League deleted successfully!");
     } catch (error) {
       console.error("Error deleting league:", error);
@@ -175,13 +177,12 @@ const Leagues: React.FC = () => {
                 className="mr-2 p-2 border dark:bg-gray-700 bg-white"
               />
 
-              <input
-                type="color"
+              <ColorPicker
                 value={editedLeague.color}
-                onChange={(e) =>
-                  handleInputChange(league.id, "color", e.target.value)
+                onChange={(newColor) =>
+                  handleInputChange(league.id, "color", newColor)
                 }
-                className="mr-2 p-2 border"
+                size={40}
               />
 
               <button
@@ -204,9 +205,13 @@ const Leagues: React.FC = () => {
               </button>
 
               {/* Arrow Icon for Navigation */}
-              <Link href={`/leagues/${league.id}?name=${encodeURIComponent(league.name)}`}>
+              <Link
+                href={`/leagues/${league.id}?name=${encodeURIComponent(
+                  league.name
+                )}`}
+              >
                 <button className="ml-2 p-2 bg-blue-500 text-white">
-                   <FaArrowRight />
+                  <FaArrowRight />
                 </button>
               </Link>
             </div>
@@ -217,30 +222,34 @@ const Leagues: React.FC = () => {
       {/* Add New League */}
       <div className="mt-4">
         <h3 className="text-xl font-semibold mb-2">Add New League</h3>
-        <input
-          type="text"
-          placeholder="Name"
-          value={newLeague.name}
-          onChange={(e) => setNewLeague({ ...newLeague, name: e.target.value })}
-          className="mr-2 p-2 border dark:bg-gray-700 bg-white"
-        />
-        <input
-          type="color"
-          value={newLeague.profile.color || "#000000"}
-          onChange={(e) =>
-            setNewLeague({ ...newLeague, profile: { color: e.target.value } })
-          }
-          className="mr-2 p-2 border"
-        />
-        <button
-          className={`p-2 text-white ${
-            isAddDisabled ? "bg-gray-500 cursor-not-allowed" : "bg-green-500"
-          }`}
-          onClick={handleAddLeague}
-          disabled={isAddDisabled}
-        >
-          Add League
-        </button>
+        <div className="flex items-center mb-2 dark:text-gray-100 text-gray-900">
+          <input
+            type="text"
+            placeholder="Name"
+            value={newLeague.name}
+            onChange={(e) =>
+              setNewLeague({ ...newLeague, name: e.target.value })
+            }
+            className="mr-2 p-2 border dark:bg-gray-700 bg-white"
+          />
+
+          <ColorPicker
+            value={newLeague.profile.color || "#000000"}
+            onChange={(e) =>
+              setNewLeague({ ...newLeague, profile: { color: e } })
+            }
+            size={40}
+          />
+          <button
+            className={`p-2 text-white ${
+              isAddDisabled ? "bg-gray-500 cursor-not-allowed" : "bg-green-500"
+            }`}
+            onClick={handleAddLeague}
+            disabled={isAddDisabled}
+          >
+            Add League
+          </button>
+        </div>
       </div>
     </div>
   );

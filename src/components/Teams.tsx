@@ -6,6 +6,7 @@ import Loader from "./Loader";
 import ErrorMessage from "./ErrorMessage";
 import { toast } from "react-toastify";
 import client from "@/lib/apolloClient";
+import ColorPicker from "./ColorPicker";
 
 const GET_TEAMS_QUERY = gql`
   query GetTeams {
@@ -169,13 +170,12 @@ const Teams: React.FC = () => {
                 className="mr-2 p-2 border dark:bg-gray-700 bg-white"
               />
 
-              <input
-                type="color"
+              <ColorPicker
                 value={editedTeam.color}
-                onChange={(e) =>
-                  handleInputChange(team.id, "color", e.target.value)
+                onChange={(newColor) =>
+                  handleInputChange(team.id, "color", newColor)
                 }
-                className="mr-2 p-2 border"
+                size={40}
               />
 
               <button
@@ -201,32 +201,32 @@ const Teams: React.FC = () => {
         })}
       </div>
 
-      <div className="mt-4">
+      <div className="mt-8">
         <h3 className="text-xl font-semibold mb-2">Add New Team</h3>
-        <input
-          type="text"
-          placeholder="Name"
-          value={newTeam.name}
-          onChange={(e) => setNewTeam({ ...newTeam, name: e.target.value })}
-          className="mr-2 p-2 border dark:bg-gray-700 bg-white"
-        />
-        <input
-          type="color"
-          value={newTeam.profile.color || "#000000"}
-          onChange={(e) =>
-            setNewTeam({ ...newTeam, profile: { color: e.target.value } })
-          }
-          className="mr-2 p-2 border"
-        />
-        <button
-          className={`p-2 text-white ${
-            isAddDisabled ? "bg-gray-500 cursor-not-allowed" : "bg-green-500"
-          }`}
-          onClick={handleAddTeam}
-          disabled={isAddDisabled}
-        >
-          Add Team
-        </button>
+        <div className="flex items-center mb-2 dark:text-gray-100 text-gray-900">
+          <input
+            type="text"
+            placeholder="Name"
+            value={newTeam.name}
+            onChange={(e) => setNewTeam({ ...newTeam, name: e.target.value })}
+            className="mr-2 p-2 border dark:bg-gray-700 bg-white"
+          />
+          <ColorPicker
+            value={newTeam.profile.color}
+            onChange={(e) => setNewTeam({ ...newTeam, profile: { color: e } })}
+            size={40}
+          />
+
+          <button
+            className={`p-2 text-white ${
+              isAddDisabled ? "bg-gray-500 cursor-not-allowed" : "bg-green-500"
+            }`}
+            onClick={handleAddTeam}
+            disabled={isAddDisabled}
+          >
+            Add Team
+          </button>
+        </div>
       </div>
     </div>
   );

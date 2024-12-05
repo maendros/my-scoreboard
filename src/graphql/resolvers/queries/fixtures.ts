@@ -46,7 +46,8 @@ const fixtureQueryResolvers = {
 
         const groupedByDay = groupBy(
           fixtures,
-          (fixture) => fixture.playedAt.toISOString().split("T")[0] // Group by date (YYYY-MM-DD)
+          (fixture: Record<string, any>) =>
+            fixture.playedAt.toISOString().split("T")[0] // Group by date (YYYY-MM-DD)
         );
 
         return Object.entries(groupedByDay).map(([day, matches]) => ({

@@ -55,9 +55,12 @@ const REMOVE_TEAM_FROM_LEAGUE_MUTATION = gql`
   }
 `;
 
-
 const ManageTeams: React.FC<{ leagueId: number }> = ({ leagueId }) => {
-  const { loading: loadingTeams, error: errorTeams, data: dataTeams } = useQuery(GET_TEAMS_QUERY);
+  const {
+    loading: loadingTeams,
+    error: errorTeams,
+    data: dataTeams,
+  } = useQuery(GET_TEAMS_QUERY);
   const {
     loading: loadingLeagueTeams,
     error: errorLeagueTeams,
@@ -74,16 +77,22 @@ const ManageTeams: React.FC<{ leagueId: number }> = ({ leagueId }) => {
 
   if (loadingTeams || loadingLeagueTeams) return <Loader />;
   if (errorTeams || errorLeagueTeams)
-    return <ErrorMessage message={errorTeams?.message || errorLeagueTeams?.message} />;
+    return (
+      <ErrorMessage
+        message={errorTeams?.message || errorLeagueTeams?.message}
+      />
+    );
 
   const allTeams = dataTeams?.teams || [];
   const leagueTeams = dataLeagueTeams?.league?.teams || [];
 
   // Filter out teams that are already in the league
   const availableTeams = allTeams.filter(
-    (team: { id: number }) => !leagueTeams.some((leagueTeam: { id: number }) => leagueTeam.id === team.id)
+    (team: { id: number }) =>
+      !leagueTeams.some(
+        (leagueTeam: { id: number }) => leagueTeam.id === team.id
+      )
   );
-
 
   const handleAddTeams = async () => {
     if (selectedTeams.length === 0) {
@@ -94,7 +103,9 @@ const ManageTeams: React.FC<{ leagueId: number }> = ({ leagueId }) => {
     try {
       await addTeamsToLeague({
         variables: { leagueId, teamIds: selectedTeams },
-        refetchQueries: [{ query: GET_LEAGUE_TEAMS_QUERY, variables: { leagueId } }],
+        refetchQueries: [
+          { query: GET_LEAGUE_TEAMS_QUERY, variables: { leagueId } },
+        ],
       });
       setSelectedTeams([]);
       refetchLeagueTeams();
@@ -109,7 +120,9 @@ const ManageTeams: React.FC<{ leagueId: number }> = ({ leagueId }) => {
     try {
       await removeTeamFromLeague({
         variables: { leagueId, teamId },
-        refetchQueries: [{ query: GET_LEAGUE_TEAMS_QUERY, variables: { leagueId } }],
+        refetchQueries: [
+          { query: GET_LEAGUE_TEAMS_QUERY, variables: { leagueId } },
+        ],
       });
       toast.success("Team removed from the league successfully!");
     } catch (error) {
@@ -123,11 +136,16 @@ const ManageTeams: React.FC<{ leagueId: number }> = ({ leagueId }) => {
       <h1 className="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-100">
         Manage Teams for League
       </h1>
+
       <div>
         <h3 className="text-xl font-semibold mb-2 mt-2 text-gray-900 dark:text-gray-100 ">
           Add Teams to League
         </h3>
-        <MultiSelect options={availableTeams} selected={selectedTeams} onChange={setSelectedTeams} />
+        <MultiSelect
+          options={availableTeams}
+          selected={selectedTeams}
+          onChange={setSelectedTeams}
+        />
         <button
           className="mt-4 p-2 bg-green-500 text-white rounded"
           onClick={handleAddTeams}
@@ -136,7 +154,7 @@ const ManageTeams: React.FC<{ leagueId: number }> = ({ leagueId }) => {
         </button>
       </div>
       <hr className="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700" />
-      <LeagueTeams addedTeams={leagueTeams}  onRemoveTeam={handleRemoveTeam}/>
+      <LeagueTeams addedTeams={leagueTeams} onRemoveTeam={handleRemoveTeam} />
     </div>
   );
 };

@@ -40,10 +40,12 @@ const GROUPED_FIXTURES_QUERY = gql`
         homeTeam {
           id
           name
+          profile
         }
         awayTeam {
           id
           name
+          profile
         }
         homeScore
         awayScore
@@ -83,7 +85,6 @@ const Scoreboard: React.FC<ScoreboardProps> = ({ leagueId }) => {
     return (
       <ErrorMessage message={errorTable?.message || errorFixtures?.message} />
     );
-  console.log(dataFixtures);
 
   return (
     <>
