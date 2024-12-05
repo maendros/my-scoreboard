@@ -64,7 +64,7 @@ const typeDefs = gql`
 
   type Query {
     leagues: [League!]!
-    fixtures: [Fixture!]!
+    fixtures(leagueId: Int): [Fixture!]!
     teams: [Team!]!
     league(id: Int!): League!
     leagueTable(leagueId: Int!): [LeagueTableEntry!]!
@@ -87,7 +87,7 @@ const typeDefs = gql`
   }
 
   type Subscription {
-    fixtureAdded: Fixture! 
+    fixtureAdded: Fixture!
   }
 `;
 

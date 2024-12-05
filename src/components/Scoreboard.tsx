@@ -4,8 +4,8 @@ import React, { useState } from "react";
 import { useQuery, gql } from "@apollo/client";
 import LeagueTable from "./LeagueTable";
 import Fixtures from "./Fixtures";
-import Loader from "./Loader"; // Import the Loader component
-import ErrorMessage from "./ErrorMessage"; // Import the ErrorMessage component
+import Loader from "./Loader";
+import ErrorMessage from "./ErrorMessage";
 
 const LEAGUE_TABLE_QUERY = gql`
   query LeagueTable($leagueId: Int!) {
@@ -13,7 +13,7 @@ const LEAGUE_TABLE_QUERY = gql`
       team {
         id
         name
-        profile # Includes team profile details (e.g., color, icon)
+        profile
       }
       played
       won
@@ -30,17 +30,17 @@ const LEAGUE_TABLE_QUERY = gql`
 
 const FIXTURES_QUERY = gql`
   query Fixtures($leagueId: Int) {
-    matches(leagueId: $leagueId) {
+    fixtures(leagueId: $leagueId) {
       id
       homeTeam {
         id
         name
-        profile # Includes home team profile details
+        profile
       }
       awayTeam {
         id
         name
-        profile # Includes away team profile details
+        profile
       }
       homeScore
       awayScore
@@ -53,35 +53,30 @@ const FIXTURES_QUERY = gql`
   }
 `;
 
-const Scoreboard: React.FC = () => {
+interface ScoreboardProps {
+  leagueId: number;
+}
+
+const Scoreboard: React.FC<ScoreboardProps> = ({ leagueId }) => {
   const [activeTab, setActiveTab] = useState<"table" | "fixtures">("table");
-  const [selectedLeagueId, setSelectedLeagueId] = useState<number | null>(null);
 
   const {
     loading: loadingTable,
     error: errorTable,
     data: dataTable,
-    refetch: refetchTable,
   } = useQuery(LEAGUE_TABLE_QUERY, {
-    variables: { leagueId: selectedLeagueId },
-    skip: selectedLeagueId === null,
+    variables: { leagueId },
+    skip: !leagueId,
   });
 
   const {
     loading: loadingFixtures,
     error: errorFixtures,
     data: dataFixtures,
-    refetch: refetchFixtures,
   } = useQuery(FIXTURES_QUERY, {
-    variables: { leagueId: selectedLeagueId },
-    skip: selectedLeagueId === null,
+    variables: { leagueId },
+    skip: !leagueId,
   });
-
-  const handleLeagueChange = (leagueId: number) => {
-    setSelectedLeagueId(leagueId);
-    refetchTable({ leagueId });
-    refetchFixtures({ leagueId });
-  };
 
   if (loadingTable || loadingFixtures) return <Loader />;
   if (errorTable || errorFixtures)
@@ -90,26 +85,7 @@ const Scoreboard: React.FC = () => {
     );
 
   return (
-    <div className="container mx-auto p-4">
-      <div className="mb-4">
-        {/* League Selector */}
-        <select
-          value={selectedLeagueId || ""}
-          onChange={(e) =>
-            handleLeagueChange(Number(e.target.value) || 1)
-          }
-          className="mb-4 px-4 py-2 border rounded"
-        >
-          <option value="" disabled>
-            Select a League
-          </option>
-          {/* Replace this with dynamic league options */}
-          <option value="1">Premier League</option>
-          <option value="2">La Liga</option>
-          <option value="3">Bundesliga</option>
-        </select>
-      </div>
-
+    <>
       <div className="mb-4">
         <button
           className={`px-4 py-2 ${
@@ -133,11 +109,7 @@ const Scoreboard: React.FC = () => {
         </button>
       </div>
 
-      {selectedLeagueId === null ? (
-        <p className="text-center text-gray-500">
-          Please select a league to view data.
-        </p>
-      ) : activeTab === "table" ? (
+      {activeTab === "table" ? (
         <>
           {dataTable?.leagueTable?.length > 0 ? (
             <LeagueTable data={dataTable.leagueTable} />
@@ -149,14 +121,14 @@ const Scoreboard: React.FC = () => {
         </>
       ) : (
         <>
-          {dataFixtures?.matches?.length > 0 ? (
-            <Fixtures data={dataFixtures.matches} />
+          {dataFixtures?.fixtures?.length > 0 ? (
+            <Fixtures data={dataFixtures.fixtures} />
           ) : (
             <p className="text-center text-gray-500">No fixtures available.</p>
           )}
         </>
       )}
-    </div>
+    </>
   );
 };
 
