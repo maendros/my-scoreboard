@@ -1,209 +1,92 @@
 {
   "env": {
-    "es6": true,
     "browser": true,
+    "es2021": true,
     "node": true
   },
   "plugins": [
     "@typescript-eslint",
     "react-hooks",
     "import",
-    "json-format",
-    "eslint-plugin-no-relative-import-paths"
+    "prettier"
   ],
   "extends": [
     "next/core-web-vitals",
     "eslint:recommended",
-    "airbnb",
-    "airbnb-typescript",
-    "plugin:react/recommended",
     "plugin:@typescript-eslint/recommended",
-    "eslint-config-prettier" // Uses eslint-config-prettier to disable ESLint rules from @typescript-eslint/eslint-plugin that would conflict with prettier
+    "plugin:react/recommended",
+    "plugin:react-hooks/recommended",
+    "plugin:import/errors",
+    "plugin:import/warnings",
+    "plugin:import/typescript",
+    "plugin:prettier/recommended"
   ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
-    "ecmaVersion": "latest",
+    "ecmaVersion": 2021,
     "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true
+    },
     "project": "./tsconfig.json"
   },
   "rules": {
-    // Typescript Rules
-    "@typescript-eslint/no-explicit-any": "warn",
-    "@typescript-eslint/comma-dangle": [
-      "off",
-      "never"
+    "prettier/prettier": [
+      "error",
+      {
+        "singleQuote": true,
+        "semi": false,
+        "trailingComma": "es5",
+        "printWidth": 80
+      }
     ],
-    "@typescript-eslint/consistent-type-imports": "warn",
-    "@typescript-eslint/explicit-function-return-type": "off",
-    "@typescript-eslint/indent": "off",
-    "@typescript-eslint/naming-convention": "off",
     "@typescript-eslint/no-unused-vars": [
       "warn",
       {
-        "argsIgnorePattern": "^_"
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_"
       }
     ],
-    "@typescript-eslint/quotes": "off",
-    // General JavaScript Rules
-    "arrow-parens": [
-      "off"
-    ],
-    "camelcase": "off",
-    "eqeqeq": "error",
-    "import/extensions": [
-      "error",
-      "ignorePackages",
-      {
-        "css": "always",
-        "jsx": "never",
-        "js": "never",
-        "scss": "always",
-        "ts": "never",
-        "tsx": "never"
-      }
-    ],
-    "sort-imports": [
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/no-explicit-any": "warn",
+    "react/react-in-jsx-scope": "off",
+    "react/jsx-filename-extension": [
       "warn",
-      {
-        "ignoreCase": true,
-        "ignoreDeclarationSort": true
-      }
+      { "extensions": [".jsx", ".tsx"] }
     ],
+    "react/prop-types": "off",
+    "react/display-name": "off",
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn",
     "import/order": [
       "warn",
       {
         "groups": [
-          [
-            "external",
-            "builtin"
-          ],
+          ["builtin", "external"],
           "internal",
-          [
-            "parent",
-            "sibling"
-          ],
-          "index",
+          ["parent", "sibling", "index"],
           "type"
         ],
-        "pathGroups": [
-          {
-            "pattern": "react*",
-            "group": "external",
-            "position": "before"
-          },
-          {
-            "pattern": "@mui/**",
-            "group": "external",
-            "position": "before"
-          },
-          {
-            "pattern": "@crema/**",
-            "group": "internal",
-            "position": "before"
-          },
-          {
-            "pattern": "(api|hooks|modules|redux|shared|styles|utils)/**",
-            "group": "internal"
-          }
-        ],
-        "pathGroupsExcludedImportTypes": [
-          "react"
-        ],
         "newlines-between": "always",
-        "alphabetize": {
-          "order": "asc",
-          "caseInsensitive": true
-        }
+        "alphabetize": { "order": "asc", "caseInsensitive": true }
       }
     ],
-    "import/no-cycle": "error",
     "import/no-unresolved": "off",
-    "import/prefer-default-export": "off",
-    "linebreak-style": "off",
-    "max-len": [
-      "warn",
-      {
-        "code": 120,
-        "ignorePattern": "^import .*"
-      }
-    ],
-    "max-params": [
-      "error",
-      3
-    ],
     "no-console": "warn",
-    "no-var": "error",
     "no-debugger": "error",
-    "no-relative-import-paths/no-relative-import-paths": [
-      "warn",
-      {
-        "allowSameFolder": true,
-        "rootDir": "src"
-      }
-    ],
-    "no-restricted-imports": [
-      "error",
-      {
-        "name": "lodash",
-        "message": "Please use import [function] from 'lodash/[function];"
-      }
-    ],
-    "no-plusplus": [
-      "warn",
-      {
-        "allowForLoopAfterthoughts": true
-      }
-    ],
-    "no-shadow": "warn",
-    "no-underscore-dangle": "off",
-    "no-unused-vars": "warn",
-    "no-use-before-define": "warn",
-    // React Rules
-    "react/prop-types": "off", // Since we do not use prop-types
-    "react/require-default-props": "off", // Since we do not use prop-types,
-    "react/function-component-definition": [
-      2,
-      {
-        "namedComponents": "arrow-function",
-        "unnamedComponents": "arrow-function"
-      }
-    ],
-    "react/react-in-jsx-scope": "off",
-    "react/jsx-one-expression-per-line": [
-      "off"
-    ],
-    "react/jsx-props-no-spreading": "warn",
-    "react/jsx-indent": "off",
-    "react/jsx-wrap-multilines": "off",
-    "react/jsx-filename-extension": [
-      1,
-      {
-        "extensions": [
-          ".js",
-          ".ts",
-          ".jsx",
-          ".tsx"
-        ]
-      }
-    ],
-    // React Hooks Rules
-    "react-hooks/rules-of-hooks": "error",
-    "react-hooks/exhaustive-deps": "warn"
+    "no-unused-vars": "off",
+    "no-var": "error",
+    "prefer-const": "warn"
   },
-  "overrides": [
-    {
-      // enable the rule specifically for TypeScript files
-      "files": [
-        "*.ts"
-      ],
-      "rules": {
-        "@typescript-eslint/explicit-function-return-type": [
-          "warn"
-        ]
-      }
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "extensions": [".js", ".jsx", ".ts", ".tsx"]
+      },
+      "typescript": {}
+    },
+    "react": {
+      "version": "detect"
     }
-  ],
-  "ignorePatterns": [
-    "precommit-checks.js"
-  ]
+  }
 }
