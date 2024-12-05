@@ -1,42 +1,61 @@
 "use client";
 
 import React from "react";
-import TableHeaders from "./TableHeaders"; // Import the TableHeaders component
 
-const Fixtures: React.FC<{ data: any[] }> = ({ data }) => {
-  const headers = [
-    { label: "Home Team", field: "homeTeam.name" },
-    { label: "Away Team", field: "awayTeam.name" },
-    { label: "Score", field: "homeScore" },
-    { label: "Date", field: "playedAt" },
-  ];
-
+const Fixtures: React.FC<{ data: { day: string; matches: any[] }[] }> = ({
+  data,
+}) => {
   return (
-    <table className="min-w-full bg-white dark:bg-gray-800 border-collapse">
-      <thead>
-        <tr className="text-gray-900 dark:text-gray-100">
-          {headers.map((header, index) => (
-            <th key={index} className="border px-4 py-2">
-              {header.label}
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {data.map((match) => (
-          <tr key={match.id} className="text-gray-800 dark:text-gray-200">
-            <td className="border px-4 py-2">{match.homeTeam.name}</td>
-            <td className="border px-4 py-2">{match.awayTeam.name}</td>
-            <td className="border px-4 py-2">
-              {match.homeScore} - {match.awayScore}
-            </td>
-            <td className="border px-4 py-2">
-              {new Date(match.playedAt).toLocaleDateString()}
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <div className="bg-gray-100 dark:bg-gray-900 p-4">
+      {data.map((group, index) => (
+        <div key={index} className="mb-6">
+          {/* Day Header */}
+          <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">
+            {group.day}
+          </h2>
+          <div className="grid grid-cols-2 gap-4">
+            {group.matches.map((match) => (
+              <div
+                key={match.id}
+                className="flex flex-col p-4 bg-white dark:bg-gray-800 rounded shadow-md"
+              >
+                <div className="flex justify-between items-center mb-2">
+                  <div className="flex items-center">
+                    <img
+                      src={match.homeTeam.profile?.color || "/default-logo.png"}
+                      alt={`${match.homeTeam.name} logo`}
+                      className="h-8 w-8 rounded-full mr-2"
+                    />
+                    <span className="text-gray-900 dark:text-gray-100 font-bold">
+                      {match.homeTeam.name}
+                    </span>
+                  </div>
+                  <span className="text-gray-900 dark:text-gray-100 font-semibold">
+                    {match.homeScore} - {match.awayScore}
+                  </span>
+                  <div className="flex items-center">
+                    <span className="text-gray-900 dark:text-gray-100 font-bold mr-2">
+                      {match.awayTeam.name}
+                    </span>
+                    <img
+                      src={match.awayTeam.profile?.logo || "/default-logo.png"}
+                      alt={`${match.awayTeam.name} logo`}
+                      className="h-8 w-8 rounded-full"
+                    />
+                  </div>
+                </div>
+                <div className="text-center text-sm text-gray-700 dark:text-gray-400">
+                  {new Date(match.playedAt).toLocaleTimeString("en-US", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
   );
 };
 

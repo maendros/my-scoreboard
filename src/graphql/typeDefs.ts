@@ -3,6 +3,12 @@ import { gql } from "graphql-tag";
 const typeDefs = gql`
   scalar GraphQLJSON
 
+  type Profile {
+    color: String
+    logo: String
+    # Include other profile fields if necessary
+  }
+
   type Team {
     id: Int!
     name: String
@@ -48,6 +54,11 @@ const typeDefs = gql`
     playedAt: String!
   }
 
+  type GroupedFixtures {
+    day: String!
+    matches: [Fixture!]!
+  }
+
   input LeagueInput {
     name: String!
     profile: GraphQLJSON
@@ -67,12 +78,21 @@ const typeDefs = gql`
     profile: GraphQLJSON
   }
 
+  type GroupedFixtures {
+    day: String! # The date for the fixtures (e.g., "2024-12-05")
+    matches: [Fixture!]! # Array of fixtures for that day
+  }
+
   type Query {
     leagues: [League!]!
     fixtures(leagueId: Int): [Fixture!]!
     teams: [Team!]!
     league(id: Int!): League!
     leagueTable(leagueId: Int!): [LeagueTableEntry!]!
+  }
+
+  type Query {
+    groupedFixtures(leagueId: Int, daysLimit: Int): [GroupedFixtures!]!
   }
 
   type Mutation {

@@ -31,26 +31,23 @@ const LEAGUE_TABLE_QUERY = gql`
   }
 `;
 
-const FIXTURES_QUERY = gql`
-  query Fixtures($leagueId: Int) {
-    fixtures(leagueId: $leagueId) {
-      id
-      homeTeam {
+const GROUPED_FIXTURES_QUERY = gql`
+  query GroupedFixtures($leagueId: Int, $daysLimit: Int) {
+    groupedFixtures(leagueId: $leagueId, daysLimit: $daysLimit) {
+      day
+      matches {
         id
-        name
-        profile
-      }
-      awayTeam {
-        id
-        name
-        profile
-      }
-      homeScore
-      awayScore
-      playedAt
-      league {
-        id
-        name
+        homeTeam {
+          id
+          name
+        }
+        awayTeam {
+          id
+          name
+        }
+        homeScore
+        awayScore
+        playedAt
       }
     }
   }
@@ -76,8 +73,8 @@ const Scoreboard: React.FC<ScoreboardProps> = ({ leagueId }) => {
     loading: loadingFixtures,
     error: errorFixtures,
     data: dataFixtures,
-  } = useQuery(FIXTURES_QUERY, {
-    variables: { leagueId },
+  } = useQuery(GROUPED_FIXTURES_QUERY, {
+    variables: { leagueId, daysLimit: 5 },
     skip: !leagueId,
   });
 
@@ -86,6 +83,7 @@ const Scoreboard: React.FC<ScoreboardProps> = ({ leagueId }) => {
     return (
       <ErrorMessage message={errorTable?.message || errorFixtures?.message} />
     );
+  console.log(dataFixtures);
 
   return (
     <>
@@ -124,8 +122,8 @@ const Scoreboard: React.FC<ScoreboardProps> = ({ leagueId }) => {
         </>
       ) : (
         <>
-          {dataFixtures?.fixtures?.length > 0 ? (
-            <Fixtures data={dataFixtures.fixtures} />
+          {dataFixtures?.groupedFixtures?.length > 0 ? (
+            <Fixtures data={dataFixtures.groupedFixtures} />
           ) : (
             <p className="text-center text-gray-500">No fixtures available.</p>
           )}
