@@ -3,7 +3,7 @@ import fixtureQueryResolvers from "./queries/fixtures";
 import leagueQueryResolvers from "./queries/league";
 import fixtureMutationResolvers from "./mutations/fixture";
 
-import userMutationResolvers from "./mutations/team";
+import teamMutationResolvers from "./mutations/team";
 import { GraphQLJSON } from "graphql-scalars";
 import leagueResolvers from "./mutations/league";
 import fixtureTypeResolvers from "./types/fixtureType";
@@ -17,8 +17,8 @@ const resolvers = {
   },
   Mutation: {
     ...fixtureMutationResolvers.Mutation,
-    ...userMutationResolvers.Mutation,
-    ...leagueResolvers.Mutation
+    ...teamMutationResolvers.Mutation,
+    ...leagueResolvers.Mutation,
   },
   Subscription: {
     ...fixtureSubscriptionResolvers.Subscription,

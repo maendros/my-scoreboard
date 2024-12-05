@@ -6,6 +6,13 @@ import Loader from "./Loader";
 import ErrorMessage from "./ErrorMessage";
 import { toast } from "react-toastify";
 
+type Score = {
+  homeTeam: string;
+  awayTeam: string;
+  homeScore: number;
+  awayScore: number;
+};
+
 const GET_LEAGUE_TEAMS_QUERY = gql`
   query GetLeagueTeams($leagueId: Int!) {
     league(id: $leagueId) {
@@ -37,11 +44,15 @@ const ADD_FIXTURES_MUTATION = gql`
 `;
 
 const AddFixture: React.FC<{ leagueId: number }> = ({ leagueId }) => {
-  const { loading, error, data: dataLeagueTeams } = useQuery(GET_LEAGUE_TEAMS_QUERY, {
+  const {
+    loading,
+    error,
+    data: dataLeagueTeams,
+  } = useQuery(GET_LEAGUE_TEAMS_QUERY, {
     variables: { leagueId },
   });
   const [addFixture] = useMutation(ADD_FIXTURES_MUTATION);
-  const [rows, setRows] = useState([
+  const [scores, setScores] = useState<Score[]>([
     { homeTeam: "", awayTeam: "", homeScore: 0, awayScore: 0 },
   ]);
 
@@ -51,31 +62,31 @@ const AddFixture: React.FC<{ leagueId: number }> = ({ leagueId }) => {
   const teams = dataLeagueTeams?.league?.teams || [];
 
   const handleAddRow = () => {
-    setRows([
-      ...rows,
+    setScores([
+      ...scores,
       { homeTeam: "", awayTeam: "", homeScore: 0, awayScore: 0 },
     ]);
   };
 
   const handleRemoveRow = (index: number) => {
-    setRows(rows.filter((_, i) => i !== index));
+    setScores(scores.filter((_, i) => i !== index));
   };
 
-  const handleInputChange = (
+  const handleInputChange = <K extends keyof Score>(
     index: number,
-    field: string,
-    value: string | number
+    field: K,
+    value: Score[K]
   ) => {
     if (typeof value === "number" && value < 0) return; // Prevent negative numbers
-    const newRows = [...rows];
-    newRows[index][field as keyof (typeof newRows)[0]] = value;
-    setRows(newRows);
+    const newScores = [...scores];
+    newScores[index][field] = value;
+    setScores(newScores);
   };
 
-  const isSaveDisabled = rows.some((row) => !row.homeTeam || !row.awayTeam);
+  const isSaveDisabled = scores.some((row) => !row.homeTeam || !row.awayTeam);
 
   const handleSave = async () => {
-    const fixtures = rows.map((row) => ({
+    const fixtures = scores.map((row) => ({
       leagueId, // Use leagueId passed from the parent
       homeTeamId: Number(row.homeTeam),
       awayTeamId: Number(row.awayTeam),
@@ -83,24 +94,23 @@ const AddFixture: React.FC<{ leagueId: number }> = ({ leagueId }) => {
       awayScore: Number(row.awayScore),
       playedAt: new Date().toISOString(),
     }));
-  
+
     try {
       await addFixture({ variables: { fixtures } });
-      setRows([{ homeTeam: "", awayTeam: "", homeScore: 0, awayScore: 0 }]);
+      setScores([{ homeTeam: "", awayTeam: "", homeScore: 0, awayScore: 0 }]);
       toast.success("Fixtures added to the league!");
     } catch (error) {
       console.error("Error adding fixtures:", error);
       toast.error(`Failed to add fixtures: ${error}`);
     }
   };
-  
 
   return (
     <>
       <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-100">
         Add Fixtures
       </h2>
-      {rows.map((row, index) => (
+      {scores.map((row, index) => (
         <div key={index} className="flex items-center mb-2">
           <select
             className="mr-2 p-2 border dark:bg-gray-700 bg-white text-gray-900 dark:text-gray-100"
@@ -129,7 +139,9 @@ const AddFixture: React.FC<{ leagueId: number }> = ({ leagueId }) => {
               Select Away Team
             </option>
             {teams
-              .filter((team: { id: number }) => team.id !== Number(row.homeTeam)) // Exclude selected home team
+              .filter(
+                (team: { id: number }) => team.id !== Number(row.homeTeam)
+              ) // Exclude selected home team
               .map((team: { id: number; name: string }) => (
                 <option key={team.id} value={team.id}>
                   {team.name}

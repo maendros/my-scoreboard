@@ -56,14 +56,14 @@ const Teams: React.FC = () => {
 
   const [editedTeams, setEditedTeams] = useState<
     Record<number, { name: string; color: string }>
-  >({}); // Temporary state for edited users
+  >({});
 
   if (loading) return <Loader />;
   if (error) return <ErrorMessage message={error.message} />;
 
-  const users = data?.teams || [];
+  const teams = data?.teams || [];
 
-  const handleAddUser = async () => {
+  const handleAddTeam = async () => {
     try {
       await addTeam({
         variables: { team: newTeam },
@@ -72,7 +72,7 @@ const Teams: React.FC = () => {
 
       setNewTeam({ name: "", profile: { color: "" } });
 
-      toast.success("User added successfully!");
+      toast.success("Team added successfully!");
     } catch (error) {
       console.error("Error adding team:", error);
       toast.error(`Failed to add team: ${error}`);
@@ -98,22 +98,22 @@ const Teams: React.FC = () => {
         delete updated[id]; // Clear temporary state after saving
         return updated;
       });
-      toast.success("User updated successfully!");
+      toast.success("Team updated successfully!");
     } catch (error) {
       console.error("Error updating team:", error);
       toast.error(`Failed to update team: ${error}`);
     }
   };
 
-  const handleDeleteUser = async (id: number) => {
+  const handleDeleteTeam = async (id: number) => {
     try {
-      await deleteTeam({ variables: { id: Number(id)  }  });
+      await deleteTeam({ variables: { id: Number(id) } });
       client.cache.updateQuery({ query: GET_TEAMS_QUERY }, (existingData) => ({
         teams: (existingData?.teams || []).filter(
           (team: Record<string, unknown>) => team.id !== id
         ),
       }));
-      toast.success("User deleted successfully!");
+      toast.success("Team deleted successfully!");
     } catch (error) {
       console.error("Error deleting team:", error);
       toast.error(`Failed to delete team: ${error}`);
@@ -122,13 +122,12 @@ const Teams: React.FC = () => {
 
   const handleInputChange = (id: number, field: string, value: string) => {
     setEditedTeams((prev) => {
-      // Populate `editedTeams` for this team with existing data from `users` if not already edited
-      const currentUser = users.find(
+      const currentTeam = teams.find(
         (team: Record<string, unknown>) => team.id === id
       );
       const existingEdit = prev[id] || {
-        name: currentUser?.name || "",
-        color: currentUser?.profile?.color || "#000000",
+        name: currentTeam?.name || "",
+        color: currentTeam?.profile?.color || "#000000",
       };
 
       return {
@@ -146,12 +145,11 @@ const Teams: React.FC = () => {
   return (
     <div className="container mx-auto p-4 dark:bg-gray-800 bg-white">
       <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-100">
-        Manage Users
+        Manage Teams
       </h2>
 
-      {/* Existing Users */}
       <div>
-        {users.map((team: { id: number; name: string; profile: any }) => {
+        {teams.map((team: { id: number; name: string; profile: any }) => {
           const editedTeam = editedTeams[team.id] || {
             name: team.name,
             color: team.profile?.color || "#000000",
@@ -194,7 +192,7 @@ const Teams: React.FC = () => {
 
               <button
                 className="ml-2 p-2 bg-red-500 text-white"
-                onClick={() => handleDeleteUser(team.id)}
+                onClick={() => handleDeleteTeam(team.id)}
               >
                 Delete
               </button>
@@ -203,9 +201,8 @@ const Teams: React.FC = () => {
         })}
       </div>
 
-      {/* Add New User */}
       <div className="mt-4">
-        <h3 className="text-xl font-semibold mb-2">Add New User</h3>
+        <h3 className="text-xl font-semibold mb-2">Add New Team</h3>
         <input
           type="text"
           placeholder="Name"
@@ -225,7 +222,7 @@ const Teams: React.FC = () => {
           className={`p-2 text-white ${
             isAddDisabled ? "bg-gray-500 cursor-not-allowed" : "bg-green-500"
           }`}
-          onClick={handleAddUser}
+          onClick={handleAddTeam}
           disabled={isAddDisabled}
         >
           Add Team

@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
-import { IncomingMessage } from "http";
+import { NextRequest } from "next/server";
 
 export interface Context {
   prisma: PrismaClient;
-  req: IncomingMessage;
+  req: NextRequest; // Use NextApiRequest
 }
