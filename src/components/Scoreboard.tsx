@@ -24,6 +24,9 @@ const LEAGUE_TABLE_QUERY = gql`
       goalDifference
       points
       winRatio
+      lastFiveMatches {
+        result
+      }
     }
   }
 `;

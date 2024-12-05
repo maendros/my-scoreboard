@@ -1,25 +1,24 @@
 "use client";
 
 import React, { useState } from "react";
-import TableHeaders from "./TableHeaders";
-import ArrowUpIcon from "@heroicons/react/16/solid/ArrowUpIcon";
-import ArrowDownIcon from "@heroicons/react/24/solid/ArrowDownIcon";
+import { FaCheckCircle, FaTimesCircle, FaMinusCircle } from "react-icons/fa";
 
 const LeagueTable: React.FC<{ data: any[] }> = ({ data }) => {
   const [sortField, setSortField] = useState<string>("points");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
   const headers = [
-    { label: "Team", field: "team.name" },
-    { label: "Played", field: "played" },
-    { label: "Won", field: "won" },
-    { label: "Drawn", field: "drawn" },
-    { label: "Lost", field: "lost" },
-    { label: "Goals For", field: "goalsFor" },
-    { label: "Goals Against", field: "goalsAgainst" },
-    { label: "Goal Difference", field: "goalDifference" },
-    { label: "Points", field: "points" },
-    { label: "Win Ratio (%)", field: "winRatio" },
+    { tooltip: "Team", field: "team.name", label: "Team" },
+    { tooltip: "Match played", field: "played", label: "M" },
+    { tooltip: "Won", field: "won", label: "W" },
+    { tooltip: "Drawn", field: "drawn", label: "D" },
+    { tooltip: "Lost", field: "lost", label: "L" },
+    { tooltip: "Goals For", field: "goalsFor", label: "GF" },
+    { tooltip: "Goals Against", field: "goalsAgainst", label: "GA" },
+    { tooltip: "Goal Difference", field: "goalDifference", label: "GD" },
+    { tooltip: "Points", field: "points", label: "P" },
+    { tooltip: "Win Ratio (%)", field: "winRatio", label: "WR" },
+    { tooltip: "Last 5 Matches", field: "lastFiveMatches", label: "Last 5 " },
   ];
 
   const handleSort = (field: string) => {
@@ -39,48 +38,68 @@ const LeagueTable: React.FC<{ data: any[] }> = ({ data }) => {
   });
 
   return (
-    <table className="min-w-full bg-white dark:bg-gray-800 border-collapse">
-      <thead>
-        <tr className="text-gray-900 dark:text-gray-100">
-          {headers.map((header) => (
-            <th
-              key={header.field}
-              className="border px-4 py-2 cursor-pointer"
-              onClick={() => handleSort(header.field)}
-            >
-              <div className="flex items-center">
-                {header.label}
-                {sortField === header.field && (
-                  <span className="ml-2">
-                    {sortOrder === "asc" ? (
-                      <ArrowUpIcon className="h-4 w-4 inline" />
-                    ) : (
-                      <ArrowDownIcon className="h-4 w-4 inline" />
-                    )}
-                  </span>
-                )}
-              </div>
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {sortedData.map((entry) => (
-          <tr key={entry.team.id} className="text-gray-800 dark:text-gray-200">
-            <td className="border px-4 py-2">{entry.team.name}</td>
-            <td className="border px-4 py-2">{entry.played}</td>
-            <td className="border px-4 py-2">{entry.won}</td>
-            <td className="border px-4 py-2">{entry.drawn}</td>
-            <td className="border px-4 py-2">{entry.lost}</td>
-            <td className="border px-4 py-2">{entry.goalsFor}</td>
-            <td className="border px-4 py-2">{entry.goalsAgainst}</td>
-            <td className="border px-4 py-2">{entry.goalDifference}</td>
-            <td className="border px-4 py-2">{entry.points}</td>
-            <td className="border px-4 py-2">{entry.winRatio.toFixed(2)}</td>
+    <div className="overflow-x-auto shadow-md rounded-lg">
+      <table className="min-w-full bg-white text-gray-950 dark:bg-gray-900 dark:text-white border border-gray-700">
+        <thead>
+          <tr className="bg-gray-400 dark:bg-gray-800 text-left text-lg font-semibold">
+            {headers.map((header) => (
+              <th
+                key={header.field}
+                className="px-4 py-2 cursor-pointer relative group"
+                onClick={() => handleSort(header.field)}
+              >
+                <div className="flex items-center">
+                  {header.label}
+                  {sortField === header.field && (
+                    <span className="ml-2 text-sm">
+                      {sortOrder === "asc" ? "▲" : "▼"}
+                    </span>
+                  )}
+                </div>
+                {/* Tooltip */}
+                <div className="absolute left-1/2 -translate-x-1/2 -bottom-8 bg-black text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 pointer-events-none">
+                  {header.tooltip}
+                </div>
+              </th>
+            ))}
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {sortedData.map((entry) => (
+            <tr
+              key={entry.team.id}
+              className="text-md border-b border-gray-700 hover:bg-gray-800"
+            >
+              <td className="px-4 py-2">{entry.team.name}</td>
+              <td className="px-4 py-2">{entry.played}</td>
+              <td className="px-4 py-2">{entry.won}</td>
+              <td className="px-4 py-2">{entry.drawn}</td>
+              <td className="px-4 py-2">{entry.lost}</td>
+              <td className="px-4 py-2">{entry.goalsFor}</td>
+              <td className="px-4 py-2">{entry.goalsAgainst}</td>
+              <td className="px-4 py-2">{entry.goalDifference}</td>
+              <td className="px-4 py-2 font-bold">{entry.points}</td>
+              <td className="px-4 py-2">{entry.winRatio.toFixed(2)}</td>
+              <td className="px-4 py-2 flex justify-left">
+                {entry.lastFiveMatches?.map(
+                  (match: Record<string, unknown>, idx: number) => (
+                    <span key={idx} className="mx-1">
+                      {match.result === "win" ? (
+                        <FaCheckCircle className="text-green-500 w-5 h-5" />
+                      ) : match.result === "draw" ? (
+                        <FaMinusCircle className="text-gray-500 w-5 h-5" />
+                      ) : (
+                        <FaTimesCircle className="text-red-500 w-5 h-5" />
+                      )}
+                    </span>
+                  )
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 };
 

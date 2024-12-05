@@ -6,16 +6,16 @@ const leagueQueryResolvers = {
   Query: {
     leagueTable: async (_: any, { leagueId }: { leagueId: number }) => {
       try {
-        // Fetch teams in the league
         const leagueTeams = await prisma.leagueTeam.findMany({
           where: { leagueId },
-          include: { team: true }, // Include the team details
+          include: { team: true },
         });
 
-        if (leagueTeams.length === 0) return []; // No teams in the league
+        if (leagueTeams.length === 0) return [];
 
         const fixtures = await prisma.fixture.findMany({
           where: { leagueId },
+          include: { homeTeam: true, awayTeam: true }, // Include team details
         });
 
         const table = leagueTeams.map(({ team }) => {
@@ -26,17 +26,28 @@ const leagueQueryResolvers = {
             (fixture) => fixture.awayTeamId === team.id
           );
 
+          const lastFiveMatches = [...homeMatches, ...awayMatches]
+            .sort(
+              (a, b) =>
+                new Date(b.playedAt).getTime() - new Date(a.playedAt).getTime()
+            )
+            .slice(0, 5);
+
           const played = homeMatches.length + awayMatches.length;
           const won =
-            homeMatches.filter((fixture) => fixture.homeScore > fixture.awayScore)
-              .length +
-            awayMatches.filter((fixture) => fixture.awayScore > fixture.homeScore)
-              .length;
+            homeMatches.filter(
+              (fixture) => fixture.homeScore > fixture.awayScore
+            ).length +
+            awayMatches.filter(
+              (fixture) => fixture.awayScore > fixture.homeScore
+            ).length;
           const drawn =
-            homeMatches.filter((fixture) => fixture.homeScore === fixture.awayScore)
-              .length +
-            awayMatches.filter((fixture) => fixture.homeScore === fixture.awayScore)
-              .length;
+            homeMatches.filter(
+              (fixture) => fixture.homeScore === fixture.awayScore
+            ).length +
+            awayMatches.filter(
+              (fixture) => fixture.homeScore === fixture.awayScore
+            ).length;
           const lost = played - won - drawn;
           const goalsFor =
             homeMatches.reduce((sum, match) => sum + match.homeScore, 0) +
@@ -60,6 +71,18 @@ const leagueQueryResolvers = {
             goalDifference,
             points,
             winRatio,
+            lastFiveMatches: lastFiveMatches.map((match) => ({
+              result:
+                match.homeScore === match.awayScore
+                  ? "draw"
+                  : match.homeScore > match.awayScore
+                  ? match.homeTeamId === team.id
+                    ? "win"
+                    : "loss"
+                  : match.homeTeamId === team.id
+                  ? "loss"
+                  : "win",
+            })),
           };
         });
 
@@ -69,10 +92,10 @@ const leagueQueryResolvers = {
         return [];
       }
     },
+
     leagues: async () => {
       try {
-        
-        return  await prisma.league.findMany({
+        return await prisma.league.findMany({
           include: { teams: { include: { team: true } }, fixtures: true },
         });
       } catch (error) {
@@ -107,7 +130,6 @@ const leagueQueryResolvers = {
         throw new Error("Failed to fetch league");
       }
     },
-    
   },
 };
 

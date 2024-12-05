@@ -23,6 +23,11 @@ const typeDefs = gql`
     goalDifference: Int!
     points: Int!
     winRatio: Float!
+    lastFiveMatches: [MatchResult!]!
+  }
+
+  type MatchResult {
+    result: String!
   }
 
   type League {
