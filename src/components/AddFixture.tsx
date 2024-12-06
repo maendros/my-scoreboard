@@ -5,12 +5,24 @@ import { useMutation, useQuery, gql } from "@apollo/client";
 import Loader from "./Loader";
 import ErrorMessage from "./ErrorMessage";
 import { toast } from "react-toastify";
+import FixtureGaming from "./FixtureGaming";
 
 type Score = {
   homeTeam: string;
   awayTeam: string;
   homeScore: number;
   awayScore: number;
+  homeTeamDetails: { chosenTeam?: string; formation?: string };
+  awayTeamDetails: { chosenTeam?: string; formation?: string };
+};
+
+const init_score: Score = {
+  homeTeam: "",
+  awayTeam: "",
+  homeScore: 0,
+  awayScore: 0,
+  homeTeamDetails: { chosenTeam: "", formation: "" },
+  awayTeamDetails: { chosenTeam: "", formation: "" },
 };
 
 const GET_LEAGUE_TEAMS_QUERY = gql`
@@ -39,6 +51,8 @@ const ADD_FIXTURES_MUTATION = gql`
       homeScore
       awayScore
       playedAt
+      homeTeamDetails
+      awayTeamDetails
     }
   }
 `;
@@ -52,23 +66,19 @@ const AddFixture: React.FC<{ leagueId: number }> = ({ leagueId }) => {
     variables: { leagueId },
   });
   const [addFixture] = useMutation(ADD_FIXTURES_MUTATION);
-  const [scores, setScores] = useState<Score[]>([
-    { homeTeam: "", awayTeam: "", homeScore: 0, awayScore: 0 },
-  ]);
+  const [scores, setScores] = useState<Score[]>([{ ...init_score }]);
+  const [isSaving, setIsSaving] = useState(false);
 
   if (loading) return <Loader />;
   if (error) return <ErrorMessage message={error.message} />;
 
   const teams = dataLeagueTeams?.league?.teams || [];
 
-  const handleAddRow = () => {
-    setScores([
-      ...scores,
-      { homeTeam: "", awayTeam: "", homeScore: 0, awayScore: 0 },
-    ]);
+  const handleAddScore = () => {
+    setScores([...scores, { ...init_score }]);
   };
 
-  const handleRemoveRow = (index: number) => {
+  const handleRemoveScore = (index: number) => {
     setScores(scores.filter((_, i) => i !== index));
   };
 
@@ -77,108 +87,147 @@ const AddFixture: React.FC<{ leagueId: number }> = ({ leagueId }) => {
     field: K,
     value: Score[K]
   ) => {
-    if (typeof value === "number" && value < 0) return; // Prevent negative numbers
+    if (typeof value === "number" && value < 0) return;
     const newScores = [...scores];
     newScores[index][field] = value;
     setScores(newScores);
   };
 
-  const isSaveDisabled = scores.some((row) => !row.homeTeam || !row.awayTeam);
+  const isSaveDisabled = scores.some(
+    (score) => !score.homeTeam || !score.awayTeam
+  );
 
   const handleSave = async () => {
-    const fixtures = scores.map((row) => ({
-      leagueId, // Use leagueId passed from the parent
-      homeTeamId: Number(row.homeTeam),
-      awayTeamId: Number(row.awayTeam),
-      homeScore: Number(row.homeScore),
-      awayScore: Number(row.awayScore),
+    const fixtures = scores.map((score) => ({
+      leagueId,
+      homeTeamId: Number(score.homeTeam),
+      awayTeamId: Number(score.awayTeam),
+      homeScore: score.homeScore,
+      awayScore: score.awayScore,
       playedAt: new Date().toISOString(),
+      homeTeamDetails: score.homeTeamDetails,
+      awayTeamDetails: score.awayTeamDetails,
     }));
 
     try {
+      setIsSaving(true); // Start loader
       await addFixture({ variables: { fixtures } });
-      setScores([{ homeTeam: "", awayTeam: "", homeScore: 0, awayScore: 0 }]);
-      toast.success("Fixtures added to the league!");
+      setScores([{ ...init_score }]); // Reset scores
+      console.log("Scores after reset:", [{ ...init_score }]);
+      toast.success("Fixtures added successfully!");
     } catch (error) {
       console.error("Error adding fixtures:", error);
       toast.error(`Failed to add fixtures: ${error}`);
+    } finally {
+      setIsSaving(false); // Stop loader
     }
   };
+  console.log(scores);
 
   return (
     <>
       <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-100">
         Add Fixtures
       </h2>
-      {scores.map((row, index) => (
-        <div key={index} className="flex items-center mb-2">
-          <select
-            className="mr-2 p-2 border dark:bg-gray-700 bg-white text-gray-900 dark:text-gray-100"
-            value={row.homeTeam || ""}
-            onChange={(e) =>
-              handleInputChange(index, "homeTeam", e.target.value)
-            }
-          >
-            <option value="" disabled>
-              Select Home Team
-            </option>
-            {teams.map((team: { id: number; name: string }) => (
-              <option key={team.id} value={team.id}>
-                {team.name}
-              </option>
-            ))}
-          </select>
-          <select
-            className="mr-2 p-2 border dark:bg-gray-700 bg-white text-gray-900 dark:text-gray-100"
-            value={row.awayTeam || ""}
-            onChange={(e) =>
-              handleInputChange(index, "awayTeam", e.target.value)
-            }
-          >
-            <option value="" disabled>
-              Select Away Team
-            </option>
-            {teams
-              .filter(
-                (team: { id: number }) => team.id !== Number(row.homeTeam)
-              ) // Exclude selected home team
-              .map((team: { id: number; name: string }) => (
-                <option key={team.id} value={team.id}>
-                  {team.name}
+      {isSaving ? (
+        <Loader /> // Show loader during saving
+      ) : (
+        scores.map((score, index) => (
+          <div key={index} className="mb-4">
+            <div className="flex items-center mb-2">
+              <select
+                className="mr-2 p-2 border dark:bg-gray-700 bg-white text-gray-900 dark:text-gray-100"
+                value={score.homeTeam || ""}
+                onChange={(e) =>
+                  handleInputChange(index, "homeTeam", e.target.value)
+                }
+              >
+                <option value="" disabled>
+                  Select Home Team
                 </option>
-              ))}
-          </select>
-          <input
-            type="number"
-            min="0"
-            className="mr-2 p-2 border dark:bg-gray-700 bg-white text-gray-900 dark:text-gray-100"
-            value={row.homeScore}
-            onChange={(e) =>
-              handleInputChange(index, "homeScore", Number(e.target.value))
-            }
-          />
-          <input
-            type="number"
-            min="0"
-            className="mr-2 p-2 border dark:bg-gray-700 bg-white text-gray-900 dark:text-gray-100"
-            value={row.awayScore}
-            onChange={(e) =>
-              handleInputChange(index, "awayScore", Number(e.target.value))
-            }
-          />
-          <button
-            className="ml-2 p-2 bg-red-500 text-white"
-            onClick={() => handleRemoveRow(index)}
-          >
-            Remove
-          </button>
-        </div>
-      ))}
+                {teams.map((team: { id: number; name: string }) => (
+                  <option key={team.id} value={team.id}>
+                    {team.name}
+                  </option>
+                ))}
+              </select>
+              <select
+                className="mr-2 p-2 border dark:bg-gray-700 bg-white text-gray-900 dark:text-gray-100"
+                value={score.awayTeam || ""}
+                onChange={(e) =>
+                  handleInputChange(index, "awayTeam", e.target.value)
+                }
+              >
+                <option value="" disabled>
+                  Select Away Team
+                </option>
+                {teams
+                  .filter(
+                    (team: { id: number }) => team.id !== Number(score.homeTeam)
+                  )
+                  .map((team: { id: number; name: string }) => (
+                    <option key={team.id} value={team.id}>
+                      {team.name}
+                    </option>
+                  ))}
+              </select>
+              <input
+                type="number"
+                min="0"
+                className="mr-2 p-2 border dark:bg-gray-700 bg-white text-gray-900 dark:text-gray-100"
+                value={score.homeScore}
+                onChange={(e) =>
+                  handleInputChange(index, "homeScore", Number(e.target.value))
+                }
+              />
+              <input
+                type="number"
+                min="0"
+                className="mr-2 p-2 border dark:bg-gray-700 bg-white text-gray-900 dark:text-gray-100"
+                value={score.awayScore}
+                onChange={(e) =>
+                  handleInputChange(index, "awayScore", Number(e.target.value))
+                }
+              />
+              <button
+                className="ml-2 p-2 bg-red-500 text-white"
+                onClick={() => handleRemoveScore(index)}
+              >
+                Remove
+              </button>
+            </div>
+            {/* Home Team Details */}
+            <div className="mb-2">
+              <h3 className="font-semibold text-gray-700 dark:text-gray-300">
+                Home Team Details
+              </h3>
+              <FixtureGaming
+                details={score.homeTeamDetails}
+                onChange={(details) =>
+                  handleInputChange(index, "homeTeamDetails", details)
+                }
+              />
+            </div>
+            {/* Away Team Details */}
+            <div>
+              <h3 className="font-semibold text-gray-700 dark:text-gray-300">
+                Away Team Details
+              </h3>
+              <FixtureGaming
+                details={score.awayTeamDetails}
+                onChange={(details) =>
+                  handleInputChange(index, "awayTeamDetails", details)
+                }
+              />
+            </div>
+          </div>
+        ))
+      )}
       <button
         className="mt-4 p-2 bg-blue-500 text-white"
-        onClick={handleAddRow}
+        onClick={handleAddScore}
       >
-        Add Row
+        Add Score
       </button>
       <button
         className={`mt-4 ml-4 p-2 text-white ${

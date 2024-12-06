@@ -42,6 +42,8 @@ const typeDefs = gql`
     profile: GraphQLJSON
     teams: [Team!]!
     fixtures: [Fixture!]!
+    isGamingLeague: Boolean!
+    size: Int!
   }
 
   type Fixture {
@@ -52,6 +54,8 @@ const typeDefs = gql`
     homeScore: Int!
     awayScore: Int!
     playedAt: String!
+    homeTeamDetails: GraphQLJSON
+    awayTeamDetails: GraphQLJSON
   }
 
   type GroupedFixtures {
@@ -59,9 +63,21 @@ const typeDefs = gql`
     matches: [Fixture!]!
   }
 
+  type GamingTeam {
+    id: Int!
+    name: String!
+  }
+
+  type Query {
+    gamingTeams: [GamingTeam!]!
+    possibleFormations: [String!]!
+  }
+
   input LeagueInput {
     name: String!
     profile: GraphQLJSON
+    isGamingLeague: Boolean!
+    size: Int!
   }
 
   input FixtureInput {
@@ -71,6 +87,8 @@ const typeDefs = gql`
     homeScore: Int!
     awayScore: Int!
     playedAt: String!
+    homeTeamDetails: GraphQLJSON
+    awayTeamDetails: GraphQLJSON
   }
 
   input TeamInput {

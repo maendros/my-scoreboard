@@ -8,39 +8,43 @@ generator client {
 }
 
 model Team {
-  id           Int           @id @default(autoincrement())
+  id           Int          @id @default(autoincrement())
   name         String
-  profile      Json?         // Optional JSON field for properties like color, icon
-  leagues      LeagueTeam[]  // Many-to-Many relationship with leagues
-  homeFixtures Fixture[]     @relation("HomeFixtures")
-  awayFixtures Fixture[]     @relation("AwayFixtures")
+  profile      Json? // Optional JSON field for properties like color, icon
+  leagues      LeagueTeam[] // Many-to-Many relationship with leagues
+  homeFixtures Fixture[]    @relation("HomeFixtures")
+  awayFixtures Fixture[]    @relation("AwayFixtures")
 }
 
 model League {
-  id        Int         @id @default(autoincrement())
-  name      String
-  profile   Json?       // Optional JSON field for properties like season, type
-  teams     LeagueTeam[]  // Many-to-Many relationship with teams
-  fixtures  Fixture[]     @relation("LeagueFixtures")
+  id             Int          @id @default(autoincrement())
+  name           String
+  profile        Json? // Optional JSON field for properties like season, type
+  teams          LeagueTeam[] // Many-to-Many relationship with teams
+  fixtures       Fixture[]    @relation("LeagueFixtures")
+  isGamingLeague Boolean?     @default(false)
+  size           Int          @default(4)
 }
 
 model Fixture {
-  id          Int       @id @default(autoincrement())
-  leagueId    Int
-  league      League    @relation("LeagueFixtures", fields: [leagueId], references: [id])
-  homeTeamId  Int
-  homeTeam    Team      @relation("HomeFixtures", fields: [homeTeamId], references: [id])
-  awayTeamId  Int
-  awayTeam    Team      @relation("AwayFixtures", fields: [awayTeamId], references: [id])
-  homeScore   Int
-  awayScore   Int
-  playedAt    DateTime  @default(now())
+  id              Int      @id @default(autoincrement())
+  leagueId        Int
+  league          League   @relation("LeagueFixtures", fields: [leagueId], references: [id])
+  homeTeamId      Int
+  homeTeam        Team     @relation("HomeFixtures", fields: [homeTeamId], references: [id])
+  awayTeamId      Int
+  awayTeam        Team     @relation("AwayFixtures", fields: [awayTeamId], references: [id])
+  homeScore       Int
+  awayScore       Int
+  playedAt        DateTime @default(now())
+  homeTeamDetails Json?
+  awayTeamDetails Json?
 }
 
 model LeagueTeam {
-  id       Int     @id @default(autoincrement())
+  id       Int    @id @default(autoincrement())
   leagueId Int
-  league   League  @relation(fields: [leagueId], references: [id])
+  league   League @relation(fields: [leagueId], references: [id])
   teamId   Int
-  team     Team    @relation(fields: [teamId], references: [id])
+  team     Team   @relation(fields: [teamId], references: [id])
 }

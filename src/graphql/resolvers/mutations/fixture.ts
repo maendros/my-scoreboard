@@ -17,6 +17,8 @@ const fixtureMutationResolvers = {
                 homeScore: fixture.homeScore,
                 awayScore: fixture.awayScore,
                 playedAt: new Date(fixture.playedAt),
+                homeTeamDetails: fixture.homeTeamDetails || {}, // Optional details
+                awayTeamDetails: fixture.awayTeamDetails || {},
               },
               include: {
                 league: true,
@@ -31,9 +33,12 @@ const fixtureMutationResolvers = {
         console.error("Error adding fixtures:", error);
         throw new Error("Failed to add fixtures");
       }
-    },    
+    },
 
-    updateFixture: async (_: any, { id, fixture }: { id: number; fixture: any }) => {
+    updateFixture: async (
+      _: any,
+      { id, fixture }: { id: number; fixture: any }
+    ) => {
       try {
         const updatedFixture = await prisma.fixture.update({
           where: { id },

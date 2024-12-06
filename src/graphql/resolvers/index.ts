@@ -8,12 +8,14 @@ import { GraphQLJSON } from "graphql-scalars";
 import leagueResolvers from "./mutations/league";
 import fixtureTypeResolvers from "./types/fixtureType";
 import fixtureSubscriptionResolvers from "./subscriptions/fixture";
+import gamingResolvers from "./queries/gamingResolvers";
 
 const resolvers = {
   Query: {
     ...teamQueryResolvers.Query,
     ...fixtureQueryResolvers.Query,
     ...leagueQueryResolvers.Query,
+    ...gamingResolvers.Query,
   },
   Mutation: {
     ...fixtureMutationResolvers.Mutation,

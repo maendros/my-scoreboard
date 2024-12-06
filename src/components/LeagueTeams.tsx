@@ -15,7 +15,7 @@ const LeagueTeams: React.FC<{
           {addedTeams.map((team) => (
             <li
               key={team.id}
-              className="flex justify-between items-center p-2 rounded bg-gray-100 dark:bg-gray-700 shadow hover:shadow-lg transition"
+              className="flex justify-between items-center p-2 rounded bg-gray-100 dark:bg-gray-700 shadow hover:shadow-lg transition w-1/3"
             >
               <span className="text-gray-900 dark:text-gray-100 font-medium">
                 {team.name}
@@ -25,8 +25,7 @@ const LeagueTeams: React.FC<{
                 onClick={() => onRemoveTeam(team.id)}
                 title="Remove team from league"
               >
-                 <FiTrash2 className="w-5 h-5" /> 
-                
+                <FiTrash2 className="w-5 h-5" />
               </button>
             </li>
           ))}
