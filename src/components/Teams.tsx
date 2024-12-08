@@ -7,6 +7,8 @@ import ErrorMessage from "./ErrorMessage";
 import { toast } from "react-toastify";
 import client from "@/lib/apolloClient";
 import ColorPicker from "./ColorPicker";
+import Link from "next/link";
+import { FaArrowRight } from "react-icons/fa";
 
 const GET_TEAMS_QUERY = gql`
   query GetTeams {
@@ -196,6 +198,14 @@ const Teams: React.FC = () => {
               >
                 Delete
               </button>
+              {/* Arrow Icon for Navigation */}
+              <Link
+                href={`/teams/${team.id}?name=${encodeURIComponent(team.name)}`}
+              >
+                <button className="ml-2 p-2 bg-blue-500 text-white">
+                  <FaArrowRight />
+                </button>
+              </Link>
             </div>
           );
         })}

@@ -4,7 +4,7 @@ import ThemeProvider from "@/components/ThemeProvider";
 import Menu from "@/components/Menu";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import "./globals.css";
+import "./globals.css"; // Other imports
 
 export default function RootLayout({
   children,

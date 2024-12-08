@@ -101,15 +101,31 @@ const typeDefs = gql`
     matches: [Fixture!]! # Array of fixtures for that day
   }
 
+  type LeagueStats {
+    wins: Int!
+    losses: Int!
+    draws: Int!
+  }
+
+  type TeamVsTeamStats {
+    team1Wins: Int!
+    team2Wins: Int!
+    draws: Int!
+  }
+
   type Query {
     leagues: [League!]!
     fixtures(leagueId: Int): [Fixture!]!
     teams: [Team!]!
     league(id: Int!): League!
     leagueTable(leagueId: Int!): [LeagueTableEntry!]!
-  }
-
-  type Query {
+    teamDetails(id: Int!): Team
+    leagueStats(teamId: Int!, leagueId: Int): LeagueStats
+    teamVsTeamStats(
+      team1Id: Int!
+      team2Id: Int!
+      leagueId: Int
+    ): TeamVsTeamStats
     groupedFixtures(leagueId: Int, daysLimit: Int): [GroupedFixtures!]!
   }
 
