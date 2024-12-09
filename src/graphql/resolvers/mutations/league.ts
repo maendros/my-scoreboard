@@ -6,7 +6,6 @@ const leagueResolvers = {
   Mutation: {
     addLeague: async (_: any, { league }: { league: any }) => {
       try {
-        console.log({ league });
 
         const { name, profile, isGamingLeague, size } = league;
         return await prisma.league.create({
@@ -28,8 +27,7 @@ const leagueResolvers = {
       { id, league }: { id: number; league: any }
     ) => {
       try {
-        console.log({ league });
-
+      
         return await prisma.league.update({
           where: { id },
           data: {

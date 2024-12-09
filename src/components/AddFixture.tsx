@@ -113,16 +113,15 @@ const AddFixture: React.FC<{ leagueId: number }> = ({ leagueId }) => {
       setIsSaving(true); // Start loader
       await addFixture({ variables: { fixtures } });
       setScores([{ ...init_score }]); // Reset scores
-      console.log("Scores after reset:", [{ ...init_score }]);
+ 
       toast.success("Fixtures added successfully!");
     } catch (error) {
-      console.error("Error adding fixtures:", error);
+
       toast.error(`Failed to add fixtures: ${error}`);
     } finally {
       setIsSaving(false); // Stop loader
     }
   };
-  console.log(scores);
 
   return (
     <>
@@ -136,7 +135,7 @@ const AddFixture: React.FC<{ leagueId: number }> = ({ leagueId }) => {
           <div key={index} className="mb-4">
             <div className="flex items-center mb-2">
               <select
-                className="mr-2 p-2 border dark:bg-gray-700 bg-white text-gray-900 dark:text-gray-100"
+                className="mr-2 p-2 border border-gray-700 dark:bg-gray-800 bg-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={score.homeTeam || ""}
                 onChange={(e) =>
                   handleInputChange(index, "homeTeam", e.target.value)
@@ -152,7 +151,7 @@ const AddFixture: React.FC<{ leagueId: number }> = ({ leagueId }) => {
                 ))}
               </select>
               <select
-                className="mr-2 p-2 border dark:bg-gray-700 bg-white text-gray-900 dark:text-gray-100"
+                className="mr-2 p-2 border border-gray-700 dark:bg-gray-800 bg-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={score.awayTeam || ""}
                 onChange={(e) =>
                   handleInputChange(index, "awayTeam", e.target.value)
@@ -174,7 +173,7 @@ const AddFixture: React.FC<{ leagueId: number }> = ({ leagueId }) => {
               <input
                 type="number"
                 min="0"
-                className="mr-2 p-2 border dark:bg-gray-700 bg-white text-gray-900 dark:text-gray-100"
+                className="mr-2 p-2 border border-gray-700 dark:bg-gray-800 bg-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={score.homeScore}
                 onChange={(e) =>
                   handleInputChange(index, "homeScore", Number(e.target.value))
@@ -183,7 +182,7 @@ const AddFixture: React.FC<{ leagueId: number }> = ({ leagueId }) => {
               <input
                 type="number"
                 min="0"
-                className="mr-2 p-2 border dark:bg-gray-700 bg-white text-gray-900 dark:text-gray-100"
+                className="mr-2 p-2 border border-gray-700 dark:bg-gray-800 bg-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={score.awayScore}
                 onChange={(e) =>
                   handleInputChange(index, "awayScore", Number(e.target.value))

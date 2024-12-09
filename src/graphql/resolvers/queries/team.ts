@@ -42,8 +42,7 @@ const teamQueryResolvers = {
           id: leagueTeam.leagueId,
           name: leagueTeam.league?.name || "", // FIXIT  name String @db.VarChar(255)
         }));
-        console.log(leaguesWithNames);
-
+   
         return { ...team, leagues: leaguesWithNames };
       } catch (error) {
         console.error("Error fetching team details:", error);

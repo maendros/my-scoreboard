@@ -174,8 +174,6 @@ const Leagues: React.FC = () => {
     });
   };
 
-  const isAddDisabled = !newLeague.name;
-  console.log(leagues);
 
   return (
     <div className="container mx-auto p-4 dark:bg-gray-800 bg-white">
@@ -211,7 +209,7 @@ const Leagues: React.FC = () => {
                   onChange={(e) =>
                     handleInputChange(league.id, "name", e.target.value)
                   }
-                  className="mr-2 p-2 border dark:bg-gray-700 bg-white"
+                  className="mr-2 p-2 border border-gray-700 dark:bg-gray-800 bg-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
 
                 <ColorPicker
@@ -226,7 +224,7 @@ const Leagues: React.FC = () => {
                   onChange={(e) =>
                     handleInputChange(league.id, "size", Number(e.target.value))
                   }
-                  className="mr-2 p-2 border dark:bg-gray-700 bg-white"
+                  className="mr-2 p-2 border border-gray-700 dark:bg-gray-800 bg-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   {Array.from({ length: 29 }, (_, i) => i + 4).map((size) => (
                     <option key={size} value={size}>
@@ -292,7 +290,7 @@ const Leagues: React.FC = () => {
             onChange={(e) =>
               setNewLeague({ ...newLeague, name: e.target.value })
             }
-            className="mr-2 p-2 border dark:bg-gray-700 bg-white"
+            className="mr-2 p-2 border border-gray-700 dark:bg-gray-800 bg-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
 
           {/* Color Picker */}
@@ -310,7 +308,7 @@ const Leagues: React.FC = () => {
             onChange={(e) =>
               setNewLeague({ ...newLeague, size: Number(e.target.value) })
             }
-            className="mr-2 p-2 border dark:bg-gray-700 bg-white"
+            className="mr-2 p-2 border border-gray-700 dark:bg-gray-800 bg-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             {Array.from({ length: 29 }, (_, i) => i + 4).map((size) => (
               <option key={size} value={size}>
