@@ -45,7 +45,7 @@ const HeadToHeadStats: React.FC<HeadToHeadStatsProps> = ({
   });
 
   return (
-    <div className="dark:bg-gray-800 bg-gray-300  rounded-lg p-6 flex flex-col md:flex-row items-center justify-between2">
+    <>
       <div className="mb-4 md:mb-0 w-full md:w-1/3">
           <h2 className="text-xl font-bold mb-4">Head-to-Head Stats</h2> 
           <select
@@ -78,7 +78,7 @@ const HeadToHeadStats: React.FC<HeadToHeadStatsProps> = ({
         </div>
       )}
 
-    </div>
+    </>
   );
 };
 

@@ -73,8 +73,8 @@ const TeamProfilePage = () => {
       variables: { teamId, leagueId }, // Include league
     });
     setTeams(statsData.league.teams)
-    
-    
+
+
     setLeagueStats(statsData.leagueStats);
   };
 
@@ -86,7 +86,7 @@ const TeamProfilePage = () => {
   const overallStats= data?.leagueStats
 
   return (
-    
+
     <div className="min-h-screen dark:bg-gray-900 bg-white  p-6 dark:text-white text-gray-800">
       <h1
         className="text-3xl font-bold mb-6"
@@ -131,13 +131,16 @@ const TeamProfilePage = () => {
         </div>
 
         {/* Head-to-Head Stats */}
-
+        <div className="dark:bg-gray-800 bg-gray-300  rounded-lg p-6 flex flex-col md:flex-row items-center justify-between2">
           <HeadToHeadStats
             teamId={teamId}
             teams={teams}
             selectedLeagueId={selectedLeagueId}
           />
-       
+         </div>
+
+
+
       </div>
     </div>
   );
