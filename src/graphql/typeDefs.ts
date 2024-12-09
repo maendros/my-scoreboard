@@ -113,6 +113,35 @@ const typeDefs = gql`
     draws: Int!
   }
 
+  type TeamPerformanceEvolution {
+    teamId: Int!
+    leagueId: Int
+    performanceData: [PerformanceMetric!]!
+  }
+
+  type PerformanceMetric {
+    matchNumber: Int!
+    date: String!
+    opponent: String!
+    result: String!
+    points: Int!
+    cumulativePoints: Int!
+    goalDifference: Int!
+    cumulativeGoalDifference: Int!
+  }
+
+  type LeagueProgression {
+    leagueId: Int!
+    teams: [TeamProgression!]!
+  }
+
+  type TeamProgression {
+    teamId: Int!
+    teamName: String!
+    progressionPoints: [Int!]!
+    progressionPosition: [Int!]!
+  }
+
   type Query {
     leagues: [League!]!
     fixtures(leagueId: Int): [Fixture!]!
@@ -127,6 +156,7 @@ const typeDefs = gql`
       leagueId: Int
     ): TeamVsTeamStats
     groupedFixtures(leagueId: Int, daysLimit: Int): [GroupedFixtures!]!
+    teamPerformanceEvolution(teamId: Int!, leagueId: Int): TeamPerformanceEvolution!
   }
 
   type Mutation {

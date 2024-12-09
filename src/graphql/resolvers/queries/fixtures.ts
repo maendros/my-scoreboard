@@ -59,6 +59,72 @@ const fixtureQueryResolvers = {
         return [];
       }
     },
+
+    teamPerformanceEvolution: async (
+      _: any, 
+      { teamId, leagueId }: { teamId: number; leagueId?: number }
+    ) => {
+      try {
+        // Fetch all fixtures for the team
+        const fixtures = await prisma.fixture.findMany({
+          where: {
+            OR: [
+              { homeTeamId: teamId },
+              { awayTeamId: teamId }
+            ],
+            ...(leagueId && { leagueId }) // Optional league filter
+          },
+          orderBy: { playedAt: 'asc' }, // Ensure chronological order
+          include: {
+            homeTeam: true,
+            awayTeam: true,
+            league: true
+          }
+        });
+        console.log({fixtures});
+        // Calculate cumulative performance metrics
+        let cumulativePoints = 0;
+        let cumulativeGoalDifference = 0;
+
+        const performanceData = fixtures.map((fixture, index) => {
+          const isHomeTeam = fixture.homeTeamId === teamId;
+          const teamScore = isHomeTeam ? fixture.homeScore : fixture.awayScore;
+          const opponentScore = isHomeTeam ? fixture.awayScore : fixture.homeScore;
+
+          // Determine match result
+          let points = 0;
+          if (teamScore > opponentScore) points = 3; // Win
+          if (teamScore === opponentScore) points = 1; // Draw
+
+          // Cumulative calculations
+          cumulativePoints += points;
+          cumulativeGoalDifference += teamScore - opponentScore;
+
+          return {
+            matchNumber: index + 1,
+            date: fixture.playedAt.toISOString().split("T")[0],
+            opponent: isHomeTeam ? fixture.awayTeam.name : fixture.homeTeam.name,
+            result: teamScore > opponentScore ? 'Win' : 
+                    teamScore < opponentScore ? 'Loss' : 'Draw',
+            points,
+            cumulativePoints,
+            goalDifference: teamScore - opponentScore,
+            cumulativeGoalDifference
+          };
+        });
+        console.log({performanceData});
+        
+
+        return {
+          teamId,
+          leagueId,
+          performanceData
+        };
+      } catch (error) {
+        console.error("Error fetching team performance:", error);
+        throw new Error("Could not retrieve team performance data");
+      }
+    },
   },
 };
 

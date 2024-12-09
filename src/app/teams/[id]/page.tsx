@@ -9,6 +9,7 @@ import { useParams } from "next/navigation";
 import client from "@/lib/apolloClient";
 import "@/lib/chartSetup";
 import Loader from "@/components/Loader";
+//import TeamPerformanceChart from "@/components/TeamPerformanceChart";
 
 const TEAM_DETAILS_QUERY = gql`
   query TeamDetails($id: Int!) {
@@ -139,7 +140,12 @@ const TeamProfilePage = () => {
           />
          </div>
 
-
+         {/* <div className="dark:bg-gray-800 bg-gray-300  rounded-lg p-6 flex flex-col md:flex-row items-center justify-between2">
+          <h2 className="text-xl font-bold mb-6 text-gray-800 dark:text-white">
+          Team Match History
+          </h2>
+             <TeamPerformanceChart teamId={teamId} leagueId={selectedLeagueId} />
+          </div> */}
 
       </div>
     </div>
