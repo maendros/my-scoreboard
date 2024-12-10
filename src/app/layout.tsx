@@ -4,7 +4,7 @@ import ThemeProvider from "@/components/ThemeProvider";
 import Menu from "@/components/Menu";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import "./globals.css"; // Other imports
+import "./globals.css";
 
 export default function RootLayout({
   children,
@@ -17,10 +17,12 @@ export default function RootLayout({
         <ApolloProvider>
           <ThemeProvider>
             <Menu />
-            <h1 className="text-center text-3xl font-bold text-gray-900 dark:text-gray-100">
-              My Scoreboard
-            </h1>
-            <section className="mt-20">{children}</section>
+            <main className="pt-20">
+              <h1 className="text-center text-3xl font-bold text-gray-900 dark:text-gray-100">
+                My Scoreboard
+              </h1>
+              <section className="mt-8">{children}</section>
+            </main>
             <ToastContainer
               position="top-right"
               autoClose={4000}

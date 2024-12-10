@@ -19,7 +19,7 @@ const LeagueSelector: React.FC<LeagueSelectorProps> = ({
         Select League:
       </label>
       <select
-        className=" p-2 border border-gray-700 dark:bg-gray-800 bg-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4"
+        className="w-full sm:w-48 p-2 border border-gray-700 dark:bg-gray-800 bg-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4"
         value={selectedLeagueId || ""}
         onChange={(e) => onLeagueSelect(Number(e.target.value))}
       >

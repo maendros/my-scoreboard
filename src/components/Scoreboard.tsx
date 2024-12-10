@@ -88,9 +88,9 @@ const Scoreboard: React.FC<ScoreboardProps> = ({ leagueId }) => {
 
   return (
     <>
-      <div className="mb-4">
+      <div className="mb-4 flex flex-row">
         <button
-          className={`px-4 py-2 ${
+          className={`w-full sm:w-32 px-4 py-2 ${
             activeTab === "table"
               ? "bg-blue-500 text-white"
               : "dark:bg-gray-500 bg-gray-200"
@@ -100,7 +100,7 @@ const Scoreboard: React.FC<ScoreboardProps> = ({ leagueId }) => {
           League Table
         </button>
         <button
-          className={`px-4 py-2 ${
+          className={`w-full sm:w-32 px-4 py-2 sm:mt-0 ${
             activeTab === "fixtures"
               ? "bg-blue-500 text-white"
               : "dark:bg-gray-500 bg-gray-200"
