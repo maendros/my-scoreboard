@@ -16,7 +16,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
       type="color"
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className="appearance-none cursor-pointer border-none p-0 mr-2 "
+      className="appearance-none cursor-pointer border-none p-0 mr-2"
       style={{
         width: `${size}px`,
         height: `${size}px`,

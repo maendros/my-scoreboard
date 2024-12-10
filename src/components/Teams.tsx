@@ -9,6 +9,7 @@ import client from "@/lib/apolloClient";
 import ColorPicker from "./ColorPicker";
 import Link from "next/link";
 import { FaArrowRight } from "react-icons/fa";
+import { FiSave, FiTrash2 } from "react-icons/fi";
 
 const GET_TEAMS_QUERY = gql`
   query GetTeams {
@@ -161,7 +162,7 @@ const Teams: React.FC = () => {
           return (
             <div
               key={team.id}
-              className="flex items-center mb-2 dark:text-gray-100 text-gray-900"
+              className="flex items-center mb-2 dark:text-gray-100 text-gray-900 "
             >
               <input
                 type="text"
@@ -169,7 +170,7 @@ const Teams: React.FC = () => {
                 onChange={(e) =>
                   handleInputChange(team.id, "name", e.target.value)
                 }
-                className="mr-2 p-2 border dark:bg-gray-700 bg-white"
+                className="mr-2 p-2 w-3/5 sm:w-auto  border border-gray-700 dark:bg-gray-800 bg-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
 
               <ColorPicker
@@ -180,30 +181,32 @@ const Teams: React.FC = () => {
                 size={40}
               />
 
+
               <button
-                className={`ml-2 p-2 text-white ${
-                  editedTeam.name
-                    ? "bg-green-500"
-                    : "bg-gray-500 cursor-not-allowed"
-                }`}
+                className={`ml-2 p-2  ${
+                          editedTeam.name
+                            ? "text-green-500"
+                            : "text-gray-500 cursor-not-allowed"
+                        }`}
                 onClick={() => handleUpdateTeam(team.id)}
-                disabled={!editedTeam.name}
+                title="Save team to league"
               >
-                Save
+                <FiSave className="w-6 h-6" />
               </button>
 
               <button
-                className="ml-2 p-2 bg-red-500 text-white"
+                className="text-red-500 hover:text-red-700"
                 onClick={() => handleDeleteTeam(team.id)}
+                title="Remove team from league"
               >
-                Delete
+                <FiTrash2 className="w-6 h-6" />
               </button>
               {/* Arrow Icon for Navigation */}
               <Link
                 href={`/teams/${team.id}?name=${encodeURIComponent(team.name)}`}
               >
-                <button className="ml-2 p-2 bg-blue-500 text-white">
-                  <FaArrowRight />
+                <button className="ml-2 p-2 text-blue-500 ">
+                  <FaArrowRight className="w-6 h-6"  />
                 </button>
               </Link>
             </div>
@@ -219,7 +222,7 @@ const Teams: React.FC = () => {
             placeholder="Name"
             value={newTeam.name}
             onChange={(e) => setNewTeam({ ...newTeam, name: e.target.value })}
-            className="mr-2 p-2 border dark:bg-gray-700 bg-white"
+            className="mr-2 p-2 border border-gray-700 dark:bg-gray-800 bg-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500e"
           />
           <ColorPicker
             value={newTeam.profile.color}
