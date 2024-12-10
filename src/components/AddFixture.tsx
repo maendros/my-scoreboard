@@ -178,7 +178,7 @@ const AddFixture: React.FC<{ leagueId: number }> = ({ leagueId }) => {
               <input
                 type="number"
                 min="0"
-                className="w-full sm:w-auto flex-1 p-2 border border-gray-700 dark:bg-gray-800 bg-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full sm:w-16 flex-1 p-2 border border-gray-700 dark:bg-gray-800 bg-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={score.homeScore}
                 onChange={(e) =>
                   handleInputChange(index, "homeScore", Number(e.target.value))
@@ -197,19 +197,12 @@ const AddFixture: React.FC<{ leagueId: number }> = ({ leagueId }) => {
               />
 
               {/* Remove Button */}
-              {scores?.length > 1 &&(
-                  <button
-                    className="w-full sm:w-auto p-2 bg-red-500 text-white rounded-md"
-                    onClick={() => handleRemoveScore(index)}
-                  >
-                  Remove
-                </button>
-              )}
+ 
   
             </div>
 
             {/* Home Team Details */}
-            <div className="mb-4">
+            <div className="mb-4 w-auto sm:w-1/2">
               <h3 className="font-semibold text-gray-700 dark:text-gray-300">
                 Home Team Details
               </h3>
@@ -222,7 +215,7 @@ const AddFixture: React.FC<{ leagueId: number }> = ({ leagueId }) => {
             </div>
 
             {/* Away Team Details */}
-            <div>
+            <div className="mb-4 w-auto sm:w-1/2">
               <h3 className="font-semibold text-gray-700 dark:text-gray-300">
                 Away Team Details
               </h3>
@@ -233,7 +226,16 @@ const AddFixture: React.FC<{ leagueId: number }> = ({ leagueId }) => {
                 }
               />
             </div>
+            {scores?.length > 1 &&(
+                  <button
+                    className="w-full sm:w-auto p-2 bg-red-500 text-white rounded-md"
+                    onClick={() => handleRemoveScore(index)}
+                  >
+                  Remove
+                </button>
+              )}
           </div>
+          
         ))
       )}
       {/* Add Score Button */}

@@ -55,13 +55,14 @@ const FixtureGaming: React.FC<{
   const formations = data.possibleFormations;
 
   return (
-    <div className="flex flex-col space-y-2">
+    <div className="flex flex-col space-y-4 lg:flex-row lg:space-y-0 lg:space-x-4">
       {/* Search for Teams */}
-      <div className="relative">
-        <div className="flex items-center border w-full sm:w-64 border-gray-700 dark:bg-gray-800 bg-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+      <div className="relative flex-1 lg:flex lg:flex-col ">
+
+        <div className="flex items-center border border-gray-700 dark:bg-gray-800 bg-gray-300 rounded-md focus-within:ring-2 focus-within:ring-blue-500">
           <input
             type="text"
-            className="p-2 flex-1 bg-transparent outline-none"
+            className="p-2 flex-1 bg-transparent border border-gray-700 dark:bg-gray-800 bg-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Search for a team..."
             value={searchTerm}
             onChange={handleInputChange}
@@ -78,7 +79,7 @@ const FixtureGaming: React.FC<{
           )}
         </div>
         {isTyping && filteredTeams.length > 0 && (
-          <ul className="absolute z-10 bg-white dark:bg-gray-700 w-full sm:w-64 border mt-1 max-h-40 overflow-y-auto">
+          <ul className="absolute z-10 bg-white dark:bg-gray-700 w-full border mt-1 max-h-40 overflow-y-auto">
             {filteredTeams.map((team: any) => (
               <li
                 key={team.id}
@@ -91,22 +92,26 @@ const FixtureGaming: React.FC<{
           </ul>
         )}
       </div>
-
+  
       {/* Formation Selector */}
-      <select
-        className="p-2 border w-full sm:w-64 border-gray-700 dark:bg-gray-800 bg-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-        value={details.formation || ""}
-        onChange={(e) => onChange({ ...details, formation: e.target.value })}
-      >
-        <option value="">Select a Formation (Optional)</option>
-        {formations.map((formation: string) => (
-          <option key={formation} value={formation}>
-            {formation}
-          </option>
-        ))}
-      </select>
+      <div className="flex-1 lg:flex lg:flex-col lg:space-y-2">
+
+        <select
+          className="p-2  border border-gray-700 dark:bg-gray-800 bg-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          value={details.formation || ""}
+          onChange={(e) => onChange({ ...details, formation: e.target.value })}
+        >
+          <option value="">Select a Formation (Optional)</option>
+          {formations.map((formation: string) => (
+            <option key={formation} value={formation}>
+              {formation}
+            </option>
+          ))}
+        </select>
+      </div>
     </div>
   );
+  
 };
 
 export default FixtureGaming;
