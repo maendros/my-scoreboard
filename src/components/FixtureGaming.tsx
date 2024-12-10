@@ -58,7 +58,7 @@ const FixtureGaming: React.FC<{
     <div className="flex flex-col space-y-2">
       {/* Search for Teams */}
       <div className="relative">
-        <div className="flex items-center border border-gray-700 dark:bg-gray-800 bg-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <div className="flex items-center border w-full sm:w-64 border-gray-700 dark:bg-gray-800 bg-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
           <input
             type="text"
             className="p-2 flex-1 bg-transparent outline-none"
@@ -78,7 +78,7 @@ const FixtureGaming: React.FC<{
           )}
         </div>
         {isTyping && filteredTeams.length > 0 && (
-          <ul className="absolute z-10 bg-white dark:bg-gray-700 w-full border mt-1 max-h-40 overflow-y-auto">
+          <ul className="absolute z-10 bg-white dark:bg-gray-700 w-full sm:w-64 border mt-1 max-h-40 overflow-y-auto">
             {filteredTeams.map((team: any) => (
               <li
                 key={team.id}
@@ -94,7 +94,7 @@ const FixtureGaming: React.FC<{
 
       {/* Formation Selector */}
       <select
-        className="p-2 border border-gray-700 dark:bg-gray-800 bg-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="p-2 border w-full sm:w-64 border-gray-700 dark:bg-gray-800 bg-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         value={details.formation || ""}
         onChange={(e) => onChange({ ...details, formation: e.target.value })}
       >

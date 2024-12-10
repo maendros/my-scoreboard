@@ -132,10 +132,11 @@ const AddFixture: React.FC<{ leagueId: number }> = ({ leagueId }) => {
         <Loader /> // Show loader during saving
       ) : (
         scores.map((score, index) => (
-          <div key={index} className="mb-4">
-            <div className="flex items-center mb-2">
+          <div key={index} className="mb-6">
+            <div className="flex flex-wrap gap-2 mb-4">
+              {/* Home Team Select */}
               <select
-                className="mr-2 p-2 border border-gray-700 dark:bg-gray-800 bg-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="flex-1 min-w-[45%] sm:min-w-0 p-2 border border-gray-700 dark:bg-gray-800 bg-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={score.homeTeam || ""}
                 onChange={(e) =>
                   handleInputChange(index, "homeTeam", e.target.value)
@@ -150,8 +151,10 @@ const AddFixture: React.FC<{ leagueId: number }> = ({ leagueId }) => {
                   </option>
                 ))}
               </select>
+
+              {/* Away Team Select */}
               <select
-                className="mr-2 p-2 border border-gray-700 dark:bg-gray-800 bg-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="flex-1 min-w-[45%] sm:min-w-0 p-2 border border-gray-700 dark:bg-gray-800 bg-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={score.awayTeam || ""}
                 onChange={(e) =>
                   handleInputChange(index, "awayTeam", e.target.value)
@@ -170,33 +173,43 @@ const AddFixture: React.FC<{ leagueId: number }> = ({ leagueId }) => {
                     </option>
                   ))}
               </select>
+
+              {/* Home Score Input */}
               <input
                 type="number"
                 min="0"
-                className="mr-2 p-2 border border-gray-700 dark:bg-gray-800 bg-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full sm:w-auto flex-1 p-2 border border-gray-700 dark:bg-gray-800 bg-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={score.homeScore}
                 onChange={(e) =>
                   handleInputChange(index, "homeScore", Number(e.target.value))
                 }
               />
+
+              {/* Away Score Input */}
               <input
                 type="number"
                 min="0"
-                className="mr-2 p-2 border border-gray-700 dark:bg-gray-800 bg-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full sm:w-auto flex-1 p-2 border border-gray-700 dark:bg-gray-800 bg-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={score.awayScore}
                 onChange={(e) =>
                   handleInputChange(index, "awayScore", Number(e.target.value))
                 }
               />
-              <button
-                className="ml-2 p-2 bg-red-500 text-white"
-                onClick={() => handleRemoveScore(index)}
-              >
-                Remove
-              </button>
+
+              {/* Remove Button */}
+              {scores?.length > 1 &&(
+                  <button
+                    className="w-full sm:w-auto p-2 bg-red-500 text-white rounded-md"
+                    onClick={() => handleRemoveScore(index)}
+                  >
+                  Remove
+                </button>
+              )}
+  
             </div>
+
             {/* Home Team Details */}
-            <div className="mb-2">
+            <div className="mb-4">
               <h3 className="font-semibold text-gray-700 dark:text-gray-300">
                 Home Team Details
               </h3>
@@ -207,6 +220,7 @@ const AddFixture: React.FC<{ leagueId: number }> = ({ leagueId }) => {
                 }
               />
             </div>
+
             {/* Away Team Details */}
             <div>
               <h3 className="font-semibold text-gray-700 dark:text-gray-300">
@@ -222,22 +236,26 @@ const AddFixture: React.FC<{ leagueId: number }> = ({ leagueId }) => {
           </div>
         ))
       )}
-      <button
-        className="mt-4 p-2 bg-blue-500 text-white"
-        onClick={handleAddScore}
-      >
-        Add Score
-      </button>
-      <button
-        className={`mt-4 ml-4 p-2 text-white ${
-          isSaveDisabled ? "bg-gray-500 cursor-not-allowed" : "bg-green-500"
-        }`}
-        onClick={handleSave}
-        disabled={isSaveDisabled}
-      >
-        Save
-      </button>
+      {/* Add Score Button */}
+      <div className="flex flex-wrap gap-2">
+        <button
+          className="w-full sm:w-auto px-4 py-2 bg-blue-500 text-white rounded-md"
+          onClick={handleAddScore}
+        >
+          Add Score
+        </button>
+        <button
+          className={`w-full sm:w-auto px-4 py-2 text-white rounded-md ${
+            isSaveDisabled ? "bg-gray-500 cursor-not-allowed" : "bg-green-500"
+          }`}
+          onClick={handleSave}
+          disabled={isSaveDisabled}
+        >
+          Save
+        </button>
+      </div>
     </>
+
   );
 };
 
