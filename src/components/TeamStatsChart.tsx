@@ -1,12 +1,17 @@
 "use client";
 
-import { Pie } from "react-chartjs-2";
+import { Bar, Pie } from "react-chartjs-2";
 
-type TeamStatsChartProps = {
-  stats: { wins: number; draws: number; losses: number } | null;
-};
+interface TeamStatsChartProps {
+  stats: {
+    wins: number;
+    draws: number;
+    losses: number;
+  };
+  chartType?: "pie" | "bar";
+}
 
-const TeamStatsChart: React.FC<TeamStatsChartProps> = ({ stats }) => {
+const TeamStatsChart = ({ stats, chartType = "pie" }: TeamStatsChartProps) => {
   if (!stats) {
     return (
       <div className="text-center text-gray-500">
@@ -14,34 +19,122 @@ const TeamStatsChart: React.FC<TeamStatsChartProps> = ({ stats }) => {
       </div>
     );
   }
+  const labels = [
+    `Wins (${stats.wins})`,
+    `Draws (${stats.draws})`,
+    `Losses (${stats.losses})`,
+  ];
+  const data = [stats.wins, stats.draws, stats.losses];
 
-  const data = {
-    labels: [
-      `Wins (${stats.wins})`,
-      `Draws (${stats.draws})`,
-      `Losses (${stats.losses})`,
-    ],
+  const pieChartData = {
+    labels,
     datasets: [
       {
-        data: [stats.wins, stats.draws, stats.losses],
-        backgroundColor: ["#22c55e", "#facc15", "#ef4444"], // Tailwind colors
+        data,
+        backgroundColor: [
+          "rgba(34, 197, 94, 0.8)", // green for wins
+          "rgba(234, 179, 8, 0.8)", // yellow for draws
+          "rgba(239, 68, 68, 0.8)", // red for losses
+        ],
+        borderColor: [
+          "rgb(34, 197, 94)",
+          "rgb(234, 179, 8)",
+          "rgb(239, 68, 68)",
+        ],
+        borderWidth: 1,
       },
     ],
   };
 
-  // Custom chart options to slow down animation and resize
-  const options = {
+  const barChartData = {
+    labels,
+    datasets: [
+      {
+        label: "Match Results",
+        data,
+        backgroundColor: [
+          "rgba(34, 197, 94, 0.8)",
+          "rgba(234, 179, 8, 0.8)",
+          "rgba(239, 68, 68, 0.8)",
+        ],
+        borderColor: [
+          "rgb(34, 197, 94)",
+          "rgb(234, 179, 8)",
+          "rgb(239, 68, 68)",
+        ],
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  const barOptions = {
     responsive: true,
-    maintainAspectRatio: false, // Allows you to control the chart's size with CSS
-    animation: {
-      duration: 2000, // Slow down the animation (2 seconds)
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: false,
+      },
+      title: {
+        display: true,
+        text: "Match Results",
+        color: "rgb(156, 163, 175)", // text-gray-400
+        font: {
+          size: 16,
+          weight: "bold",
+        },
+      },
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: {
+          color: "rgb(156, 163, 175)", // text-gray-400
+          font: {
+            size: 12,
+          },
+        },
+        grid: {
+          color: "rgba(107, 114, 128, 0.1)", // gray-500 with opacity
+        },
+      },
+      x: {
+        ticks: {
+          color: "rgb(156, 163, 175)", // text-gray-400
+          font: {
+            size: 12,
+          },
+        },
+        grid: {
+          display: false,
+        },
+      },
+    },
+  };
+
+  const pieOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: "bottom" as const,
+        labels: {
+          color: "rgb(156, 163, 175)", // text-gray-400
+          font: {
+            size: 12,
+          },
+          padding: 20,
+        },
+      },
     },
   };
 
   return (
-    <div className="p-4 bg-white shadow-md rounded-md ">
-      {/* Pie chart with custom data and options */}
-      <Pie data={data} options={options} />
+    <div className="w-full h-full">
+      {chartType === "pie" ? (
+        <Pie data={pieChartData} options={pieOptions} />
+      ) : (
+        <Bar data={barChartData} options={barOptions} />
+      )}
     </div>
   );
 };

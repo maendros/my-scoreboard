@@ -47,24 +47,23 @@ const HeadToHeadStats: React.FC<HeadToHeadStatsProps> = ({
   return (
     <>
       <div className="mb-4 md:mb-0 w-full md:w-1/3">
-          <h2 className="text-xl font-bold mb-4">Head-to-Head Stats</h2> 
-          <select
-            className="w-2/3 p-2 border border-gray-700 dark:bg-gray-800 bg-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4"
-            onChange={(e) => setSelectedOpponentId(Number(e.target.value))}
-          >
-            <option value="">Select Opponent</option>
-            {teams
-              .filter((team) => team.id !== teamId) // Exclude current team
-              .map((team) => (
-                <option key={team.id} value={team.id}>
-                  {team.name}
-                </option>
-              ))}
-          </select>
-      
+        <h2 className="text-xl font-bold mb-4">Head-to-Head Stats</h2>
+        <select
+          className="w-2/3 p-2 border border-gray-700 dark:bg-gray-800 bg-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4"
+          onChange={(e) => setSelectedOpponentId(Number(e.target.value))}
+        >
+          <option value="">Select Opponent</option>
+          {teams
+            .filter((team) => team.id !== teamId) // Exclude current team
+            .map((team) => (
+              <option key={team.id} value={team.id}>
+                {team.name}
+              </option>
+            ))}
+        </select>
       </div>
-     
-      {loading && <Loader/>}
+
+      {loading && <Loader />}
       {error && <p className="text-red-500">Error loading stats</p>}
       {data?.teamVsTeamStats && (
         <div className="w-full md:w-2/3">
@@ -74,10 +73,10 @@ const HeadToHeadStats: React.FC<HeadToHeadStatsProps> = ({
               losses: data.teamVsTeamStats.team2Wins,
               draws: data.teamVsTeamStats.draws,
             }}
+            chartType="bar" // Add this prop
           />
         </div>
       )}
-
     </>
   );
 };

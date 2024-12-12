@@ -130,16 +130,21 @@ const typeDefs = gql`
     cumulativeGoalDifference: Int!
   }
 
-  type LeagueProgression {
-    leagueId: Int!
-    teams: [TeamProgression!]!
+  type ProgressionPoint {
+    matchday: Int!
+    points: Int!
+    position: Int!
   }
 
   type TeamProgression {
     teamId: Int!
     teamName: String!
-    progressionPoints: [Int!]!
-    progressionPosition: [Int!]!
+    progression: [ProgressionPoint!]!
+  }
+
+  type LeagueProgression {
+    leagueId: Int!
+    teams: [TeamProgression!]!
   }
 
   type Query {
@@ -156,7 +161,11 @@ const typeDefs = gql`
       leagueId: Int
     ): TeamVsTeamStats
     groupedFixtures(leagueId: Int, daysLimit: Int): [GroupedFixtures!]!
-    teamPerformanceEvolution(teamId: Int!, leagueId: Int): TeamPerformanceEvolution!
+    teamPerformanceEvolution(
+      teamId: Int!
+      leagueId: Int
+    ): TeamPerformanceEvolution!
+    leagueProgression(leagueId: Int!): LeagueProgression!
   }
 
   type Mutation {

@@ -9,7 +9,8 @@ import { useParams } from "next/navigation";
 import client from "@/lib/apolloClient";
 import "@/lib/chartSetup";
 import Loader from "@/components/Loader";
-//import TeamPerformanceChart from "@/components/TeamPerformanceChart";
+import LeagueProgressionChart from "@/components/LeagueProgressionChart";
+import TeamPerformanceChart from "@/components/TeamPerformanceChart";
 
 const TEAM_DETAILS_QUERY = gql`
   query TeamDetails($id: Int!) {
@@ -48,7 +49,6 @@ const LEAGUE_STATS_QUERY = gql`
   }
 `;
 
-
 const TeamProfilePage = () => {
   const params = useParams();
   const teamId = parseInt(params.id as string, 10);
@@ -59,8 +59,7 @@ const TeamProfilePage = () => {
     draws: number;
     losses: number;
   } | null>(null);
-  const [teams, setTeams] = useState<{id:number; name: string}[] >([])
-
+  const [teams, setTeams] = useState<{ id: number; name: string }[]>([]);
 
   const { data, loading, error } = useQuery(TEAM_DETAILS_QUERY, {
     variables: { id: teamId },
@@ -73,21 +72,18 @@ const TeamProfilePage = () => {
       query: LEAGUE_STATS_QUERY,
       variables: { teamId, leagueId }, // Include league
     });
-    setTeams(statsData.league.teams)
-
+    setTeams(statsData.league.teams);
 
     setLeagueStats(statsData.leagueStats);
   };
 
-
-  if (loading) return  <Loader/>;
+  if (loading) return <Loader />;
   if (error) return <div>Error loading team details</div>;
 
   const team = data?.teamDetails;
-  const overallStats= data?.leagueStats
+  const overallStats = data?.leagueStats;
 
   return (
-
     <div className="min-h-screen dark:bg-gray-900 bg-white  p-6 dark:text-white text-gray-800">
       <h1
         className="text-3xl font-bold mb-6"
@@ -97,7 +93,7 @@ const TeamProfilePage = () => {
       </h1>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Overall Stats */}
-        <div className="dark:bg-gray-800 bg-gray-300 rounded-lg p-6 flex flex-col md:flex-row items-center justify-between">
+        <div className="dark:bg-gray-800 bg-gray-300 rounded-lg p-6 flex flex-col md:flex-row items-center justify-between col-span-2 ">
           <div className="mb-4 md:mb-0">
             <h2 className="text-xl font-bold mb-4 ">Overall Stats</h2>
           </div>
@@ -109,44 +105,60 @@ const TeamProfilePage = () => {
             />
           </div>
         </div>
-
-        {/* Stats by League */}
-        <div className="dark:bg-gray-800 bg-gray-300  rounded-lg p-6 flex flex-col md:flex-row items-center justify-between">
-          <div className="mb-4 md:mb-0 w-full md:w-1/3">
-            <h2 className="text-xl font-bold mb-4">
-              Stats by League
-            </h2>
-            <LeagueSelector
-              leagues={team.leagues}
-              selectedLeagueId={selectedLeagueId}
-              onLeagueSelect={handleLeagueChange}
-            />
-          </div>
-          <div className="w-full md:w-2/3">
-            <TeamStatsChart
-              stats={
-                leagueStats as { wins: number; draws: number; losses: number }
-              }
-            />
-          </div>
-        </div>
-
-        {/* Head-to-Head Stats */}
-        <div className="dark:bg-gray-800 bg-gray-300  rounded-lg p-6 flex flex-col md:flex-row items-center justify-between2">
-          <HeadToHeadStats
-            teamId={teamId}
-            teams={teams}
+        <div className="dark:bg-gray-800 bg-gray-300 rounded-lg p-6 flex flex-col md:flex-row items-center justify-between col-span-2 ">
+          {" "}
+          <LeagueSelector
+            leagues={team.leagues}
             selectedLeagueId={selectedLeagueId}
+            onLeagueSelect={handleLeagueChange}
           />
-         </div>
+        </div>
+        {/* Stats by League */}
+        {selectedLeagueId && (
+          <>
+            <div className="dark:bg-gray-800 bg-gray-300  rounded-lg p-6 flex flex-col md:flex-row items-center justify-between">
+              <div className="mb-4 md:mb-0 w-full md:w-1/3">
+                <h2 className="text-xl font-bold mb-4">Stats by League</h2>
+              </div>
+              <div className="w-full md:w-2/3">
+                <TeamStatsChart
+                  stats={
+                    leagueStats as {
+                      wins: number;
+                      draws: number;
+                      losses: number;
+                    }
+                  }
+                />
+              </div>
+            </div>
 
-         {/* <div className="dark:bg-gray-800 bg-gray-300  rounded-lg p-6 flex flex-col md:flex-row items-center justify-between2">
-          <h2 className="text-xl font-bold mb-6 text-gray-800 dark:text-white">
-          Team Match History
-          </h2>
-             <TeamPerformanceChart teamId={teamId} leagueId={selectedLeagueId} />
-          </div> */}
+            {/* Head-to-Head Stats */}
+            <div className="dark:bg-gray-800 bg-gray-300  rounded-lg p-6 flex flex-col md:flex-row items-center justify-between2">
+              <HeadToHeadStats
+                teamId={teamId}
+                teams={teams}
+                selectedLeagueId={selectedLeagueId}
+              />
+            </div>
 
+            <div className="dark:bg-gray-800 bg-gray-300  rounded-lg p-6 flex flex-col items-center justify-between2">
+              <h2 className="text-xl font-bold mb-6 text-gray-800 dark:text-white">
+                League Progression
+              </h2>
+              <LeagueProgressionChart leagueId={selectedLeagueId} />
+            </div>
+            <div className="dark:bg-gray-800 bg-gray-300  rounded-lg p-6 flex flex-col  items-center justify-between2">
+              <h2 className="text-xl font-bold mb-6 text-gray-800 dark:text-white">
+                Team Match History
+              </h2>
+              <TeamPerformanceChart
+                teamId={teamId}
+                leagueId={selectedLeagueId}
+              />
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

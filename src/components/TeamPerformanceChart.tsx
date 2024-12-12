@@ -24,16 +24,17 @@ const TEAM_PERFORMANCE_QUERY = gql`
   }
 `;
 
-const TeamPerformanceChart: React.FC<{ teamId: number; leagueId?: number | null }> = ({
-  teamId,
-  leagueId,
-}) => {
+const TeamPerformanceChart: React.FC<{
+  teamId: number;
+  leagueId?: number | null;
+}> = ({ teamId, leagueId }) => {
   const { data, loading, error } = useQuery(TEAM_PERFORMANCE_QUERY, {
     variables: { teamId, leagueId },
   });
 
   if (loading) return <Loader />;
-  if (error) return <div className="text-red-500">Error loading team performance.</div>;
+  if (error)
+    return <div className="text-red-500">Error loading team performance.</div>;
 
   const performanceData = data.teamPerformanceEvolution.performanceData;
 
@@ -47,7 +48,7 @@ const TeamPerformanceChart: React.FC<{ teamId: number; leagueId?: number | null 
         borderColor: "#3b82f6", // Tailwind blue
         backgroundColor: "rgba(59, 130, 246, 0.2)",
         fill: true,
-        yAxisID: 'y-points',
+        yAxisID: "y-points",
       },
       {
         label: "Cumulative Goal Difference",
@@ -55,7 +56,7 @@ const TeamPerformanceChart: React.FC<{ teamId: number; leagueId?: number | null 
         borderColor: "#22c55e", // Tailwind green
         backgroundColor: "rgba(34, 197, 94, 0.2)",
         fill: true,
-        yAxisID: 'y-goal-difference',
+        yAxisID: "y-goal-difference",
       },
       {
         label: "Match Points",
@@ -63,74 +64,68 @@ const TeamPerformanceChart: React.FC<{ teamId: number; leagueId?: number | null 
         borderColor: "#f43f5e", // Tailwind rose
         backgroundColor: "rgba(244, 63, 94, 0.2)",
         fill: true,
-        yAxisID: 'y-points',
-      }
+        yAxisID: "y-points",
+      },
     ],
   };
-  console.log(chartData);
-  
 
   const options = {
     responsive: true,
     interaction: {
-      mode: 'index',
+      mode: "index",
       intersect: false,
     },
     stacked: false,
     plugins: {
       title: {
         display: true,
-        text: 'Team Performance Evolution',
+        text: "Team Performance Evolution",
       },
       tooltip: {
         callbacks: {
-          label: function(context: any) {
-            const datasetLabel = context.dataset.label || '';
+          label: function (context: any) {
+            const datasetLabel = context.dataset.label || "";
             const dataPoint = context.parsed.y;
             const matchData = performanceData[context.dataIndex];
-            
+
             // Enhance tooltip with additional match information
             return `${datasetLabel}: ${dataPoint} | Opponent: ${matchData.opponent} | Result: ${matchData.result}`;
-          }
-        }
-      }
+          },
+        },
+      },
     },
     scales: {
       x: {
         title: {
           display: true,
-          text: 'Matches',
-        }
+          text: "Matches",
+        },
       },
-      'y-points': {
-        type: 'linear',
+      "y-points": {
+        type: "linear",
         display: true,
-        position: 'left',
+        position: "left",
         title: {
           display: true,
-          text: 'Points',
-        }
+          text: "Points",
+        },
       },
-      'y-goal-difference': {
-        type: 'linear',
+      "y-goal-difference": {
+        type: "linear",
         display: true,
-        position: 'right',
+        position: "right",
         title: {
           display: true,
-          text: 'Goal Difference',
+          text: "Goal Difference",
         },
         grid: {
           drawOnChartArea: false,
-        }
-      }
-    }
+        },
+      },
+    },
   };
 
-  return (
-    <div className="p-4 bg-white dark:bg-gray-800 shadow-md rounded-md ">
-      <Line data={chartData} options={options} />
-    </div>
-  );
+  return <Line data={chartData} options={options} />;
 };
 
 export default TeamPerformanceChart;
