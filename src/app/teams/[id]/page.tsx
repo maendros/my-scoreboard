@@ -116,7 +116,7 @@ const TeamProfilePage = () => {
         {/* Stats by League */}
         {selectedLeagueId && (
           <>
-            <div className="dark:bg-gray-800 bg-gray-300  rounded-lg p-6 flex flex-col md:flex-row items-center justify-between">
+            <div className="dark:bg-gray-800 bg-gray-300  rounded-lg p-6 flex flex-col md:flex-row items-center justify-between col-span-2 md:col-span-1">
               <div className="mb-4 md:mb-0 w-full md:w-1/3">
                 <h2 className="text-xl font-bold mb-4">Stats by League</h2>
               </div>
@@ -134,7 +134,7 @@ const TeamProfilePage = () => {
             </div>
 
             {/* Head-to-Head Stats */}
-            <div className="dark:bg-gray-800 bg-gray-300  rounded-lg p-6 flex flex-col md:flex-row items-center justify-between2">
+            <div className="dark:bg-gray-800 bg-gray-300  rounded-lg p-6 flex flex-col md:flex-row items-center justify-between col-span-2 md:col-span-1">
               <HeadToHeadStats
                 teamId={teamId}
                 teams={teams}
@@ -142,14 +142,14 @@ const TeamProfilePage = () => {
               />
             </div>
 
-            <div className="dark:bg-gray-800 bg-gray-300  rounded-lg p-6 flex flex-col items-center justify-between2">
+            <div className="dark:bg-gray-800 bg-gray-300  rounded-lg p-6 flex flex-col items-center justify-between col-span-2 md:col-span-1">
               <h2 className="text-xl font-bold mb-6 text-gray-800 dark:text-white">
                 League Progression
               </h2>
               <LeagueProgressionChart leagueId={selectedLeagueId} />
             </div>
-            <div className="dark:bg-gray-800 bg-gray-300  rounded-lg p-6 flex flex-col  items-center justify-between2">
-              <h2 className="text-xl font-bold mb-6 text-gray-800 dark:text-white">
+            <div className="dark:bg-gray-800 bg-gray-300  rounded-lg p-6 flex flex-col  items-center justify-between2 col-span-2 md:col-span-1">
+              <h2 className="text-xl font-bold mb-6 text-gray-800 dark:text-white col-span-2 ">
                 Team Match History
               </h2>
               <TeamPerformanceChart

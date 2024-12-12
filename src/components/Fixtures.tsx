@@ -2,6 +2,7 @@
 
 import React from "react";
 import ColoredDot from "./ColoredDot";
+import Link from "next/link";
 
 const Fixtures: React.FC<{ data: { day: string; matches: any[] }[] }> = ({
   data,
@@ -27,7 +28,13 @@ const Fixtures: React.FC<{ data: { day: string; matches: any[] }[] }> = ({
                     <span className=" font-bold">
                       <ColoredDot color={match.homeTeam.profile?.color} />
                       {"  "}
-                      {match.homeTeam.name}
+                      <Link
+                        href={`/teams/${
+                          match.homeTeam.id
+                        }?name=${encodeURIComponent(match.homeTeam.name)}`}
+                      >
+                        {match.homeTeam.name}
+                      </Link>
                     </span>
                   </div>
                   {/* Score */}
@@ -39,7 +46,13 @@ const Fixtures: React.FC<{ data: { day: string; matches: any[] }[] }> = ({
                   {/* Away Team */}
                   <div className="flex items-center justify-end">
                     <span className=" font-bold">
-                      {match.awayTeam.name}
+                      <Link
+                        href={`/teams/${
+                          match.awayTeam.id
+                        }?name=${encodeURIComponent(match.awayTeam.name)}`}
+                      >
+                        {match.awayTeam.name}
+                      </Link>
                       {"  "}
                       <ColoredDot color={match.awayTeam.profile?.color} />
                     </span>

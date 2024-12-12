@@ -19,18 +19,22 @@ const Menu: React.FC = () => {
   return (
     <>
       {/* Burger Icon */}
-      <button
-        className="fixed top-4 left-4 z-50 p-3 bg-gray-200 dark:bg-gray-700 rounded-full shadow-md focus:outline-none"
-        onClick={toggleMenu}
-        aria-label="Toggle Menu"
-      >
-        {isOpen ? "✖" : "☰"}
-      </button>
 
+      {!isOpen && (
+        <button
+          className="fixed top-4 left-4 z-50 p-3 bg-gray-200 dark:bg-gray-700 rounded-full shadow-md focus:outline-none"
+          onClick={toggleMenu}
+          aria-label="Toggle Menu"
+        >
+          ☰
+        </button>
+      )}
       {/* Menu Overlay */}
       <div
         className={`fixed inset-0 z-40 bg-black bg-opacity-50 transition-opacity ${
-          isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+          isOpen
+            ? "opacity-100 pointer-events-auto"
+            : "opacity-0 pointer-events-none"
         }`}
         onClick={toggleMenu}
       />
@@ -41,6 +45,15 @@ const Menu: React.FC = () => {
           isOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
+        {isOpen && (
+          <button
+            className="fixed top-4 right-4 z-50 p-3 bg-gray-200 dark:bg-gray-700 rounded-full shadow-md focus:outline-none"
+            onClick={toggleMenu}
+            aria-label="Toggle Menu"
+          >
+            ✖
+          </button>
+        )}
         <ul className="p-6 space-y-6">
           {menuItems.map((item) => (
             <li key={item.path}>

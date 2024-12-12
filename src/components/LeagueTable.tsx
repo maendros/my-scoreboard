@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { FaCheckCircle, FaTimesCircle, FaMinusCircle } from "react-icons/fa";
 import ColoredDot from "./ColoredDot";
+import Link from "next/link";
 
 const LeagueTable: React.FC<{ data: any[] }> = ({ data }) => {
   const [sortField, setSortField] = useState<string>("winRatio");
@@ -71,12 +72,19 @@ const LeagueTable: React.FC<{ data: any[] }> = ({ data }) => {
               key={entry.team.id}
               className="text-md border-b border-gray-700 hover:bg-gray-800"
             >
-              <td
-                className="px-4 py-2 whitespace-nowrap bg-gray-200 dark:bg-slate-600 sticky left-0 z-10"
-              >
+              <td className="px-4 py-2 whitespace-nowrap bg-gray-200 dark:bg-slate-600 sticky left-0 z-10">
                 <div className="flex items-center">
                   <ColoredDot color={entry.team.profile?.color} />
-                  <span className="ml-2">{entry.team.name}</span>
+                  <span className="ml-2">
+                    {" "}
+                    <Link
+                      href={`/teams/${entry.team.id}?name=${encodeURIComponent(
+                        entry.team.name
+                      )}`}
+                    >
+                      {entry.team.name}
+                    </Link>
+                  </span>
                 </div>
               </td>
               <td className="px-4 py-2">{entry.played}</td>

@@ -72,15 +72,33 @@ const TeamPerformanceChart: React.FC<{
   const options = {
     responsive: true,
     interaction: {
-      mode: "index",
+      mode: "index" as const,
       intersect: false,
     },
-    stacked: false,
-    plugins: {
-      title: {
+    scales: {
+      y: {
+        type: "linear" as const,
         display: true,
-        text: "Team Performance Evolution",
+        position: "left" as const,
+        title: {
+          display: true,
+          text: "Points",
+        },
       },
+      y1: {
+        type: "linear" as const,
+        display: true,
+        position: "right" as const,
+        title: {
+          display: true,
+          text: "Goal Difference",
+        },
+        grid: {
+          drawOnChartArea: false,
+        },
+      },
+    },
+    plugins: {
       tooltip: {
         callbacks: {
           label: function (context: any) {
@@ -91,35 +109,6 @@ const TeamPerformanceChart: React.FC<{
             // Enhance tooltip with additional match information
             return `${datasetLabel}: ${dataPoint} | Opponent: ${matchData.opponent} | Result: ${matchData.result}`;
           },
-        },
-      },
-    },
-    scales: {
-      x: {
-        title: {
-          display: true,
-          text: "Matches",
-        },
-      },
-      "y-points": {
-        type: "linear",
-        display: true,
-        position: "left",
-        title: {
-          display: true,
-          text: "Points",
-        },
-      },
-      "y-goal-difference": {
-        type: "linear",
-        display: true,
-        position: "right",
-        title: {
-          display: true,
-          text: "Goal Difference",
-        },
-        grid: {
-          drawOnChartArea: false,
         },
       },
     },

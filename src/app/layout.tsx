@@ -5,6 +5,7 @@ import Menu from "@/components/Menu";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./globals.css";
+import Link from "next/link";
 
 export default function RootLayout({
   children,
@@ -18,9 +19,12 @@ export default function RootLayout({
           <ThemeProvider>
             <Menu />
             <main className="pt-20">
-              <h1 className="text-center text-3xl font-bold text-gray-900 dark:text-gray-100">
-                My Scoreboard
-              </h1>
+              <Link
+                href="/"
+                className="block text-center hover:text-blue-500 dark:hover:text-blue-400 transition-colors"
+              >
+                <h1 className="text-3xl font-bold">My Scoreboard</h1>
+              </Link>
               <section className="mt-8">{children}</section>
             </main>
             <ToastContainer

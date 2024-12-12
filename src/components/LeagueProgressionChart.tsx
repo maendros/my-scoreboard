@@ -53,8 +53,6 @@ const LeagueProgressionChart: React.FC<{ leagueId: number | null }> = ({
 
   const { teams } = data.leagueProgression;
 
-  console.log({ leagueProgression: data.leagueProgression });
-
   // Prepare chart data
   const chartData = {
     labels: teams[0].progression.map(
@@ -76,18 +74,18 @@ const LeagueProgressionChart: React.FC<{ leagueId: number | null }> = ({
     responsive: true,
     plugins: {
       title: {
-        display: true,
+        display: true as const,
         text: "League Progression - Team Standings",
       },
       legend: {
-        position: "top",
+        position: "top" as const,
       },
     },
     scales: {
       y: {
         reverse: false, // Lower number means higher position
         title: {
-          display: true,
+          display: true as const,
           text: "League Position",
         },
         ticks: {
