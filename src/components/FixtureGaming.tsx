@@ -55,10 +55,9 @@ const FixtureGaming: React.FC<{
   const formations = data.possibleFormations;
 
   return (
-    <div className="flex flex-col space-y-4 lg:flex-row lg:space-y-0 lg:space-x-4">
+    <>
       {/* Search for Teams */}
-      <div className="relative flex-1 lg:flex lg:flex-col ">
-
+      <div className="col-span-4 sm:col-span-3  relative flex-1 lg:flex lg:flex-col ">
         <div className="flex items-center border border-gray-700 dark:bg-gray-800 bg-gray-300 rounded-md focus-within:ring-2 focus-within:ring-blue-500">
           <input
             type="text"
@@ -92,10 +91,9 @@ const FixtureGaming: React.FC<{
           </ul>
         )}
       </div>
-  
-      {/* Formation Selector */}
-      <div className="flex-1 lg:flex lg:flex-col lg:space-y-2">
 
+      {/* Formation Selector */}
+      <div className="col-span-2 sm:col-span-1  lg:flex lg:flex-col lg:space-y-2">
         <select
           className="p-2  border border-gray-700 dark:bg-gray-800 bg-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           value={details.formation || ""}
@@ -109,9 +107,8 @@ const FixtureGaming: React.FC<{
           ))}
         </select>
       </div>
-    </div>
+    </>
   );
-  
 };
 
 export default FixtureGaming;
