@@ -86,7 +86,7 @@ const TeamProfilePage = () => {
   return (
     <div className="min-h-screen dark:bg-gray-900 bg-white  p-6 dark:text-white text-gray-800">
       <h1
-        className="text-3xl font-bold mb-6"
+        className="text-3xl text-center sm:text-left font-bold mb-6"
         style={{ color: team.profile.color }}
       >
         {team.name}
@@ -118,7 +118,9 @@ const TeamProfilePage = () => {
           <>
             <div className="dark:bg-gray-800 bg-gray-300  rounded-lg p-6 flex flex-col md:flex-row items-center justify-between col-span-2 md:col-span-1">
               <div className="mb-4 md:mb-0 w-full md:w-1/3">
-                <h2 className="text-xl font-bold mb-4">Stats by League</h2>
+                <h2 className="text-xl font-bold mb-4 text-center sm:text-left ">
+                  Stats by League
+                </h2>
               </div>
               <div className="w-full md:w-2/3">
                 <TeamStatsChart

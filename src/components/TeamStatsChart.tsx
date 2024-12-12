@@ -72,15 +72,15 @@ const TeamStatsChart = ({ stats, chartType = "pie" }: TeamStatsChartProps) => {
     maintainAspectRatio: false,
     plugins: {
       legend: {
-        display: false,
+        display: false as const,
       },
       title: {
-        display: true,
+        display: true as const,
         text: "Match Results",
         color: "rgb(156, 163, 175)", // text-gray-400
         font: {
           size: 16,
-          weight: "bold",
+          weight: "bold" as const,
         },
       },
     },
@@ -105,7 +105,7 @@ const TeamStatsChart = ({ stats, chartType = "pie" }: TeamStatsChartProps) => {
           },
         },
         grid: {
-          display: false,
+          display: false as const,
         },
       },
     },
