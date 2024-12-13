@@ -1,31 +1,27 @@
 import cron from "node-cron";
-import fetch from "node-fetch";
+import dotenv from "dotenv";
 
-interface FetchTeamsResponse {
-  success: boolean;
-  message?: string;
-  teams?: any[];
-}
+// Load environment variables
+dotenv.config();
 
 const fetchTeams = async () => {
-  console.log("Running local cron job to fetch teams...");
   try {
-    const response = await fetch(
-      "http://localhost:5000/api/fetch-gaming-teams"
-    );
-    const data = (await response.json()) as FetchTeamsResponse;
+    const response = await fetch("http://localhost:5000/api/refresh-teams", {
+      method: "GET",
+    });
 
-    if (typeof data?.success !== "boolean") {
-      throw new Error(
-        "Invalid response format: 'success' field is missing or invalid."
-      );
-    }
-
-    console.log("Fetched teams successfully:", data?.success);
+    const data = await response.json();
+    console.log("Cron job result:", data);
   } catch (error) {
-    console.error("Error during cron job:", error);
+    console.error("Cron job failed:", error);
   }
 };
-fetchTeams();
 
-cron.schedule("*/5 * * * *", fetchTeams);
+// Schedule task to run every 3 months
+cron.schedule("0 0 1 */3 *", () => {
+  console.log("Running teams fetch cron job");
+  fetchTeams();
+});
+
+// Initial fetch
+fetchTeams();

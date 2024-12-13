@@ -35,6 +35,13 @@ const TEAM_COLORS = [
   "#a855f7", // Tailwind purple
 ];
 
+// Add this interface above the component
+interface Progression {
+  matchday: number;
+  points: number;
+  position: number;
+}
+
 const LeagueProgressionChart: React.FC<{ leagueId: number | null }> = ({
   leagueId,
 }) => {
@@ -56,13 +63,13 @@ const LeagueProgressionChart: React.FC<{ leagueId: number | null }> = ({
   // Prepare chart data
   const chartData = {
     labels: teams[0].progression.map(
-      (_, index: number) => `Match ${index + 1}`
+      (_: number, index: number) => `Match ${index + 1}`
     ),
     datasets: teams.map((team: any, index: number) => ({
       label: team.teamName,
-      data: team.progression.map((p) => ({
+      data: team.progression.map((p: Progression) => ({
         x: p.matchday,
-        y: p.points, // or p.position depending on what you want to show
+        y: p.points,
       })),
       borderColor: TEAM_COLORS[index % TEAM_COLORS.length],
       backgroundColor: `${TEAM_COLORS[index % TEAM_COLORS.length]}22`, // Transparent fill

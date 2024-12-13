@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev -p 5000",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -p 5000",
     "lint": "next lint",
     "lint:fix": "next lint --fix",
     "migrate": "prisma migrate deploy",
@@ -19,6 +19,7 @@
     "@typescript-eslint/parser": "^7.18.0",
     "chart.js": "^4.4.7",
     "date-fns": "^4.1.0",
+    "dotenv": "^16.4.7",
     "glob": "^11.0.0",
     "graphql": "^16.9.0",
     "graphql-scalars": "^1.24.0",
@@ -28,7 +29,6 @@
     "next": "14.2.5",
     "node-cache": "^5.1.2",
     "node-cron": "^3.0.3",
-    "node-fetch": "^3.3.2",
     "react": "^18.3.1",
     "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.3.1",
@@ -39,6 +39,7 @@
   "devDependencies": {
     "@prisma/client": "^5.22.0",
     "@tailwindcss/forms": "^0.5.9",
+    "@types/lodash": "^4.17.13",
     "@types/node": "^20.17.9",
     "@types/node-cron": "^3.0.11",
     "@types/react": "^18.3.13",
