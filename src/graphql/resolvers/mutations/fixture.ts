@@ -49,6 +49,8 @@ const fixtureMutationResolvers = {
             homeScore: fixture.homeScore,
             awayScore: fixture.awayScore,
             playedAt: new Date(fixture.playedAt),
+            homeTeamDetails: fixture.homeTeamDetails || {}, // Optional details
+            awayTeamDetails: fixture.awayTeamDetails || {},
           },
           include: {
             league: true,

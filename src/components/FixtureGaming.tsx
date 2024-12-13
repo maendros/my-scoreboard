@@ -19,7 +19,7 @@ const FixtureGaming: React.FC<{
 }> = ({ onChange, details }) => {
   const { data, loading, error } = useQuery(GET_GAMING_TEAMS_AND_FORMATIONS);
 
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState(details.chosenTeam || "");
   const [filteredTeams, setFilteredTeams] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
 

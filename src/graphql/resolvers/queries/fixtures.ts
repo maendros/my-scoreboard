@@ -28,21 +28,26 @@ const fixtureQueryResolvers = {
       { leagueId, daysLimit }: { leagueId?: number; daysLimit?: number }
     ) => {
       try {
-        const startDate = daysLimit
-          ? subDays(new Date(), daysLimit) // Calculate the start date
-          : undefined;
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Start of today
 
         const fixtures = await prisma.fixture.findMany({
           where: {
-            ...(leagueId && { leagueId }), // Filter by leagueId if provided
-            ...(startDate && { playedAt: { gte: formatISO(startDate) } }), // Filter by date if daysLimit is provided
+            ...(leagueId && { leagueId }),
+            ...(daysLimit && {
+              playedAt: {
+                gte: formatISO(today), // If daysLimit is 1, start from today
+              },
+            }),
           },
           include: {
             homeTeam: true,
             awayTeam: true,
             league: true,
           },
-          orderBy: { playedAt: "desc" },
+          orderBy: {
+            playedAt: "desc",
+          },
         });
 
         const groupedByDay = groupBy(

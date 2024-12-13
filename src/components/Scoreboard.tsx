@@ -78,7 +78,7 @@ const Scoreboard: React.FC<ScoreboardProps> = ({ leagueId }) => {
     error: errorFixtures,
     data: dataFixtures,
   } = useQuery(GROUPED_FIXTURES_QUERY, {
-    variables: { leagueId, daysLimit: 5 },
+    variables: { leagueId, daysLimit: 0 },
     skip: !leagueId,
   });
 
