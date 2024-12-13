@@ -149,7 +149,7 @@ const typeDefs = gql`
 
   type Query {
     leagues: [League!]!
-    fixtures(leagueId: Int): [Fixture!]!
+    fixtures(teamId: Int): [Fixture!]!
     teams: [Team!]!
     league(id: Int!): League!
     leagueTable(leagueId: Int!): [LeagueTableEntry!]!

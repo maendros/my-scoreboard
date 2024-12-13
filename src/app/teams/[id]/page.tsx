@@ -11,6 +11,7 @@ import "@/lib/chartSetup";
 import Loader from "@/components/Loader";
 import LeagueProgressionChart from "@/components/LeagueProgressionChart";
 import TeamPerformanceChart from "@/components/TeamPerformanceChart";
+import TeamDetails from "@/components/TeamDetails";
 
 const TEAM_DETAILS_QUERY = gql`
   query TeamDetails($id: Int!) {
@@ -27,6 +28,19 @@ const TEAM_DETAILS_QUERY = gql`
       wins
       draws
       losses
+    }
+    fixtures(teamId: $id) {
+      id
+      homeTeam {
+        id
+        name
+      }
+      awayTeam {
+        id
+        name
+      }
+      homeTeamDetails
+      awayTeamDetails
     }
   }
 `;
@@ -93,7 +107,7 @@ const TeamProfilePage = () => {
       </h1>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Overall Stats */}
-        <div className="dark:bg-gray-800 bg-gray-300 rounded-lg p-6 flex flex-col md:flex-row items-center justify-between col-span-2 ">
+        <div className="dark:bg-gray-800 bg-gray-300 rounded-lg p-6 flex flex-col md:flex-row items-center col-span-2 md:col-span-2">
           <div className="mb-4 md:mb-0">
             <h2 className="text-xl font-bold mb-4 ">Overall Stats</h2>
           </div>
@@ -104,6 +118,9 @@ const TeamProfilePage = () => {
               }
             />
           </div>
+        </div>
+        <div className="dark:bg-gray-800 bg-gray-300 rounded-lg p-6 flex flex-col md:flex-row items-center justify-between col-span-2 md:col-span-2 ">
+          <TeamDetails teamId={teamId} fixtures={data.fixtures} />
         </div>
         <div className="dark:bg-gray-800 bg-gray-300 rounded-lg p-6 flex flex-col md:flex-row items-center justify-between col-span-2 ">
           {" "}

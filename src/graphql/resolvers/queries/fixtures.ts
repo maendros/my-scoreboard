@@ -6,18 +6,23 @@ const prisma = new PrismaClient();
 
 const fixtureQueryResolvers = {
   Query: {
-    fixtures: async (_: any, { leagueId }: { leagueId?: number }) => {
+    fixtures: async (_: any, { teamId }: { teamId?: number }) => {
       try {
-        // Fetch matches with optional league filtering
+        console.log("teamId", teamId);
         const fixtures = await prisma.fixture.findMany({
-          where: leagueId ? { leagueId } : undefined, // Filter by leagueId if provided
-          include: { homeTeam: true, awayTeam: true, league: true }, // Include related data
+          where: {
+            OR: [{ homeTeamId: teamId }, { awayTeamId: teamId }],
+          },
+          include: {
+            homeTeam: true,
+            awayTeam: true,
+          },
+          orderBy: {
+            playedAt: "desc",
+          },
         });
 
-        return fixtures.map((fixture) => ({
-          ...fixture,
-          league: fixture.league || null, // Handle optional league association
-        }));
+        return fixtures;
       } catch (error) {
         console.error("Error fetching fixtures:", error);
         return [];
