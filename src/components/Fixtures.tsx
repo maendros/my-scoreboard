@@ -59,12 +59,30 @@ const Fixtures: React.FC<{ data: { day: string; matches: any[] }[] }> = ({
                   </div>
                 </div>
                 {/* Match Time */}
-                <div className="text-sm text-gray-700 dark:text-gray-400 text-center">
-                  {new Date(match.playedAt).toLocaleTimeString(undefined, {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    hour12: false,
-                  })}
+                <div className="grid grid-cols-3 items-center mb-2">
+                  <div className="flex items-start justify-start">
+                    {match.homeTeamDetails && (
+                      <span className="text-sm text-gray-600 dark:text-gray-400 ">
+                        {match.homeTeamDetails.chosenTeam || ""}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center justify-center">
+                    <div className="text-sm text-gray-700 dark:text-gray-400 text-center">
+                      {new Date(match.playedAt).toLocaleTimeString(undefined, {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        hour12: false,
+                      })}
+                    </div>
+                  </div>
+                  <div className="flex items-start justify-end">
+                    {match.awayTeamDetails && (
+                      <span className="text-sm text-gray-600 dark:text-gray-400 ">
+                        {match.awayTeamDetails.chosenTeam || ""}
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
             ))}

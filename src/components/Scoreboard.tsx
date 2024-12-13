@@ -50,6 +50,8 @@ const GROUPED_FIXTURES_QUERY = gql`
         homeScore
         awayScore
         playedAt
+        homeTeamDetails # Add this
+        awayTeamDetails
       }
     }
   }

@@ -42,6 +42,7 @@ const fixtureQueryResolvers = {
             awayTeam: true,
             league: true,
           },
+          orderBy: { playedAt: "desc" },
         });
 
         const groupedByDay = groupBy(
