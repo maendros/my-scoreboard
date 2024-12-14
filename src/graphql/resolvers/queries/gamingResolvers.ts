@@ -12,7 +12,7 @@ interface FootballTeam {
 const gamingResolvers = {
   Query: {
     gamingTeams: async () => {
-      const cachedTeams = teamCache.get<FootballTeam[]>("allTeams");
+      const cachedTeams = teamCache.get<FootballTeam[]>("teams");
 
       if (!cachedTeams) {
         // const test = [
