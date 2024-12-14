@@ -9,7 +9,8 @@
     "lint": "next lint",
     "lint:fix": "next lint --fix",
     "migrate": "prisma migrate deploy",
-    "fetch-teams": "npx tsx  scripts/cron-fetch-teams.ts"
+    "fetch-teams": "npx tsx  scripts/cron-fetch-teams.ts",
+    "vercel-build": "prisma migrate deploy && prisma generate && pnpm build"
   },
   "dependencies": {
     "@apollo/client": "^3.12.0",
