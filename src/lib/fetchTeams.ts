@@ -11,19 +11,19 @@ interface FootballTeam {
 }
 
 const COMPETITIONS = [
-  "WC",
-  "CL",
-  "BL1",
-  "DED",
-  "BSA",
-  "PD",
-  "FL1",
-  "ELC",
-  "PPL",
-  "EC",
-  "SA",
-  "PL",
-  "CLI",
+  "WC", // FIFA World Cup
+  "CL", // UEFA Champions League
+  "BL1", // Bundesliga (Germany)
+  "DED", // Eredivisie (Netherlands)
+  "BSA", // Série A (Brazil)
+  "PD", // Primera División / La Liga (Spain)
+  "FL1", // Ligue 1 (France)
+  "ELC", // Championship (England)
+  "PPL", // Primeira Liga (Portugal)
+  //"EC", // European Championship
+  "SA", // Serie A (Italy)
+  "PL", // Premier League (England)
+  //"CLI", // Copa Libertadores
 ];
 
 export const prefetchTeams = async (): Promise<FootballTeam[]> => {
@@ -66,7 +66,7 @@ export const prefetchTeams = async (): Promise<FootballTeam[]> => {
         `Added ${simplifiedTeams.length} teams from competition ${competition}`
       );
     }
-    await new Promise((resolve) => setTimeout(resolve, 6000));
+    await new Promise((resolve) => setTimeout(resolve, 4000));
   }
 
   const uniqueTeams = Array.from(
