@@ -28,7 +28,7 @@ const COMPETITIONS = [
 
 export const prefetchTeams = async (): Promise<FootballTeam[]> => {
   console.log("Starting prefetchTeams...");
-  const cachedData = teamCache.get<FootballTeam[]>("teams");
+  const cachedData = await teamCache.get<FootballTeam[]>("teams");
 
   if (cachedData) {
     console.log("Cache hit! Teams found:", cachedData.length);
