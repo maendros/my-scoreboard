@@ -1,28 +1,29 @@
-import NodeCache from "node-cache";
+import { Redis } from "@upstash/redis";
 
-// Declare global variable for the cache
-declare global {
-  var globalCache: NodeCache | undefined;
-}
-
-// Create singleton cache
-if (!global.globalCache) {
-  global.globalCache = new NodeCache({ stdTTL: 7776000 });
-  console.log("Created new global cache instance");
-}
-
-const cache = global.globalCache;
-
-cache.on("set", function (key, value) {
-  console.log(
-    `Cache SET: ${key}, value length: ${
-      Array.isArray(value) ? value.length : "not array"
-    }`
-  );
+const redis = new Redis({
+  url: process.env.KV_URL!,
+  token: process.env.KV_REST_API_TOKEN!,
 });
 
-cache.on("get", function (key, value) {
-  console.log(`Cache GET: ${key}, value found: ${value !== undefined}`);
-});
+class Cache {
+  async set(key: string, value: any) {
+    await redis.set(key, value);
+    console.log(
+      `Redis Cache SET: ${key}, value length: ${
+        Array.isArray(value) ? value.length : "not array"
+      }`
+    );
+  }
 
-export const teamCache = cache;
+  async get<T>(key: string): Promise<T | undefined> {
+    const value = (await redis.get(key)) as T;
+    console.log(`Redis Cache GET: ${key}, found: ${!!value}`);
+    return value;
+  }
+
+  async keys(): Promise<string[]> {
+    return redis.keys("*");
+  }
+}
+
+export const teamCache = new Cache();

@@ -12,17 +12,14 @@ interface FootballTeam {
 }
 
 export async function GET() {
-  console.log("Cache keys available:", Array.from(teamCache.keys()));
-  console.log("Attempting to get teams with key 'teams'");
-
-  const teams = teamCache.get("teams") as FootballTeam[];
-  console.log("Cache content:", JSON.stringify(teams, null, 2));
+  const teams = (await teamCache.get("teams")) as FootballTeam[];
+  const cacheKeys = await teamCache.keys();
 
   return NextResponse.json({
     cacheExists: !!teams,
     teamsCount: teams ? teams.length : 0,
     timestamp: new Date().toISOString(),
-    cacheKeys: Array.from(teamCache.keys()),
+    cacheKeys: cacheKeys,
     teams: teams || [],
   });
 }
