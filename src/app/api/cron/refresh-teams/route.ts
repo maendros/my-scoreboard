@@ -1,9 +1,6 @@
 import { prefetchTeams } from "@/lib/fetchTeams";
 import { NextResponse } from "next/server";
 
-export const runtime = "edge";
-export const preferredRegion = "fra1";
-
 const validateCronRequest = (req: Request) => {
   const authHeader = req.headers.get("authorization");
   return authHeader === `Bearer ${process.env.CRON_SECRET}`;

@@ -8,7 +8,6 @@ const fixtureQueryResolvers = {
   Query: {
     fixtures: async (_: any, { teamId }: { teamId?: number }) => {
       try {
-        console.log("teamId", teamId);
         const fixtures = await prisma.fixture.findMany({
           where: {
             OR: [{ homeTeamId: teamId }, { awayTeamId: teamId }],
