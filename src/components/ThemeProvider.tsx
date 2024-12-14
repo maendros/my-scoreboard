@@ -2,14 +2,34 @@
 
 import React, { useState, useEffect } from "react";
 
-const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
-  const [theme, setTheme] = useState("light");
+type Theme = "light" | "dark" | "system";
+
+interface ThemeProviderProps {
+  children: React.ReactNode;
+  defaultTheme?: Theme;
+}
+
+const ThemeProvider = ({
+  children,
+  defaultTheme = "system",
+}: ThemeProviderProps) => {
+  const [theme, setTheme] = useState(defaultTheme);
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem("theme") || "light";
-    setTheme(savedTheme);
-    document.documentElement.classList.add(savedTheme);
-  }, []);
+    const savedTheme = (localStorage.getItem("theme") as Theme) || defaultTheme;
+
+    if (savedTheme === "system") {
+      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
+        .matches
+        ? "dark"
+        : "light";
+      setTheme(systemTheme);
+      document.documentElement.classList.add(systemTheme);
+    } else {
+      setTheme(savedTheme);
+      document.documentElement.classList.add(savedTheme);
+    }
+  }, [defaultTheme]);
 
   const toggleTheme = () => {
     const newTheme = theme === "light" ? "dark" : "light";
@@ -21,8 +41,10 @@ const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <div>
-      {/* Theme toggle button */}
-      <div className="fixed top-4 right-4 p-2 bg-gray-200 dark:bg-gray-700 rounded-full shadow-md" style={{zIndex:500}}>
+      <div
+        className="fixed top-4 right-4 p-2 bg-gray-200 dark:bg-gray-700 rounded-full shadow-md"
+        style={{ zIndex: 500 }}
+      >
         <button onClick={toggleTheme} className="text-xl">
           {theme === "light" ? "🌞" : "🌜"}
         </button>

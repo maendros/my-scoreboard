@@ -13,10 +13,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" className="[color-scheme:dark]">
       <body>
         <ApolloProvider>
-          <ThemeProvider>
+          <ThemeProvider defaultTheme="system">
             <Menu />
             <main className="pt-20">
               <Link
