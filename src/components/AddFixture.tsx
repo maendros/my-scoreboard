@@ -13,8 +13,8 @@ type Score = {
   awayTeam: string;
   homeScore: number;
   awayScore: number;
-  homeTeamDetails: { chosenTeam?: string; formation?: string };
-  awayTeamDetails: { chosenTeam?: string; formation?: string };
+  homeTeamDetails: { chosenTeam?: string };
+  awayTeamDetails: { chosenTeam?: string };
 };
 
 const init_score: Score = {
@@ -22,8 +22,8 @@ const init_score: Score = {
   awayTeam: "",
   homeScore: 0,
   awayScore: 0,
-  homeTeamDetails: { chosenTeam: "", formation: "" },
-  awayTeamDetails: { chosenTeam: "", formation: "" },
+  homeTeamDetails: { chosenTeam: "" },
+  awayTeamDetails: { chosenTeam: "" },
 };
 
 const COMBINED_QUERY = gql`
@@ -126,11 +126,9 @@ const AddFixture: React.FC<{ leagueId: number }> = ({ leagueId }) => {
         awayScore: match.awayScore,
         homeTeamDetails: match.homeTeamDetails || {
           chosenTeam: "",
-          formation: "",
         },
         awayTeamDetails: match.awayTeamDetails || {
           chosenTeam: "",
-          formation: "",
         },
       }));
     }
@@ -198,12 +196,11 @@ const AddFixture: React.FC<{ leagueId: number }> = ({ leagueId }) => {
           homeScore: score.homeScore,
           awayScore: score.awayScore,
           playedAt: new Date().toISOString(),
-          homeTeamDetails: score.homeTeamDetails,
-          awayTeamDetails: score.awayTeamDetails,
+          homeTeamDetails: { chosenTeam: score.homeTeamDetails.chosenTeam },
+          awayTeamDetails: { chosenTeam: score.awayTeamDetails.chosenTeam },
         };
 
         if (score.id) {
-          // Update existing fixture
           await updateFixture({
             variables: {
               id: score.id,
@@ -211,7 +208,6 @@ const AddFixture: React.FC<{ leagueId: number }> = ({ leagueId }) => {
             },
           });
         } else {
-          // Add new fixture
           await addFixture({
             variables: {
               fixtures: [fixtureData],
