@@ -7,9 +7,11 @@ import ErrorMessage from "./ErrorMessage";
 import { toast } from "react-toastify";
 import client from "@/lib/apolloClient";
 import { FaArrowRight } from "react-icons/fa";
+import { FiSave, FiTrash2 } from "react-icons/fi";
 import Link from "next/link";
 import ColorPicker from "./ColorPicker";
 import Checkbox from "./CheckBox";
+import ConfirmationDialog from "./ConfirmationDialog";
 
 // GraphQL Queries and Mutations for Leagues
 const GET_LEAGUES_QUERY = gql`
@@ -74,12 +76,118 @@ const Leagues: React.FC = () => {
     >
   >({}); // Temporary state for edited leagues
 
+  const [dialogState, setDialogState] = useState<{
+    isOpen: boolean;
+    type: "save" | "remove" | "add";
+    leagueId?: number;
+    leagueName?: string;
+  }>({
+    isOpen: false,
+    type: "save",
+  });
+
   if (loading) return <Loader />;
   if (error) return <ErrorMessage message={error.message} />;
 
   const leagues = data?.leagues || [];
 
-  const handleAddLeague = async () => {
+  const handleAddLeague = () => {
+    setDialogState({
+      isOpen: true,
+      type: "add",
+      leagueName: newLeague.name,
+    });
+  };
+
+  const handleUpdateLeague = (id: number) => {
+    const editedLeague = editedLeagues[id];
+    if (!editedLeague) return;
+
+    setDialogState({
+      isOpen: true,
+      type: "save",
+      leagueId: id,
+      leagueName: editedLeague.name,
+    });
+  };
+
+  const handleDeleteLeague = (id: number) => {
+    const league = leagues.find((l: any) => l.id === id);
+    setDialogState({
+      isOpen: true,
+      type: "remove",
+      leagueId: id,
+      leagueName: league?.name,
+    });
+  };
+
+  const handleInputChange = (id: number, field: string, value: any) => {
+    setEditedLeagues((prev) => {
+      const currentLeague = leagues.find(
+        (league: Record<string, unknown>) => league.id === id
+      );
+      const existingEdit = prev[id] || {
+        name: currentLeague?.name || "",
+        color: currentLeague?.profile?.color || "#000000",
+        size: currentLeague?.size || 4,
+        isGamingLeague: currentLeague?.isGamingLeague || false,
+      };
+
+      return {
+        ...prev,
+        [id]: {
+          ...existingEdit,
+          [field]: value,
+        },
+      };
+    });
+  };
+
+  const handleConfirmedUpdate = async (id: number) => {
+    const editedLeague = editedLeagues[id];
+    try {
+      await updateLeague({
+        variables: {
+          id: Number(id),
+          league: {
+            name: editedLeague.name,
+            profile: { color: editedLeague.color || "#ff0000" },
+            size: editedLeague.size,
+            isGamingLeague: editedLeague.isGamingLeague,
+          },
+        },
+      });
+      setEditedLeagues((prev) => {
+        const updated = { ...prev };
+        delete updated[id];
+        return updated;
+      });
+      toast.success("League updated successfully!");
+    } catch (error) {
+      console.error("Error updating league:", error);
+      toast.error(`Failed to update league: ${error}`);
+    }
+  };
+
+  const handleConfirmedDelete = async (id: number) => {
+    try {
+      await deleteLeague({ variables: { id: Number(id) } });
+      client.cache.updateQuery(
+        { query: GET_LEAGUES_QUERY },
+        (existingData) => ({
+          leagues: (existingData?.leagues || []).filter(
+            (league: Record<string, unknown>) => league.id !== id
+          ),
+        })
+      );
+      toast.success("League deleted successfully!");
+    } catch (error) {
+      console.error("Error deleting league:", error);
+      toast.error(`Failed to delete league: ${error}`);
+    }
+  };
+
+  const handleConfirmedAdd = async () => {
     try {
       await addLeague({
         variables: {
@@ -105,75 +213,6 @@ const Leagues: React.FC = () => {
       toast.error(`Failed to add league: ${error}`);
     }
   };
-
-  const handleUpdateLeague = async (id: number) => {
-    const editedLeague = editedLeagues[id];
-    if (!editedLeague) return;
-
-    try {
-      await updateLeague({
-        variables: {
-          id: Number(id),
-          league: {
-            name: editedLeague.name,
-            profile: { color: editedLeague.color || "#ff0000" },
-            size: editedLeague.size,
-            isGamingLeague: editedLeague.isGamingLeague,
-          },
-        },
-      });
-      setEditedLeagues((prev) => {
-        const updated = { ...prev };
-        delete updated[id]; // Clear temporary state after saving
-        return updated;
-      });
-      toast.success("League updated successfully!");
-    } catch (error) {
-      console.error("Error updating league:", error);
-      toast.error(`Failed to update league: ${error}`);
-    }
-  };
-
-  const handleDeleteLeague = async (id: number) => {
-    try {
-      await deleteLeague({ variables: { id: Number(id) } });
-      client.cache.updateQuery(
-        { query: GET_LEAGUES_QUERY },
-        (existingData) => ({
-          leagues: (existingData?.leagues || []).filter(
-            (league: Record<string, unknown>) => league.id !== id
-          ),
-        })
-      );
-      toast.success("League deleted successfully!");
-    } catch (error) {
-      console.error("Error deleting league:", error);
-      toast.error(`Failed to delete league: ${error}`);
-    }
-  };
-
-  const handleInputChange = (id: number, field: string, value: any) => {
-    setEditedLeagues((prev) => {
-      const currentLeague = leagues.find(
-        (league: Record<string, unknown>) => league.id === id
-      );
-      const existingEdit = prev[id] || {
-        name: currentLeague?.name || "",
-        color: currentLeague?.profile?.color || "#000000",
-        size: currentLeague?.size || 4,
-        isGamingLeague: currentLeague?.isGamingLeague || false,
-      };
-
-      return {
-        ...prev,
-        [id]: {
-          ...existingEdit,
-          [field]: value,
-        },
-      };
-    });
-  };
-
 
   return (
     <div className="container mx-auto p-4 dark:bg-gray-800 bg-white">
@@ -209,7 +248,7 @@ const Leagues: React.FC = () => {
                   onChange={(e) =>
                     handleInputChange(league.id, "name", e.target.value)
                   }
-                  className="mr-2 p-2 border border-gray-700 dark:bg-gray-800 bg-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="mr-2 p-2 w-3/5 sm:w-auto border border-gray-700 dark:bg-gray-800 bg-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
 
                 <ColorPicker
@@ -219,6 +258,7 @@ const Leagues: React.FC = () => {
                   }
                   size={40}
                 />
+
                 <select
                   value={editedLeague.size}
                   onChange={(e) =>
@@ -244,32 +284,33 @@ const Leagues: React.FC = () => {
                 />
 
                 <button
-                  className={`ml-2 p-2 text-white ${
+                  className={`ml-2 p-2 ${
                     editedLeague.name
-                      ? "bg-green-500"
-                      : "bg-gray-500 cursor-not-allowed"
+                      ? "text-green-500"
+                      : "text-gray-500 cursor-not-allowed"
                   }`}
                   onClick={() => handleUpdateLeague(league.id)}
                   disabled={!editedLeague.name}
+                  title="Save league"
                 >
-                  Save
+                  <FiSave className="w-6 h-6" />
                 </button>
 
                 <button
-                  className="ml-2 p-2 bg-red-500 text-white"
+                  className="text-red-500 hover:text-red-700"
                   onClick={() => handleDeleteLeague(league.id)}
+                  title="Delete league"
                 >
-                  Delete
+                  <FiTrash2 className="w-6 h-6" />
                 </button>
 
-                {/* Arrow Icon for Navigation */}
                 <Link
                   href={`/leagues/${league.id}?name=${encodeURIComponent(
                     league.name
                   )}`}
                 >
-                  <button className="ml-2 p-2 bg-blue-500 text-white">
-                    <FaArrowRight />
+                  <button className="ml-2 p-2 text-blue-500">
+                    <FaArrowRight className="w-6 h-6" />
                   </button>
                 </Link>
               </div>
@@ -279,10 +320,9 @@ const Leagues: React.FC = () => {
       </div>
 
       {/* Add New League */}
-      <div className="mt-4">
+      <div className="mt-8">
         <h3 className="text-xl font-semibold mb-2">Add New League</h3>
         <div className="flex items-center mb-2 dark:text-gray-100 text-gray-900">
-          {/* Name Input */}
           <input
             type="text"
             placeholder="Name"
@@ -293,7 +333,6 @@ const Leagues: React.FC = () => {
             className="mr-2 p-2 border border-gray-700 dark:bg-gray-800 bg-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
 
-          {/* Color Picker */}
           <ColorPicker
             value={newLeague.profile.color || "#000000"}
             onChange={(e) =>
@@ -302,7 +341,6 @@ const Leagues: React.FC = () => {
             size={40}
           />
 
-          {/* League Size Dropdown */}
           <select
             value={newLeague.size}
             onChange={(e) =>
@@ -327,7 +365,6 @@ const Leagues: React.FC = () => {
             className="me-4"
           />
 
-          {/* Add Button */}
           <button
             className={`p-2 text-white ${
               !newLeague.name
@@ -341,6 +378,41 @@ const Leagues: React.FC = () => {
           </button>
         </div>
       </div>
+
+      <ConfirmationDialog
+        isOpen={dialogState.isOpen}
+        onClose={() => setDialogState({ ...dialogState, isOpen: false })}
+        onConfirm={() => {
+          switch (dialogState.type) {
+            case "save":
+              dialogState.leagueId &&
+                handleConfirmedUpdate(dialogState.leagueId);
+              break;
+            case "remove":
+              dialogState.leagueId &&
+                handleConfirmedDelete(dialogState.leagueId);
+              break;
+            case "add":
+              handleConfirmedAdd();
+              break;
+          }
+          setDialogState({ ...dialogState, isOpen: false });
+        }}
+        title={
+          dialogState.type === "save"
+            ? "Confirm Save"
+            : dialogState.type === "remove"
+            ? "Confirm Delete"
+            : "Confirm Add"
+        }
+        message={
+          dialogState.type === "save"
+            ? `Are you sure you want to save changes to ${dialogState.leagueName}?`
+            : dialogState.type === "remove"
+            ? `Are you sure you want to delete ${dialogState.leagueName}?`
+            : `Are you sure you want to add ${dialogState.leagueName}?`
+        }
+      />
     </div>
   );
 };
