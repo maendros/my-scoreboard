@@ -7,6 +7,7 @@ import ErrorMessage from "./ErrorMessage";
 import { toast } from "react-toastify";
 import FixtureGaming from "./FixtureGaming";
 import LoadingButton from "./LoadingButton";
+import ConfirmationDialog from "./ConfirmationDialog";
 
 type Score = {
   homeTeam: string;
@@ -61,7 +62,7 @@ const COMBINED_QUERY = gql`
 `;
 
 const ADD_FIXTURES_MUTATION = gql`
-  mutation AddFixtures($fixtures: [FixtureInput!]!) {
+  mutation AddFixtures($fixtures: FixtureInput!) {
     addFixtures(fixtures: $fixtures) {
       id
       homeTeam {
@@ -113,6 +114,10 @@ const AddFixture: React.FC<{ leagueId: number }> = ({ leagueId }) => {
         variables: { leagueId, daysLimit: 1 },
       },
     ],
+  });
+  const [dialogState, setDialogState] = useState({
+    isOpen: false,
+    itemIndex: -1,
   });
 
   const initializeScores = () => {
@@ -184,44 +189,47 @@ const AddFixture: React.FC<{ leagueId: number }> = ({ leagueId }) => {
     (score) => !score.homeTeam || !score.awayTeam
   );
 
-  const handleSave = async () => {
+  const handleSave = async (score: Score & { id?: number }) => {
     try {
       setIsSaving(true);
+      const fixtureData = {
+        leagueId,
+        homeTeamId: Number(score.homeTeam),
+        awayTeamId: Number(score.awayTeam),
+        homeScore: score.homeScore,
+        awayScore: score.awayScore,
+        playedAt: new Date().toISOString(),
+        homeTeamDetails: { chosenTeam: score.homeTeamDetails.chosenTeam },
+        awayTeamDetails: { chosenTeam: score.awayTeamDetails.chosenTeam },
+      };
 
-      for (const score of scores) {
-        const fixtureData = {
-          leagueId,
-          homeTeamId: Number(score.homeTeam),
-          awayTeamId: Number(score.awayTeam),
-          homeScore: score.homeScore,
-          awayScore: score.awayScore,
-          playedAt: new Date().toISOString(),
-          homeTeamDetails: { chosenTeam: score.homeTeamDetails.chosenTeam },
-          awayTeamDetails: { chosenTeam: score.awayTeamDetails.chosenTeam },
-        };
-
-        if (score.id) {
-          await updateFixture({
-            variables: {
-              id: score.id,
-              fixture: fixtureData,
-            },
-          });
-        } else {
-          await addFixture({
-            variables: {
-              fixtures: [fixtureData],
-            },
-          });
-        }
+      if (score.id) {
+        await updateFixture({
+          variables: {
+            id: score.id,
+            fixture: fixtureData,
+          },
+        });
+      } else {
+        await addFixture({
+          variables: {
+            fixtures: fixtureData,
+          },
+        });
       }
-
-      toast.success("Fixtures saved successfully!");
+      toast.success("Fixture saved successfully!");
     } catch (error) {
-      toast.error(`Failed to save fixtures: ${error}`);
+      toast.error(`Failed to save fixture: ${error}`);
     } finally {
       setIsSaving(false);
     }
+  };
+
+  const handleRemoveConfirmation = (index: number) => {
+    setDialogState({
+      isOpen: true,
+      itemIndex: index,
+    });
   };
 
   return (
@@ -229,6 +237,17 @@ const AddFixture: React.FC<{ leagueId: number }> = ({ leagueId }) => {
       <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-100">
         Add Fixtures
       </h2>
+      <ConfirmationDialog
+        isOpen={dialogState.isOpen}
+        onClose={() => setDialogState({ isOpen: false, itemIndex: -1 })}
+        onConfirm={() => {
+          if (dialogState.itemIndex !== -1) {
+            handleRemoveScore(dialogState.itemIndex);
+          }
+        }}
+        title="Confirm Deletion"
+        message="Are you sure you want to delete this fixture?"
+      />
       {scores.map((score, index) => (
         <div key={index} className="mb-6">
           <div className="grid grid-cols-12 gap-2 mb-4">
@@ -315,14 +334,24 @@ const AddFixture: React.FC<{ leagueId: number }> = ({ leagueId }) => {
             <div className="sm:col-span-4" />
           </div>
 
-          {scores?.length > 1 && (
+          <div className="flex gap-2 mt-4">
             <button
               className="w-full sm:w-auto p-2 bg-red-500 text-white rounded-md"
-              onClick={() => handleRemoveScore(index)}
+              onClick={() => handleRemoveConfirmation(index)}
             >
               Remove
             </button>
-          )}
+
+            <LoadingButton
+              onClick={() => handleSave(score)}
+              isLoading={isSaving}
+              disabled={!score.homeTeam || !score.awayTeam}
+              className="w-full sm:w-auto"
+              color="green"
+            >
+              Save
+            </LoadingButton>
+          </div>
         </div>
       ))}
 
@@ -333,15 +362,6 @@ const AddFixture: React.FC<{ leagueId: number }> = ({ leagueId }) => {
         >
           Add Score
         </button>
-        <LoadingButton
-          onClick={handleSave}
-          isLoading={isSaving}
-          disabled={isSaveDisabled}
-          className="w-full sm:w-auto"
-          color="green"
-        >
-          Save
-        </LoadingButton>
       </div>
     </>
   );

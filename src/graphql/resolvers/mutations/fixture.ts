@@ -5,33 +5,20 @@ const prisma = new PrismaClient();
 
 const fixtureMutationResolvers = {
   Mutation: {
-    addFixtures: async (_: any, { fixtures }: { fixtures: any[] }) => {
+    addFixtures: async (_: any, { fixtures }: { fixtures: any }) => {
       try {
-        const createdFixtures = await Promise.all(
-          fixtures.map(async (fixture) => {
-            return prisma.fixture.create({
-              data: {
-                leagueId: fixture.leagueId,
-                homeTeamId: fixture.homeTeamId,
-                awayTeamId: fixture.awayTeamId,
-                homeScore: fixture.homeScore,
-                awayScore: fixture.awayScore,
-                playedAt: new Date(fixture.playedAt),
-                homeTeamDetails: fixture.homeTeamDetails || {}, // Optional details
-                awayTeamDetails: fixture.awayTeamDetails || {},
-              },
-              include: {
-                league: true,
-                homeTeam: true,
-                awayTeam: true,
-              },
-            });
-          })
-        );
-        return createdFixtures;
+        const createdFixture = await prisma.fixture.create({
+          data: fixtures,
+          include: {
+            league: true,
+            homeTeam: true,
+            awayTeam: true,
+          },
+        });
+        return createdFixture;
       } catch (error) {
-        console.error("Error adding fixtures:", error);
-        throw new Error("Failed to add fixtures");
+        console.error("Error adding fixture:", error);
+        throw new Error("Failed to add fixture");
       }
     },
 

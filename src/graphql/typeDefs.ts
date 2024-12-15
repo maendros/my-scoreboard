@@ -179,7 +179,7 @@ const typeDefs = gql`
     updateTeam(id: Int!, team: TeamInput!): Team!
     deleteTeam(id: Int!): Boolean!
 
-    addFixtures(fixtures: [FixtureInput!]!): [Fixture!]!
+    addFixtures(fixtures: FixtureInput!): Fixture!
     updateFixture(id: Int!, fixture: FixtureInput!): Fixture!
     deleteFixture(id: Int!): Boolean!
   }
