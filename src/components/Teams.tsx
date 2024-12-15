@@ -10,6 +10,7 @@ import ColorPicker from "./ColorPicker";
 import Link from "next/link";
 import { FaArrowRight } from "react-icons/fa";
 import { FiSave, FiTrash2 } from "react-icons/fi";
+import ConfirmationDialog from "./ConfirmationDialog";
 
 const GET_TEAMS_QUERY = gql`
   query GetTeams {
@@ -62,31 +63,53 @@ const Teams: React.FC = () => {
     Record<number, { name: string; color: string }>
   >({});
 
+  const [dialogState, setDialogState] = useState<{
+    isOpen: boolean;
+    type: "save" | "remove" | "add";
+    teamId?: number;
+    teamName?: string;
+  }>({
+    isOpen: false,
+    type: "save",
+  });
+
   if (loading) return <Loader />;
   if (error) return <ErrorMessage message={error.message} />;
 
   const teams = data?.teams || [];
 
-  const handleAddTeam = async () => {
-    try {
-      await addTeam({
-        variables: { team: newTeam },
-        refetchQueries: [{ query: GET_TEAMS_QUERY }],
-      });
-
-      setNewTeam({ name: "", profile: { color: "" } });
-
-      toast.success("Team added successfully!");
-    } catch (error) {
-      console.error("Error adding team:", error);
-      toast.error(`Failed to add team: ${error}`);
-    }
-  };
-
   const handleUpdateTeam = async (id: number) => {
     const editedTeam = editedTeams[id];
     if (!editedTeam) return;
 
+    setDialogState({
+      isOpen: true,
+      type: "save",
+      teamId: id,
+      teamName: editedTeam.name,
+    });
+  };
+
+  const handleDeleteTeam = async (id: number) => {
+    const team = teams.find((t: any) => t.id === id);
+    setDialogState({
+      isOpen: true,
+      type: "remove",
+      teamId: id,
+      teamName: team?.name,
+    });
+  };
+
+  const handleAddTeam = async () => {
+    setDialogState({
+      isOpen: true,
+      type: "add",
+      teamName: newTeam.name,
+    });
+  };
+
+  const handleConfirmedUpdate = async (id: number) => {
+    const editedTeam = editedTeams[id];
     try {
       await updateTeam({
         variables: {
@@ -99,7 +122,7 @@ const Teams: React.FC = () => {
       });
       setEditedTeams((prev) => {
         const updated = { ...prev };
-        delete updated[id]; // Clear temporary state after saving
+        delete updated[id];
         return updated;
       });
       toast.success("Team updated successfully!");
@@ -109,7 +132,7 @@ const Teams: React.FC = () => {
     }
   };
 
-  const handleDeleteTeam = async (id: number) => {
+  const handleConfirmedDelete = async (id: number) => {
     try {
       await deleteTeam({ variables: { id: Number(id) } });
       client.cache.updateQuery({ query: GET_TEAMS_QUERY }, (existingData) => ({
@@ -121,6 +144,20 @@ const Teams: React.FC = () => {
     } catch (error) {
       console.error("Error deleting team:", error);
       toast.error(`Failed to delete team: ${error}`);
+    }
+  };
+
+  const handleConfirmedAdd = async () => {
+    try {
+      await addTeam({
+        variables: { team: newTeam },
+        refetchQueries: [{ query: GET_TEAMS_QUERY }],
+      });
+      setNewTeam({ name: "", profile: { color: "" } });
+      toast.success("Team added successfully!");
+    } catch (error) {
+      console.error("Error adding team:", error);
+      toast.error(`Failed to add team: ${error}`);
     }
   };
 
@@ -181,13 +218,12 @@ const Teams: React.FC = () => {
                 size={40}
               />
 
-
               <button
                 className={`ml-2 p-2  ${
-                          editedTeam.name
-                            ? "text-green-500"
-                            : "text-gray-500 cursor-not-allowed"
-                        }`}
+                  editedTeam.name
+                    ? "text-green-500"
+                    : "text-gray-500 cursor-not-allowed"
+                }`}
                 onClick={() => handleUpdateTeam(team.id)}
                 title="Save team to league"
               >
@@ -206,7 +242,7 @@ const Teams: React.FC = () => {
                 href={`/teams/${team.id}?name=${encodeURIComponent(team.name)}`}
               >
                 <button className="ml-2 p-2 text-blue-500 ">
-                  <FaArrowRight className="w-6 h-6"  />
+                  <FaArrowRight className="w-6 h-6" />
                 </button>
               </Link>
             </div>
@@ -241,6 +277,39 @@ const Teams: React.FC = () => {
           </button>
         </div>
       </div>
+
+      <ConfirmationDialog
+        isOpen={dialogState.isOpen}
+        onClose={() => setDialogState({ ...dialogState, isOpen: false })}
+        onConfirm={() => {
+          switch (dialogState.type) {
+            case "save":
+              dialogState.teamId && handleConfirmedUpdate(dialogState.teamId);
+              break;
+            case "remove":
+              dialogState.teamId && handleConfirmedDelete(dialogState.teamId);
+              break;
+            case "add":
+              handleConfirmedAdd();
+              break;
+          }
+          setDialogState({ ...dialogState, isOpen: false });
+        }}
+        title={
+          dialogState.type === "save"
+            ? "Confirm Save"
+            : dialogState.type === "remove"
+            ? "Confirm Delete"
+            : "Confirm Add"
+        }
+        message={
+          dialogState.type === "save"
+            ? `Are you sure you want to save changes to ${dialogState.teamName}?`
+            : dialogState.type === "remove"
+            ? `Are you sure you want to delete ${dialogState.teamName}?`
+            : `Are you sure you want to add ${dialogState.teamName}?`
+        }
+      />
     </div>
   );
 };
