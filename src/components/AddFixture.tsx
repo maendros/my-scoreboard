@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 import FixtureGaming from "./FixtureGaming";
 import LoadingButton from "./LoadingButton";
 import ConfirmationDialog from "./ConfirmationDialog";
+import Divider from "./Divider";
 
 type Score = {
   homeTeam: string;
@@ -248,8 +249,10 @@ const AddFixture: React.FC<{ leagueId: number }> = ({ leagueId }) => {
         title="Confirm Deletion"
         message="Are you sure you want to delete this fixture?"
       />
+
       {scores.map((score, index) => (
         <div key={index} className="mb-6">
+          <Divider />
           <div className="grid grid-cols-12 gap-2 mb-4">
             {/* Home Team Select */}
             <select
