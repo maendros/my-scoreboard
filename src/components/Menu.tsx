@@ -2,6 +2,8 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { RiMenuLine } from "react-icons/ri"
+
 
 // Define menu items
 const menuItems = [
@@ -22,11 +24,11 @@ const Menu: React.FC = () => {
 
       {!isOpen && (
         <button
-          className="fixed top-4 left-4 z-50 p-3 bg-gray-200 dark:bg-gray-700 rounded-full shadow-md focus:outline-none"
+          className="fixed top-2 left-4 z-50 p-3 shadow-md focus:outline-none"
           onClick={toggleMenu}
           aria-label="Toggle Menu"
         >
-          ☰
+          <RiMenuLine className="w-6 h-6"/>
         </button>
       )}
       {/* Menu Overlay */}

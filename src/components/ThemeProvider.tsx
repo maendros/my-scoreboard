@@ -1,8 +1,21 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, createContext, useContext } from "react";
 
 type Theme = "light" | "dark" | "system";
+
+interface ThemeContextType {
+  theme: Theme;
+  toggleTheme: () => void;
+}
+
+const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
+
+export const useTheme = () => {
+  const context = useContext(ThemeContext);
+  if (!context) throw new Error("useTheme must be used within ThemeProvider");
+  return context;
+};
 
 interface ThemeProviderProps {
   children: React.ReactNode;
@@ -13,7 +26,7 @@ const ThemeProvider = ({
   children,
   defaultTheme = "system",
 }: ThemeProviderProps) => {
-  const [theme, setTheme] = useState(defaultTheme);
+  const [theme, setTheme] = useState<Theme>(defaultTheme);
 
   useEffect(() => {
     const savedTheme = (localStorage.getItem("theme") as Theme) || defaultTheme;
@@ -40,17 +53,9 @@ const ThemeProvider = ({
   };
 
   return (
-    <div>
-      <div
-        className="fixed top-4 right-4 p-2 bg-gray-200 dark:bg-gray-700 rounded-full shadow-md"
-        style={{ zIndex: 500 }}
-      >
-        <button onClick={toggleTheme} className="text-xl">
-          {theme === "light" ? "🌞" : "🌜"}
-        </button>
-      </div>
+    <ThemeContext.Provider value={{ theme, toggleTheme }}>
       {children}
-    </div>
+    </ThemeContext.Provider>
   );
 };
 
