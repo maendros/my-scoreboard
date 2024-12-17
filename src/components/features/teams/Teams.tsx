@@ -2,15 +2,15 @@
 
 import React, { useState } from "react";
 import { useMutation, useQuery, gql } from "@apollo/client";
-import Loader from "./Loader";
-import ErrorMessage from "./ErrorMessage";
+import Loader from "@/components/common/ui/Loader";
+import ErrorMessage from "@/components/common/ui/ErrorMessage";
 import { toast } from "react-toastify";
 import client from "@/lib/apolloClient";
-import ColorPicker from "./ColorPicker";
+import ColorPicker from "@/components/common/ui/ColorPicker";
 import Link from "next/link";
 import { FaArrowRight } from "react-icons/fa";
 import { FiSave, FiTrash2 } from "react-icons/fi";
-import ConfirmationDialog from "./ConfirmationDialog";
+import ConfirmationDialog from "@/components/common/feedback/ConfirmationDialog";
 
 const GET_TEAMS_QUERY = gql`
   query GetTeams {

@@ -2,9 +2,10 @@
 
 import React from "react";
 import Link from "next/link";
-import Menu from "@/components/Menu";
-import { useTheme } from "./ThemeProvider";
+
 import { IoPerson } from "react-icons/io5";
+import { useTheme } from "@/components/common/context/ThemeProvider";
+import Menu from "@/components/common/layout/Menu";
 
 const NavBar: React.FC = () => {
   const { theme, toggleTheme } = useTheme();
@@ -28,7 +29,7 @@ const NavBar: React.FC = () => {
 
           {/* Right side - Auth & Theme */}
           <div className="flex items-center space-x-4">
-          <IoPerson className="w-5 h-5"/>
+            <IoPerson className="w-5 h-5" />
             <button
               onClick={toggleTheme}
               className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"

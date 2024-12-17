@@ -2,17 +2,17 @@
 
 import React, { useState } from "react";
 import { useMutation, useQuery, gql } from "@apollo/client";
-import Loader from "./Loader";
-import ErrorMessage from "./ErrorMessage";
+import Loader from "@/components/common/ui/Loader";
+import ErrorMessage from "@/components/common/ui/ErrorMessage";
 import { toast } from "react-toastify";
 import client from "@/lib/apolloClient";
 import { FaArrowRight } from "react-icons/fa";
 import { FiSave, FiTrash2 } from "react-icons/fi";
 import Link from "next/link";
-import ColorPicker from "./ColorPicker";
-import Checkbox from "./CheckBox";
-import ConfirmationDialog from "./ConfirmationDialog";
-import Divider from "./Divider";
+import ColorPicker from "@/components/common/ui/ColorPicker";
+import Checkbox from "@/components/common/ui/CheckBox";
+import ConfirmationDialog from "@/components/common/feedback/ConfirmationDialog";
+import Divider from "@/components/common/ui/Divider";
 
 // GraphQL Queries and Mutations for Leagues
 const GET_LEAGUES_QUERY = gql`

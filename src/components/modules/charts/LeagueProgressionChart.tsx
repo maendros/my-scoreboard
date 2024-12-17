@@ -2,7 +2,7 @@
 
 import { gql, useQuery } from "@apollo/client";
 import { Line } from "react-chartjs-2";
-import Loader from "./Loader";
+import Loader from "@/components/common/ui/Loader";
 import { useState } from "react";
 
 // GraphQL Query for League Progression

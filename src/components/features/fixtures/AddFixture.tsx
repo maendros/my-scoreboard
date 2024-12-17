@@ -2,13 +2,14 @@
 
 import React, { useEffect, useState } from "react";
 import { useMutation, useQuery, gql } from "@apollo/client";
-import Loader from "./Loader";
-import ErrorMessage from "./ErrorMessage";
+
 import { toast } from "react-toastify";
+import Loader from "@/components/common/ui/Loader";
+import ErrorMessage from "@/components/common/ui/ErrorMessage";
+import ConfirmationDialog from "@/components/common/feedback/ConfirmationDialog";
+import Divider from "@/components/common/ui/Divider";
 import FixtureGaming from "./FixtureGaming";
-import LoadingButton from "./LoadingButton";
-import ConfirmationDialog from "./ConfirmationDialog";
-import Divider from "./Divider";
+import LoadingButton from "@/components/common/ui/LoadingButton";
 
 type Score = {
   homeTeam: string;

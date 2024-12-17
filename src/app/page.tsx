@@ -2,12 +2,15 @@
 
 import React from "react";
 import dynamic from "next/dynamic";
-import LeagueManager from "@/components/LeagueManager";
+import LeagueManager from "@/components/features/leagues/LeagueManager";
 
 // Dynamically load Scoreboard without SSR
-const Scoreboard = dynamic(() => import("../components/Scoreboard"), {
-  ssr: false,
-});
+const Scoreboard = dynamic(
+  () => import("../components/common/layout/Scoreboard"),
+  {
+    ssr: false,
+  }
+);
 
 const Home: React.FC = () => {
   return (

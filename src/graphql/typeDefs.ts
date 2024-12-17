@@ -113,12 +113,6 @@ const typeDefs = gql`
     draws: Int!
   }
 
-  type TeamPerformanceEvolution {
-    teamId: Int!
-    leagueId: Int
-    performanceData: [PerformanceMetric!]!
-  }
-
   type PerformanceMetric {
     matchNumber: Int!
     date: String!
@@ -161,10 +155,7 @@ const typeDefs = gql`
       leagueId: Int
     ): TeamVsTeamStats
     groupedFixtures(leagueId: Int, daysLimit: Int): [GroupedFixtures!]!
-    teamPerformanceEvolution(
-      teamId: Int!
-      leagueId: Int
-    ): TeamPerformanceEvolution!
+
     leagueProgression(leagueId: Int!): LeagueProgression!
   }
 

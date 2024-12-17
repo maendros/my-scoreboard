@@ -2,11 +2,11 @@
 
 import React, { useState } from "react";
 import { useMutation, useQuery, gql } from "@apollo/client";
-import Loader from "./Loader";
-import ErrorMessage from "./ErrorMessage";
+import Loader from "@/components/common/ui/Loader";
+import ErrorMessage from "@/components/common/ui/ErrorMessage";
 import { toast } from "react-toastify";
-import MultiSelect from "./MultiSelect";
-import LeagueTeams from "./LeagueTeams";
+import MultiSelect from "@/components/common/ui/MultiSelect";
+import LeagueTeams from "@/components/features/leagues/LeagueTeams";
 
 // GraphQL Queries and Mutations
 const GET_TEAMS_QUERY = gql`

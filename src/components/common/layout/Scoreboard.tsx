@@ -2,10 +2,10 @@
 
 import React, { useState } from "react";
 import { useQuery, gql } from "@apollo/client";
-import LeagueTable from "./LeagueTable";
-import Fixtures from "./Fixtures";
-import Loader from "./Loader";
-import ErrorMessage from "./ErrorMessage";
+import Loader from "@/components/common/ui/Loader";
+import ErrorMessage from "@/components/common/ui/ErrorMessage";
+import LeagueTable from "@/components/features/leagues/LeagueTable";
+import Fixtures from "@/components/features/fixtures/Fixtures";
 
 const LEAGUE_TABLE_QUERY = gql`
   query LeagueTable($leagueId: Int!) {

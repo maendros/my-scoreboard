@@ -1,6 +1,5 @@
-import Leagues from "@/components/Leagues";
+import Leagues from "@/components/features/leagues/Leagues";
 import React from "react";
-
 
 const Admin: React.FC = () => {
   return <Leagues />;

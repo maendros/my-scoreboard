@@ -2,16 +2,16 @@
 
 import { useEffect, useState } from "react";
 import { gql, useQuery } from "@apollo/client";
-import LeagueSelector from "@/components/LeagueSelector";
-import TeamStatsChart from "@/components/TeamStatsChart";
-import HeadToHeadStats from "@/components/HeadToHeadStats";
+import LeagueSelector from "@/components/features/leagues/LeagueSelector";
+import TeamStatsChart from "@/components/modules/charts/TeamStatsChart";
+import HeadToHeadStats from "@/components/features/teams/HeadToHeadStats";
 import { useParams } from "next/navigation";
 import client from "@/lib/apolloClient";
 import "@/lib/chartSetup";
-import Loader from "@/components/Loader";
-import LeagueProgressionChart from "@/components/LeagueProgressionChart";
-import TeamPerformanceChart from "@/components/TeamPerformanceChart";
-import TeamDetails from "@/components/TeamDetails";
+import Loader from "@/components/common/ui/Loader";
+import LeagueProgressionChart from "@/components/modules/charts/LeagueProgressionChart";
+
+import TeamDetails from "@/components/features/teams/TeamDetails";
 
 const TEAM_DETAILS_QUERY = gql`
   query TeamDetails($id: Int!) {
@@ -166,15 +166,6 @@ const TeamProfilePage = () => {
                 League Progression
               </h2>
               <LeagueProgressionChart leagueId={selectedLeagueId} />
-            </div>
-            <div className="dark:bg-gray-800 bg-gray-300  rounded-lg p-6 flex flex-col  items-center justify-between2 col-span-2 md:col-span-1">
-              <h2 className="text-xl font-bold mb-6 text-gray-800 dark:text-white col-span-2 ">
-                Team Match History
-              </h2>
-              <TeamPerformanceChart
-                teamId={teamId}
-                leagueId={selectedLeagueId}
-              />
             </div>
           </>
         )}

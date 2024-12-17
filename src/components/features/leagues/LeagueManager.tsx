@@ -2,9 +2,9 @@
 
 import React, { useState } from "react";
 import { useQuery, gql } from "@apollo/client";
-import Loader from "@/components/Loader";
-import ErrorMessage from "@/components/ErrorMessage";
-import LeagueSelector from "@/components/LeagueSelector";
+import Loader from "@/components/common/ui/Loader";
+import ErrorMessage from "@/components/common/ui/ErrorMessage";
+import LeagueSelector from "@/components/features/leagues/LeagueSelector";
 
 // GraphQL Query to Fetch Leagues
 const GET_LEAGUES_QUERY = gql`

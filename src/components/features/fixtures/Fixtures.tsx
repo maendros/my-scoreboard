@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import ColoredDot from "./ColoredDot";
+import ColoredDot from "@/components/common/ui/ColoredDot";
 import Link from "next/link";
 
 const Fixtures: React.FC<{ data: { day: string; matches: any[] }[] }> = ({

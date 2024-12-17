@@ -1,6 +1,6 @@
 "use client";
 
-import ManageTeams from "@/components/ManageTeams";
+import ManageTeams from "@/components/features/teams/ManageTeams";
 import { useParams, useSearchParams } from "next/navigation";
 
 const LeaguePage: React.FC = () => {
@@ -11,7 +11,9 @@ const LeaguePage: React.FC = () => {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-4 text-center">Manage League: {leagueName}</h1>
+      <h1 className="text-2xl font-bold mb-4 text-center">
+        Manage League: {leagueName}
+      </h1>
       <ManageTeams leagueId={leagueId} />
     </div>
   );

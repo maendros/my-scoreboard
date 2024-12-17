@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { FaCheckCircle, FaTimesCircle, FaMinusCircle } from "react-icons/fa";
-import ColoredDot from "./ColoredDot";
+import ColoredDot from "@/components/common/ui/ColoredDot";
 import Link from "next/link";
 
 const LeagueTable: React.FC<{ data: any[] }> = ({ data }) => {

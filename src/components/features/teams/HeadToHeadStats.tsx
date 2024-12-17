@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { gql, useQuery } from "@apollo/client";
-import TeamStatsChart from "./TeamStatsChart";
-import Loader from "./Loader";
+import TeamStatsChart from "@/components/modules/charts/TeamStatsChart";
+import Loader from "@/components/common/ui/Loader";
 
 const TEAM_VS_TEAM_STATS_QUERY = gql`
   query TeamVsTeamStats($team1Id: Int!, $team2Id: Int!, $leagueId: Int) {

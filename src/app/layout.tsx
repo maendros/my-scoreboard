@@ -1,11 +1,12 @@
 import React from "react";
-import { ApolloProvider } from "@/components/ApolloProvider";
-import ThemeProvider from "@/components/ThemeProvider";
-import NavBar from "@/components/NavBar";
+import { ApolloProvider } from "@/components/common/context/ApolloProvider";
+import ThemeProvider from "@/components/common/context/ThemeProvider";
+
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./globals.css";
 import Link from "next/link";
+import NavBar from "@/components/common/layout/NavBar";
 
 export default function RootLayout({
   children,
