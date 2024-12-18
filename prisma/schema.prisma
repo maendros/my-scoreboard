@@ -8,22 +8,26 @@ generator client {
 }
 
 enum UserRole {
-  ADMIN
-  EDITOR
-  VIEWER
+  ADMIN // Full system access
+  EDITOR // Can edit content
+  VIEWER // Standard user with basic access
 }
 
 model User {
-  id         Int      @id @default(autoincrement())
-  email      String?  @unique
-  name       String?
-  password   String? // Hashed password for email/password auth
-  image      String? // Profile image URL
-  provider   String? // "google", "apple", or "email"
-  providerId String? // External provider ID
-  role       UserRole @default(VIEWER)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id           Int      @id @default(autoincrement())
+  email        String?  @unique
+  name         String?
+  password     String?
+  image        String?
+  role         UserRole @default(VIEWER)
+  provider     String? // "google" or "github"
+  providerId   String? // ID from the provider
+  accessToken  String?  @db.Text // OAuth access token
+  refreshToken String?  @db.Text // OAuth refresh token
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([provider, providerId])
 }
 
 model Team {

@@ -205,7 +205,7 @@ const typeDefs = gql`
   type Mutation {
     login(input: LoginInput!): AuthResponse
     register(input: RegisterInput!): AuthResponse!
-    socialLogin(input: SocialLoginInput!): AuthResponse!
+    socialLogin(provider: String!, code: String!): AuthResponse!
     logout: Boolean!
     addLeague(league: LeagueInput!): League!
     updateLeague(id: Int!, league: LeagueInput!): League!

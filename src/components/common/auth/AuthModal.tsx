@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import { useMutation, gql } from "@apollo/client";
 import { FcGoogle } from "react-icons/fc";
 import { FaApple } from "react-icons/fa";
+import { useMutation, useApolloClient, gql } from "@apollo/client";
 import { toast } from "react-toastify";
 
 const LOGIN_MUTATION = gql`
@@ -12,8 +12,8 @@ const LOGIN_MUTATION = gql`
       token
       user {
         id
-        email
         name
+        email
         role
       }
     }
@@ -26,8 +26,8 @@ const REGISTER_MUTATION = gql`
       token
       user {
         id
-        email
         name
+        email
         role
       }
     }
@@ -44,72 +44,69 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const apolloClient = useApolloClient();
 
-  const [login, { loading: loginLoading }] = useMutation(LOGIN_MUTATION, {
-    onCompleted: (data) => {
-      if (data?.login) {
-        localStorage.setItem("token", data.login.token);
-        localStorage.setItem("userRole", data.login.user.role);
-        toast.success(`Logged in successfully as ${data.login.user.role}!`);
-        onClose();
-        window.location.reload();
-      }
-    },
-    onError: (error) => {
-      console.error("Login error:", error);
-      toast.error(error.message || "Login failed");
-    },
-  });
-
-  const [register, { loading: registerLoading }] = useMutation(
-    REGISTER_MUTATION,
-    {
-      onCompleted: (data) => {
-        if (data?.register) {
-          localStorage.setItem("token", data.register.token);
-          localStorage.setItem("userRole", data.register.user.role);
-          toast.success(
-            `Registered successfully as ${data.register.user.role}!`
-          );
-          onClose();
-          window.location.reload();
-        }
-      },
-      onError: (error) => {
-        console.error("Register error:", error);
-        toast.error(error.message || "Registration failed");
-      },
-    }
-  );
+  const [login] = useMutation(LOGIN_MUTATION);
+  const [register] = useMutation(REGISTER_MUTATION);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (isLogin) {
-      await login({
-        variables: {
-          input: { email, password },
-        },
+    try {
+      const mutation = isLogin ? login : register;
+      const variables = isLogin
+        ? { input: { email, password } }
+        : { input: { email, password, name } };
+
+      const { data } = await mutation({
+        variables,
+        refetchQueries: ["GetCurrentUser"],
+        awaitRefetchQueries: true,
       });
-    } else {
-      await register({
-        variables: {
-          input: { email, password, name },
-        },
+
+      const result = isLogin ? data.login : data.register;
+
+      // Clear Apollo cache to ensure fresh data
+      await apolloClient.resetStore();
+
+      localStorage.setItem("token", result.token);
+      localStorage.setItem("userRole", result.user.role);
+
+      toast.success(`Successfully ${isLogin ? "logged in" : "registered"}!`);
+      onClose();
+
+      // Ensure the Apollo cache is updated
+      await apolloClient.refetchQueries({
+        include: ["GetCurrentUser"],
       });
+    } catch (error: any) {
+      console.error("Login/Register error:", error);
+      toast.error(error.message || "An error occurred during authentication");
     }
   };
 
-  const handleSocialLogin = async (provider: string) => {
-    toast.info(`${provider} login coming soon!`);
-  };
+  const handleSocialLogin = (provider: string) => {
+    // Store the provider for when we return
+    sessionStorage.setItem("authProvider", provider);
 
-  const loading = loginLoading || registerLoading;
+    // Get the correct redirect URI based on environment
+    const redirectUri =
+      process.env.NODE_ENV === "production"
+        ? "https://my-scoreboard.vercel.app"
+        : "http://localhost:5000";
+
+    // Redirect to the appropriate OAuth provider
+    if (provider === "google") {
+      window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}&redirect_uri=${redirectUri}&response_type=code&scope=email profile&access_type=offline`;
+    } else if (provider === "apple") {
+      window.location.href = `https://appleid.apple.com/auth/authorize?client_id=${process.env.NEXT_PUBLIC_APPLE_CLIENT_ID}&redirect_uri=${redirectUri}&response_type=code&scope=name email&response_mode=query`;
+    }
+  };
 
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white dark:bg-gray-800 rounded-lg p-8 max-w-md w-full">
+      <div className="bg-base-darker p-8 rounded-lg shadow-xl max-w-md w-full">
         <h2 className="text-2xl font-bold mb-6 text-center">
           {isLogin ? "Login" : "Register"}
         </h2>
@@ -117,32 +114,26 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
         {/* Social Login Buttons */}
         <div className="space-y-4 mb-6">
           <button
-            onClick={() => handleSocialLogin("Google")}
-            className="w-full flex items-center justify-center gap-2 p-2 border border-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"
-            disabled={loading}
+            onClick={() => handleSocialLogin("google")}
+            className="w-full flex items-center justify-center gap-3 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
           >
-            <FcGoogle className="w-6 h-6" />
+            <FcGoogle className="w-5 h-5" />
             Continue with Google
           </button>
           <button
-            onClick={() => handleSocialLogin("Apple")}
-            className="w-full flex items-center justify-center gap-2 p-2 border border-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"
-            disabled={loading}
+            onClick={() => handleSocialLogin("apple")}
+            className="w-full flex items-center justify-center gap-3 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
           >
-            <FaApple className="w-6 h-6" />
+            <FaApple className="w-5 h-5" />
             Continue with Apple
           </button>
         </div>
 
-        <div className="relative my-6">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-300"></div>
-          </div>
-          <div className="relative flex justify-center text-sm">
-            <span className="px-2 bg-white dark:bg-gray-800 text-gray-500">
-              Or continue with email
-            </span>
-          </div>
+        <div className="relative mb-6">
+          <hr className="border-gray-300 dark:border-gray-600" />
+          <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-base-darker px-4 text-sm text-gray-500">
+            or
+          </span>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -152,9 +143,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
               placeholder="Name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded dark:bg-gray-700"
+              className="w-full p-2 border border-gray-300 rounded dark:bg-gray-700 dark:border-gray-600"
               required
-              disabled={loading}
             />
           )}
           <input
@@ -162,34 +152,30 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded dark:bg-gray-700"
+            className="w-full p-2 border border-gray-300 rounded dark:bg-gray-700 dark:border-gray-600"
             required
-            disabled={loading}
           />
           <input
             type="password"
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded dark:bg-gray-700"
+            className="w-full p-2 border border-gray-300 rounded dark:bg-gray-700 dark:border-gray-600"
             required
-            disabled={loading}
           />
           <button
             type="submit"
-            disabled={loading}
-            className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 disabled:opacity-50"
+            className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition-colors"
           >
-            {loading ? "Loading..." : isLogin ? "Login" : "Register"}
+            {isLogin ? "Login" : "Register"}
           </button>
         </form>
 
-        <p className="mt-4 text-center text-sm text-gray-600 dark:text-gray-400">
+        <p className="mt-4 text-center text-sm">
           {isLogin ? "Don't have an account? " : "Already have an account? "}
           <button
             onClick={() => setIsLogin(!isLogin)}
             className="text-blue-500 hover:underline"
-            disabled={loading}
           >
             {isLogin ? "Register" : "Login"}
           </button>
@@ -197,8 +183,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
         <button
           onClick={onClose}
-          className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
-          disabled={loading}
+          className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
         >
           ✕
         </button>
