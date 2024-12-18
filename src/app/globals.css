@@ -2,21 +2,73 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Custom styles */
+/* Default dark theme to prevent flash */
+:root {
+  color-scheme: dark;
+  --background: 26 32 44; /* #1a202c */
+  --background-darker: 17 24 39; /* Slightly darker variation */
+  --foreground: 247 250 252; /* #f7fafc */
+}
+
+@layer base {
+  :root[class~="light"] {
+    color-scheme: light;
+    --background: 247 250 252; /* #f7fafc */
+    --background-darker: 243 244 246; /* Slightly grayer variation */
+    --foreground: 26 32 44; /* #1a202c */
+  }
+
+  :root[class~="dark"] {
+    color-scheme: dark;
+    --background: 26 32 44; /* #1a202c */
+    --background-darker: 17 24 39; /* Slightly darker variation */
+    --foreground: 247 250 252; /* #f7fafc */
+  }
+}
+
+/* Base styles */
+html {
+  background-color: rgb(var(--background));
+}
+
 body {
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-html.dark body {
-  background-color: #1a202c; /* Dark mode background */
-  color: #f7fafc; /* Light text in dark mode */
+  background-color: rgb(var(--background));
+  color: rgb(var(--foreground));
 }
 
-html.light body {
-  background-color: #f7fafc; /* Light mode background */
-  color: #1a202c; /* Dark text in light mode */
+/* Ensure main content area has consistent background */
+main {
+  background-color: rgb(var(--background));
+  min-height: calc(100vh - 5rem);
 }
 
+/* Apply background to all major containers */
+.bg-base {
+  background-color: rgb(var(--background));
+}
 
+.bg-base-darker {
+  background-color: rgb(var(--background));
+}
 
+.nav-item {
+  background: rgb(var(--background-darker));
+}
 
+/* Content area styles */
 
+/* Prevent white flash during page transitions */
+#__next {
+  background-color: rgb(var(--background));
+  min-height: 100vh;
+}
+
+/* Ensure smooth transitions */
+body,
+.bg-base,
+.bg-base-darker,
+.dark\:bg-gray-900,
+.dark\:text-gray-200,
+.dark\:hover\:bg-gray-800 {
+  transition: background-color 0.1s ease-in-out, color 0.1s ease-in-out;
+}
