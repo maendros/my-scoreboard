@@ -9,6 +9,8 @@ import leagueResolvers from "./mutations/league";
 import fixtureTypeResolvers from "./types/fixtureType";
 import fixtureSubscriptionResolvers from "./subscriptions/fixture";
 import gamingResolvers from "./queries/gamingResolvers";
+import authQueryResolvers from "./queries/auth";
+import authMutationResolvers from "./mutations/auth";
 
 const resolvers = {
   Query: {
@@ -16,11 +18,13 @@ const resolvers = {
     ...fixtureQueryResolvers.Query,
     ...leagueQueryResolvers.Query,
     ...gamingResolvers.Query,
+    ...authQueryResolvers.Query,
   },
   Mutation: {
     ...fixtureMutationResolvers.Mutation,
     ...teamMutationResolvers.Mutation,
     ...leagueResolvers.Mutation,
+    ...authMutationResolvers.Mutation,
   },
   Subscription: {
     ...fixtureSubscriptionResolvers.Subscription,

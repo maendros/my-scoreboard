@@ -1,7 +1,11 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, UserRole } from "@prisma/client";
 import { NextRequest } from "next/server";
 
 export interface Context {
   prisma: PrismaClient;
-  req: NextRequest; // Use NextApiRequest
+  req: NextRequest;
+  user?: {
+    id: number;
+    role: UserRole;
+  } | null;
 }

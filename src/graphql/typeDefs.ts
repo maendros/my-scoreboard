@@ -3,6 +3,50 @@ import { gql } from "graphql-tag";
 const typeDefs = gql`
   scalar GraphQLJSON
 
+  enum UserRole {
+    ADMIN
+    EDITOR
+    VIEWER
+  }
+
+  type User {
+    id: Int!
+    email: String
+    name: String
+    image: String
+    provider: String
+    role: UserRole!
+    createdAt: String!
+    updatedAt: String!
+  }
+
+  type AuthResponse {
+    token: String!
+    user: User!
+  }
+
+  input RegisterInput {
+    email: String!
+    password: String!
+    name: String
+    role: UserRole
+  }
+
+  input LoginInput {
+    email: String!
+    password: String!
+  }
+
+  input SocialLoginInput {
+    provider: String!
+    token: String!
+  }
+
+  input UpdateUserRoleInput {
+    userId: Int!
+    role: UserRole!
+  }
+
   type Profile {
     color: String
     logo: String
@@ -71,6 +115,23 @@ const typeDefs = gql`
   type Query {
     gamingTeams: [GamingTeam!]!
     possibleFormations: [String!]!
+    me: User
+    leagues: [League!]!
+    fixtures(teamId: Int): [Fixture!]!
+    teams: [Team!]!
+    league(id: Int!): League!
+    leagueTable(leagueId: Int!): [LeagueTableEntry!]!
+    teamDetails(id: Int!): Team
+    leagueStats(teamId: Int!, leagueId: Int): LeagueStats
+    teamVsTeamStats(
+      team1Id: Int!
+      team2Id: Int!
+      leagueId: Int
+    ): TeamVsTeamStats
+    groupedFixtures(leagueId: Int, daysLimit: Int): [GroupedFixtures!]!
+    leagueProgression(leagueId: Int!): LeagueProgression!
+    users: [User!]! # Admin only
+    userById(id: Int!): User # Admin and Editor
   }
 
   input LeagueInput {
@@ -141,38 +202,24 @@ const typeDefs = gql`
     teams: [TeamProgression!]!
   }
 
-  type Query {
-    leagues: [League!]!
-    fixtures(teamId: Int): [Fixture!]!
-    teams: [Team!]!
-    league(id: Int!): League!
-    leagueTable(leagueId: Int!): [LeagueTableEntry!]!
-    teamDetails(id: Int!): Team
-    leagueStats(teamId: Int!, leagueId: Int): LeagueStats
-    teamVsTeamStats(
-      team1Id: Int!
-      team2Id: Int!
-      leagueId: Int
-    ): TeamVsTeamStats
-    groupedFixtures(leagueId: Int, daysLimit: Int): [GroupedFixtures!]!
-
-    leagueProgression(leagueId: Int!): LeagueProgression!
-  }
-
   type Mutation {
+    login(input: LoginInput!): AuthResponse
+    register(input: RegisterInput!): AuthResponse!
+    socialLogin(input: SocialLoginInput!): AuthResponse!
+    logout: Boolean!
     addLeague(league: LeagueInput!): League!
     updateLeague(id: Int!, league: LeagueInput!): League!
     deleteLeague(id: Int!): Boolean!
     addTeamsToLeague(leagueId: Int!, teamIds: [Int!]!): League!
     removeTeamFromLeague(leagueId: Int!, teamId: Int!): League!
-
     addTeam(team: TeamInput!): Team!
     updateTeam(id: Int!, team: TeamInput!): Team!
     deleteTeam(id: Int!): Boolean!
-
     addFixtures(fixtures: FixtureInput!): Fixture!
     updateFixture(id: Int!, fixture: FixtureInput!): Fixture!
     deleteFixture(id: Int!): Boolean!
+    updateUserRole(input: UpdateUserRoleInput!): User! # Admin only
+    deleteUser(id: Int!): Boolean! # Admin only
   }
 
   type Subscription {

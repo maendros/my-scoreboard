@@ -7,6 +7,25 @@ generator client {
   provider = "prisma-client-js"
 }
 
+enum UserRole {
+  ADMIN
+  EDITOR
+  VIEWER
+}
+
+model User {
+  id         Int      @id @default(autoincrement())
+  email      String?  @unique
+  name       String?
+  password   String? // Hashed password for email/password auth
+  image      String? // Profile image URL
+  provider   String? // "google", "apple", or "email"
+  providerId String? // External provider ID
+  role       UserRole @default(VIEWER)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
 model Team {
   id           Int          @id @default(autoincrement())
   name         String
