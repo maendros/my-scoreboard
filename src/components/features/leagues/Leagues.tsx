@@ -60,7 +60,20 @@ const DELETE_LEAGUE_MUTATION = gql`
 const Leagues: React.FC = () => {
   const { loading, error, data } = useQuery(GET_LEAGUES_QUERY);
   const [addLeague] = useMutation(ADD_LEAGUE_MUTATION);
-  const [updateLeague] = useMutation(UPDATE_LEAGUE_MUTATION);
+  const [updateLeague] = useMutation(UPDATE_LEAGUE_MUTATION, {
+    update(cache, { data: { updateLeague } }) {
+      // Update the cache with the new league data
+      cache.modify({
+        fields: {
+          leagues(existingLeagues = []) {
+            return existingLeagues.map((league: any) =>
+              league.id === updateLeague.id ? updateLeague : league
+            );
+          },
+        },
+      });
+    },
+  });
   const [deleteLeague] = useMutation(DELETE_LEAGUE_MUTATION);
 
   const [newLeague, setNewLeague] = useState({
@@ -158,11 +171,11 @@ const Leagues: React.FC = () => {
           },
         },
       });
-      setEditedLeagues((prev) => {
-        const updated = { ...prev };
-        delete updated[id];
-        return updated;
-      });
+      // setEditedLeagues((prev) => {
+      //   const updated = { ...prev };
+      //   delete updated[id];
+      //   return updated;
+      // });
       toast.success("League updated successfully!");
     } catch (error) {
       console.error("Error updating league:", error);
