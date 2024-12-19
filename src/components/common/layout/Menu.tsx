@@ -5,15 +5,6 @@ import Link from "next/link";
 import { RiMenuLine } from "react-icons/ri";
 import { useQuery, gql } from "@apollo/client";
 
-const GET_CURRENT_USER = gql`
-  query GetCurrentUser {
-    me {
-      id
-      role
-    }
-  }
-`;
-
 // Define menu items with required roles
 const menuItems = [
   { name: "Home", path: "/", roles: ["PUBLIC"] },
@@ -24,7 +15,14 @@ const menuItems = [
 
 const Menu: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { data: userData } = useQuery(GET_CURRENT_USER);
+  const { data: userData } = useQuery(gql`
+    query GetCurrentUserFromCache {
+      me @client {
+        id
+        role
+      }
+    }
+  `);
   const userRole = userData?.me?.role || "PUBLIC";
 
   const toggleMenu = () => setIsOpen((prev) => !prev);
