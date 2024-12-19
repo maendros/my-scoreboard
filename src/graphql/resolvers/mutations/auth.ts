@@ -6,6 +6,8 @@ import { Context } from "@/types/context";
 
 const prisma = new PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
+const REDIRECT_URI =
+  process.env.NEXT_PUBLIC_REDIRECT_URI || "http://localhost:5000";
 
 type Role = "ADMIN" | "EDITOR" | "VIEWER";
 
@@ -114,10 +116,7 @@ const authMutationResolvers = {
                 client_id: process.env.GOOGLE_CLIENT_ID,
                 client_secret: process.env.GOOGLE_CLIENT_SECRET,
                 code,
-                redirect_uri:
-                  process.env.NODE_ENV === "production"
-                    ? "https://my-scoreboard-alpha.vercel.app"
-                    : "http://localhost:5000",
+                redirect_uri: REDIRECT_URI,
                 grant_type: "authorization_code",
               }),
             }

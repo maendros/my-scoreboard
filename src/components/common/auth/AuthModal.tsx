@@ -6,6 +6,9 @@ import { FaApple } from "react-icons/fa";
 import { useMutation, useApolloClient, gql } from "@apollo/client";
 import { toast } from "react-toastify";
 
+const REDIRECT_URI =
+  process.env.NEXT_PUBLIC_REDIRECT_URI || "http://localhost:5000";
+
 const LOGIN_MUTATION = gql`
   mutation Login($input: LoginInput!) {
     login(input: $input) {
@@ -88,17 +91,11 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     // Store the provider for when we return
     sessionStorage.setItem("authProvider", provider);
 
-    // Get the correct redirect URI based on environment
-    const redirectUri =
-      process.env.NODE_ENV === "production"
-        ? "https://my-scoreboard.vercel.app"
-        : "http://localhost:5000";
-
     // Redirect to the appropriate OAuth provider
     if (provider === "google") {
-      window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}&redirect_uri=${redirectUri}&response_type=code&scope=email profile&access_type=offline`;
+      window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code&scope=email profile&access_type=offline`;
     } else if (provider === "apple") {
-      window.location.href = `https://appleid.apple.com/auth/authorize?client_id=${process.env.NEXT_PUBLIC_APPLE_CLIENT_ID}&redirect_uri=${redirectUri}&response_type=code&scope=name email&response_mode=query`;
+      window.location.href = `https://appleid.apple.com/auth/authorize?client_id=${process.env.NEXT_PUBLIC_APPLE_CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code&scope=name email&response_mode=query`;
     }
   };
 
