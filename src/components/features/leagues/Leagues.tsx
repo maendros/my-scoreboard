@@ -239,7 +239,7 @@ const Leagues: React.FC = () => {
             };
 
             return (
-              <>
+              <React.Fragment key={league.id}>
                 <Divider />
                 <div key={league.id} className="mb-4 flex flex-col sm:flex-row">
                   {/* First row - always visible */}
@@ -328,7 +328,7 @@ const Leagues: React.FC = () => {
                     </div>
                   </div>
                 </div>
-              </>
+              </React.Fragment>
             );
           }
         )}

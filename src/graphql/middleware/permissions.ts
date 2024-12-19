@@ -1,17 +1,10 @@
 import { GraphQLError } from "graphql";
 import { PrismaClient, UserRole } from "@prisma/client";
+import { rule, shield, and, allow } from "graphql-shield";
+import { Context } from "../../types/context";
 import jwt from "jsonwebtoken";
 
 const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
-
-interface Context {
-  prisma: PrismaClient;
-  req: Request;
-  user?: {
-    id: number;
-    role: UserRole;
-  };
-}
 
 // Role hierarchy
 const roleHierarchy: { [key in UserRole]: number } = {
@@ -90,3 +83,77 @@ export const requireRole =
 export const adminOnly = requireRole(UserRole.ADMIN);
 export const editorOrHigher = requireRole(UserRole.EDITOR);
 export const viewerOrHigher = requireRole(UserRole.VIEWER);
+
+// Base rules
+const isAuthenticated = rule()(async (_parent, _args, ctx: Context) => {
+  console.log("Checking authentication...");
+  console.log("Context user:", ctx.user);
+  if (!ctx.user) {
+    console.log("Authentication failed: No user");
+    return false;
+  }
+  console.log("Authentication successful");
+  return true;
+});
+
+const isAdmin = rule()(async (_parent, _args, ctx: Context) => {
+  console.log("Checking admin role...");
+  console.log("User role:", ctx.user?.role);
+  return ctx.user?.role === "ADMIN";
+});
+
+const isEditor = rule()(async (_parent, _args, ctx: Context) => {
+  console.log("Checking editor role...");
+  console.log("User role:", ctx.user?.role);
+  return ["ADMIN", "EDITOR"].includes(ctx.user?.role || "");
+});
+
+// Permissions shield
+export const permissions = shield(
+  {
+    Query: {
+      // Public queries (no auth required)
+      me: allow,
+      getTeam: allow,
+      teamDetails: allow,
+      leagueStats: allow,
+      fixtures: allow,
+      league: allow,
+
+      // Protected queries (require authentication and proper role)
+      getTeams: isEditor,
+      getLeagues: isEditor,
+      getAdminStats: isAdmin,
+      getAllUsers: isAdmin,
+    },
+    Mutation: {
+      // Public mutations
+      login: allow,
+      register: allow,
+
+      // Team mutations (require editor or admin)
+      createTeam: isEditor,
+      updateTeam: isEditor,
+      deleteTeam: isEditor,
+
+      // League mutations (require editor or admin)
+      createLeague: isEditor,
+      updateLeague: isEditor,
+      deleteLeague: isEditor,
+
+      // Fixture mutations (require editor or admin)
+      createFixture: isEditor,
+      updateFixture: isEditor,
+      deleteFixture: isEditor,
+
+      // Admin only mutations
+      updateUserRole: isAdmin,
+      deleteUser: isAdmin,
+    },
+  },
+  {
+    allowExternalErrors: true,
+    fallbackError: "Not authorized to perform this action",
+    fallbackRule: isAuthenticated,
+  }
+);

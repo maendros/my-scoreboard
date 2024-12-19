@@ -1,8 +1,12 @@
-import React from "react";
+import AuthGuard from "@/components/common/auth/AuthGuard";
 import Teams from "@/components/features/teams/Teams";
 
-const Admin: React.FC = () => {
-  return <Teams />;
+const TeamsPage = () => {
+  return (
+    <AuthGuard allowedRoles={["ADMIN", "EDITOR"]}>
+      <Teams />
+    </AuthGuard>
+  );
 };
 
-export default Admin;
+export default TeamsPage;
