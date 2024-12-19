@@ -7,8 +7,8 @@ import ErrorMessage from "@/components/common/ui/ErrorMessage";
 import LeagueTable from "@/components/features/leagues/LeagueTable";
 import Fixtures from "@/components/features/fixtures/Fixtures";
 
-const LEAGUE_TABLE_QUERY = gql`
-  query LeagueTable($leagueId: Int!) {
+const TABLE_AND_FIXTURES_QUERY = gql`
+  query TableAndFixtures($leagueId: Int!, $daysLimit: Int) {
     leagueTable(leagueId: $leagueId) {
       team {
         id
@@ -28,11 +28,6 @@ const LEAGUE_TABLE_QUERY = gql`
         result
       }
     }
-  }
-`;
-
-const GROUPED_FIXTURES_QUERY = gql`
-  query GroupedFixtures($leagueId: Int, $daysLimit: Int) {
     groupedFixtures(leagueId: $leagueId, daysLimit: $daysLimit) {
       day
       matches {
@@ -64,29 +59,13 @@ interface ScoreboardProps {
 const Scoreboard: React.FC<ScoreboardProps> = ({ leagueId }) => {
   const [activeTab, setActiveTab] = useState<"table" | "fixtures">("table");
 
-  const {
-    loading: loadingTable,
-    error: errorTable,
-    data: dataTable,
-  } = useQuery(LEAGUE_TABLE_QUERY, {
-    variables: { leagueId },
-    skip: !leagueId,
-  });
-
-  const {
-    loading: loadingFixtures,
-    error: errorFixtures,
-    data: dataFixtures,
-  } = useQuery(GROUPED_FIXTURES_QUERY, {
+  const { loading, error, data } = useQuery(TABLE_AND_FIXTURES_QUERY, {
     variables: { leagueId, daysLimit: 0 },
     skip: !leagueId,
   });
 
-  if (loadingTable || loadingFixtures) return <Loader />;
-  if (errorTable || errorFixtures)
-    return (
-      <ErrorMessage message={errorTable?.message || errorFixtures?.message} />
-    );
+  if (loading) return <Loader />;
+  if (error) return <ErrorMessage message={error?.message} />;
 
   return (
     <>
@@ -115,8 +94,8 @@ const Scoreboard: React.FC<ScoreboardProps> = ({ leagueId }) => {
 
       {activeTab === "table" ? (
         <>
-          {dataTable?.leagueTable?.length > 0 ? (
-            <LeagueTable data={dataTable.leagueTable} />
+          {data?.leagueTable?.length > 0 ? (
+            <LeagueTable data={data.leagueTable} />
           ) : (
             <p className="text-center text-gray-500">
               No league table data available.
@@ -125,8 +104,8 @@ const Scoreboard: React.FC<ScoreboardProps> = ({ leagueId }) => {
         </>
       ) : (
         <>
-          {dataFixtures?.groupedFixtures?.length > 0 ? (
-            <Fixtures data={dataFixtures.groupedFixtures} />
+          {data?.groupedFixtures?.length > 0 ? (
+            <Fixtures data={data.groupedFixtures} />
           ) : (
             <p className="text-center text-gray-500">No fixtures available.</p>
           )}
