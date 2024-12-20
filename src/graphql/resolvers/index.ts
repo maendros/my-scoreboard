@@ -11,6 +11,8 @@ import fixtureSubscriptionResolvers from "./subscriptions/fixture";
 import gamingResolvers from "./queries/gamingResolvers";
 import authQueryResolvers from "./queries/auth";
 import authMutationResolvers from "./mutations/auth";
+import userQueryResolvers from "./queries/user";
+import userMutationResolvers from "./mutations/user";
 
 const resolvers = {
   Query: {
@@ -19,12 +21,14 @@ const resolvers = {
     ...leagueQueryResolvers.Query,
     ...gamingResolvers.Query,
     ...authQueryResolvers.Query,
+    ...userQueryResolvers.Query,
   },
   Mutation: {
     ...fixtureMutationResolvers.Mutation,
     ...teamMutationResolvers.Mutation,
     ...leagueResolvers.Mutation,
     ...authMutationResolvers.Mutation,
+    ...userMutationResolvers.Mutation,
   },
   Subscription: {
     ...fixtureSubscriptionResolvers.Subscription,

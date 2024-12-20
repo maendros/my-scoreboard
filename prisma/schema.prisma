@@ -26,6 +26,7 @@ model User {
   refreshToken String?  @db.Text // OAuth refresh token
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+  teams        Team[] // Add this relation
 
   @@index([provider, providerId])
 }
@@ -37,6 +38,8 @@ model Team {
   leagues      LeagueTeam[] // Many-to-Many relationship with leagues
   homeFixtures Fixture[]    @relation("HomeFixtures")
   awayFixtures Fixture[]    @relation("AwayFixtures")
+  userId       Int? // Add this field
+  user         User?        @relation(fields: [userId], references: [id]) // Add this relation
 }
 
 model League {

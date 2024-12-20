@@ -60,6 +60,8 @@ const typeDefs = gql`
     leagues: [League!]!
     homeFixture: [Fixture!]!
     awayFixture: [Fixture!]!
+    userId: Int
+    user: User
   }
 
   type LeagueTableEntry {
@@ -132,6 +134,7 @@ const typeDefs = gql`
     leagueProgression(leagueId: Int!): LeagueProgression!
     users: [User!]! # Admin only
     userById(id: Int!): User # Admin and Editor
+    myTeams(userId: Int!): [Team!]!
   }
 
   input LeagueInput {
@@ -220,6 +223,7 @@ const typeDefs = gql`
     deleteFixture(id: Int!): Boolean!
     updateUserRole(input: UpdateUserRoleInput!): User! # Admin only
     deleteUser(id: Int!): Boolean! # Admin only
+    assignTeam(teamId: Int!, userId: Int): Team!
   }
 
   type Subscription {

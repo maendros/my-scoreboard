@@ -1,21 +1,19 @@
 "use client";
 
-import { useQuery, gql } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 import { useRouter } from "next/navigation";
-import { ReactNode } from "react";
-
-const GET_CURRENT_USER = gql`
-  query GetCurrentUser {
-    me {
-      id
-      role
-    }
-  }
-`;
+import React, { ReactNode, isValidElement } from "react";
+import { GET_CURRENT_USER } from "@/hooks/useUserAccess";
+import type { UserData } from "@/hooks/useUserAccess";
+import Loader from "../ui/Loader";
 
 interface AuthGuardProps {
   children: ReactNode;
   allowedRoles: string[];
+}
+
+interface WithUserData {
+  userData?: UserData;
 }
 
 const AuthGuard: React.FC<AuthGuardProps> = ({ children, allowedRoles }) => {
@@ -23,7 +21,7 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children, allowedRoles }) => {
   const router = useRouter();
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <Loader />;
   }
 
   const userRole = userData?.me?.role;
@@ -43,6 +41,11 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children, allowedRoles }) => {
         </button>
       </div>
     );
+  }
+
+  // Pass user data to child component if it's a valid React element
+  if (isValidElement<WithUserData>(children)) {
+    return React.cloneElement(children, { userData: userData?.me as UserData });
   }
 
   return <>{children}</>;

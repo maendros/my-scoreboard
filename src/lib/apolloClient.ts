@@ -20,14 +20,17 @@ const cache = new InMemoryCache({
   typePolicies: {
     Query: {
       fields: {
-        // Cache leagues query but expire after 5 minutes
+        me: {
+          merge(existing, incoming) {
+            return incoming;
+          },
+        },
         leagues: {
           keyArgs: false,
           merge(existing, incoming) {
             return incoming;
           },
         },
-        // Cache teams query but expire after 5 minutes
         teams: {
           keyArgs: false,
           merge(existing, incoming) {
@@ -44,15 +47,14 @@ const client = new ApolloClient({
   cache,
   defaultOptions: {
     watchQuery: {
-      fetchPolicy: "cache-and-network", // Use cache but verify against network
-      nextFetchPolicy: "cache-first", // Use cache for subsequent requests
+      fetchPolicy: "cache-first",
     },
     query: {
-      fetchPolicy: "cache-first", // Use cache when available
-      errorPolicy: "all", // Handle partial errors
+      fetchPolicy: "cache-first",
+      errorPolicy: "all",
     },
     mutate: {
-      fetchPolicy: "no-cache", // Never cache mutations
+      fetchPolicy: "no-cache",
     },
   },
 });

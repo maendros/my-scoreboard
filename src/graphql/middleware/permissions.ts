@@ -1,6 +1,6 @@
 import { GraphQLError } from "graphql";
 import { PrismaClient, UserRole } from "@prisma/client";
-import { rule, shield, and, allow } from "graphql-shield";
+import { rule, shield, and, allow, or } from "graphql-shield";
 import { Context } from "../../types/context";
 import jwt from "jsonwebtoken";
 
@@ -86,14 +86,21 @@ export const viewerOrHigher = requireRole(UserRole.VIEWER);
 
 // Base rules
 const isAuthenticated = rule()(async (_parent, _args, ctx: Context) => {
-  console.log("Checking authentication...");
-  console.log("Context user:", ctx.user);
-  if (!ctx.user) {
-    console.log("Authentication failed: No user");
+  const token = ctx.req.headers.get("authorization")?.replace("Bearer ", "");
+
+  if (!token) return false;
+
+  try {
+    const user = await getUserFromToken(token, ctx.prisma);
+    if (!user) return false;
+
+    // Attach user to context
+    ctx.user = user;
+    return true;
+  } catch (error) {
+    console.error("Auth error:", error);
     return false;
   }
-  console.log("Authentication successful");
-  return true;
 });
 
 const isAdmin = rule()(async (_parent, _args, ctx: Context) => {
@@ -106,6 +113,18 @@ const isEditor = rule()(async (_parent, _args, ctx: Context) => {
   console.log("Checking editor role...");
   console.log("User role:", ctx.user?.role);
   return ["ADMIN", "EDITOR"].includes(ctx.user?.role || "");
+});
+
+const isTeamOwner = rule()(async (parent, args, ctx: Context) => {
+  const teamId = args.id || args.teamId;
+  if (!teamId) return false;
+
+  const team = await ctx.prisma.team.findUnique({
+    where: { id: teamId },
+    select: { userId: true },
+  });
+
+  return team?.userId === ctx.user?.id;
 });
 
 // Permissions shield
@@ -125,6 +144,8 @@ export const permissions = shield(
       getLeagues: isEditor,
       getAdminStats: isAdmin,
       getAllUsers: isAdmin,
+      myTeams: isAuthenticated,
+      teams: and(isAuthenticated, or(isAdmin, isEditor)),
     },
     Mutation: {
       // Public mutations
@@ -133,7 +154,7 @@ export const permissions = shield(
 
       // Team mutations (require editor or admin)
       createTeam: isEditor,
-      updateTeam: isEditor,
+      updateTeam: and(isAuthenticated, or(isAdmin, isTeamOwner)),
       deleteTeam: isEditor,
 
       // League mutations (require editor or admin)
@@ -149,6 +170,7 @@ export const permissions = shield(
       // Admin only mutations
       updateUserRole: isAdmin,
       deleteUser: isAdmin,
+      assignTeam: isAdmin,
     },
   },
   {
