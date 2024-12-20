@@ -4,7 +4,8 @@ const MultiSelect: React.FC<{
   options: { id: number; name: string }[];
   selected: number[];
   onChange: (selected: number[]) => void;
-}> = ({ options, selected, onChange }) => {
+  disabled?: boolean;
+}> = ({ options, selected, onChange, disabled }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -21,7 +22,10 @@ const MultiSelect: React.FC<{
   // Close dropdown if clicked outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
     };
@@ -36,8 +40,9 @@ const MultiSelect: React.FC<{
     <div className="relative inline-block w-full max-w-md" ref={dropdownRef}>
       {/* Button to toggle dropdown */}
       <button
-        className="w-full text-left p-2 border rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
+        className="w-full text-left p-2 border rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
         onClick={toggleDropdown}
+        disabled={disabled}
       >
         {selected.length > 0
           ? options

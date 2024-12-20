@@ -4,7 +4,8 @@ import { FiTrash2 } from "react-icons/fi"; // Import a trash icon
 const LeagueTeams: React.FC<{
   addedTeams: { id: number; name: string }[];
   onRemoveTeam: (teamId: number) => void; // Callback to remove team
-}> = ({ addedTeams, onRemoveTeam }) => {
+  disabled?: boolean;
+}> = ({ addedTeams, onRemoveTeam, disabled }) => {
   return (
     <div className="mt-4">
       <h3 className="text-xl font-semibold mb-2 text-gray-900 dark:text-gray-100">
@@ -21,9 +22,10 @@ const LeagueTeams: React.FC<{
                 {team.name}
               </span>
               <button
-                className="text-red-500 hover:text-red-700"
+                className="text-red-500 hover:text-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
                 onClick={() => onRemoveTeam(team.id)}
                 title="Remove team from league"
+                disabled={disabled}
               >
                 <FiTrash2 className="w-5 h-5" />
               </button>

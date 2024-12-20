@@ -11,7 +11,7 @@ const LeaguePage: React.FC = () => {
   const leagueName = searchParams.get("name");
 
   return (
-    <AuthGuard allowedRoles={["ADMIN", "EDITOR"]}>
+    <AuthGuard allowedRoles={["ADMIN", "EDITOR", "VIEWER"]}>
       <div>
         <h1 className="text-2xl font-bold mb-4 text-center">
           Manage League: {leagueName}

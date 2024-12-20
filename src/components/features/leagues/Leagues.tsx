@@ -13,6 +13,7 @@ import ColorPicker from "@/components/common/ui/ColorPicker";
 import Checkbox from "@/components/common/ui/CheckBox";
 import ConfirmationDialog from "@/components/common/feedback/ConfirmationDialog";
 import Divider from "@/components/common/ui/Divider";
+import { useUserAccess } from "@/hooks/useUserAccess";
 
 // GraphQL Queries and Mutations for Leagues
 const GET_LEAGUES_QUERY = gql`
@@ -99,6 +100,8 @@ const Leagues: React.FC = () => {
     isOpen: false,
     type: "save",
   });
+
+  const { isViewer } = useUserAccess();
 
   if (loading) return <Loader />;
   if (error) return <ErrorMessage message={error.message} />;
@@ -263,7 +266,10 @@ const Leagues: React.FC = () => {
                       onChange={(e) =>
                         handleInputChange(league.id, "name", e.target.value)
                       }
-                      className="w-1/2 sm:w-auto flex-grow sm:flex-grow-0 p-2 border border-gray-700 dark:bg-gray-800 bg-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      disabled={isViewer}
+                      className={`w-1/2 sm:w-auto flex-grow sm:flex-grow-0 p-2 border border-gray-700 dark:bg-gray-800 bg-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                        isViewer ? "opacity-75 cursor-not-allowed" : ""
+                      }`}
                     />
 
                     <select
@@ -275,7 +281,10 @@ const Leagues: React.FC = () => {
                           Number(e.target.value)
                         )
                       }
-                      className="w-24 p-2 border border-gray-700 dark:bg-gray-800 bg-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      disabled={isViewer}
+                      className={`w-24 p-2 border border-gray-700 dark:bg-gray-800 bg-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                        isViewer ? "opacity-75 cursor-not-allowed" : ""
+                      }`}
                     >
                       {Array.from({ length: 29 }, (_, i) => i + 4).map(
                         (size) => (
@@ -292,6 +301,7 @@ const Leagues: React.FC = () => {
                         handleInputChange(league.id, "color", newColor)
                       }
                       size={40}
+                      disabled={isViewer}
                     />
                   </div>
 
@@ -304,26 +314,34 @@ const Leagues: React.FC = () => {
                       onChange={(checked) =>
                         handleInputChange(league.id, "isGamingLeague", checked)
                       }
+                      disabled={isViewer}
                       className="ml-2"
                     />
 
                     <div className="flex items-center gap-2">
                       <button
                         className={`p-2 ${
-                          editedLeague.name
+                          isViewer
+                            ? "text-gray-400 cursor-not-allowed"
+                            : editedLeague.name
                             ? "text-green-500"
                             : "text-gray-500 cursor-not-allowed"
                         }`}
                         onClick={() => handleUpdateLeague(league.id)}
-                        disabled={!editedLeague.name}
+                        disabled={isViewer || !editedLeague.name}
                         title="Save league"
                       >
                         <FiSave className="w-6 h-6" />
                       </button>
 
                       <button
-                        className="text-red-500 hover:text-red-700 p-2"
+                        className={`p-2 ${
+                          isViewer
+                            ? "text-gray-400 cursor-not-allowed"
+                            : "text-red-500 hover:text-red-700"
+                        }`}
                         onClick={() => handleDeleteLeague(league.id)}
+                        disabled={isViewer}
                         title="Delete league"
                       >
                         <FiTrash2 className="w-6 h-6" />
@@ -348,70 +366,72 @@ const Leagues: React.FC = () => {
       </div>
 
       {/* Add New League */}
-      <div className="mt-20">
-        <Divider topText="Add New League" />
-        <div className="flex flex-col gap-4">
-          {/* First row */}
-          <div className="flex flex-wrap items-center gap-2">
-            <input
-              type="text"
-              placeholder="Name"
-              value={newLeague.name}
-              onChange={(e) =>
-                setNewLeague({ ...newLeague, name: e.target.value })
-              }
-              className="w-full sm:w-auto flex-grow sm:flex-grow-0 p-2 border border-gray-700 dark:bg-gray-800 bg-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+      {!isViewer && (
+        <div className="mt-20">
+          <Divider topText="Add New League" />
+          <div className="flex flex-col gap-4">
+            {/* First row */}
+            <div className="flex flex-wrap items-center gap-2">
+              <input
+                type="text"
+                placeholder="Name"
+                value={newLeague.name}
+                onChange={(e) =>
+                  setNewLeague({ ...newLeague, name: e.target.value })
+                }
+                className="w-full sm:w-auto flex-grow sm:flex-grow-0 p-2 border border-gray-700 dark:bg-gray-800 bg-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
 
-            <select
-              value={newLeague.size}
-              onChange={(e) =>
-                setNewLeague({ ...newLeague, size: Number(e.target.value) })
-              }
-              className="w-24 p-2 border border-gray-700 dark:bg-gray-800 bg-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              {Array.from({ length: 29 }, (_, i) => i + 4).map((size) => (
-                <option key={size} value={size}>
-                  {size} Teams
-                </option>
-              ))}
-            </select>
+              <select
+                value={newLeague.size}
+                onChange={(e) =>
+                  setNewLeague({ ...newLeague, size: Number(e.target.value) })
+                }
+                className="w-24 p-2 border border-gray-700 dark:bg-gray-800 bg-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                {Array.from({ length: 29 }, (_, i) => i + 4).map((size) => (
+                  <option key={size} value={size}>
+                    {size} Teams
+                  </option>
+                ))}
+              </select>
 
-            <ColorPicker
-              value={newLeague.profile.color || "#000000"}
-              onChange={(e) =>
-                setNewLeague({ ...newLeague, profile: { color: e } })
-              }
-              size={40}
-            />
-          </div>
+              <ColorPicker
+                value={newLeague.profile.color || "#000000"}
+                onChange={(e) =>
+                  setNewLeague({ ...newLeague, profile: { color: e } })
+                }
+                size={40}
+              />
+            </div>
 
-          {/* Second row */}
-          <div className="flex flex-wrap items-center gap-2">
-            <Checkbox
-              id="gaming-league-checkbox"
-              label="Gaming League"
-              checked={newLeague.isGamingLeague}
-              onChange={(checked) =>
-                setNewLeague({ ...newLeague, isGamingLeague: checked })
-              }
-              className="mr-auto"
-            />
+            {/* Second row */}
+            <div className="flex flex-wrap items-center gap-2">
+              <Checkbox
+                id="gaming-league-checkbox"
+                label="Gaming League"
+                checked={newLeague.isGamingLeague}
+                onChange={(checked) =>
+                  setNewLeague({ ...newLeague, isGamingLeague: checked })
+                }
+                className="mr-auto"
+              />
 
-            <button
-              className={`px-4 py-2 text-white rounded-md ${
-                !newLeague.name
-                  ? "bg-gray-500 cursor-not-allowed"
-                  : "bg-green-500"
-              }`}
-              onClick={handleAddLeague}
-              disabled={!newLeague.name}
-            >
-              Add League
-            </button>
+              <button
+                className={`px-4 py-2 text-white rounded-md ${
+                  !newLeague.name
+                    ? "bg-gray-500 cursor-not-allowed"
+                    : "bg-green-500"
+                }`}
+                onClick={handleAddLeague}
+                disabled={!newLeague.name}
+              >
+                Add League
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       <ConfirmationDialog
         isOpen={dialogState.isOpen}

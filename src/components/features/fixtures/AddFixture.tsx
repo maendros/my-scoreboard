@@ -10,6 +10,7 @@ import ConfirmationDialog from "@/components/common/feedback/ConfirmationDialog"
 import Divider from "@/components/common/ui/Divider";
 import FixtureGaming from "./FixtureGaming";
 import LoadingButton from "@/components/common/ui/LoadingButton";
+import { useUserAccess } from "@/hooks/useUserAccess";
 
 type Score = {
   homeTeam: string;
@@ -143,6 +144,7 @@ const AddFixture: React.FC<{ leagueId: number }> = ({ leagueId }) => {
   };
   const [scores, setScores] = useState<(Score & { id?: number })[]>([]);
   const [isSaving, setIsSaving] = useState(false);
+  const { isViewer } = useUserAccess();
 
   useEffect(() => {
     if (data) {
@@ -259,6 +261,7 @@ const AddFixture: React.FC<{ leagueId: number }> = ({ leagueId }) => {
             <select
               className="col-span-4 sm:col-span-3 p-2 border border-gray-700 dark:bg-gray-800 bg-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               value={score.homeTeam || ""}
+              disabled={isViewer}
               onChange={(e) =>
                 handleInputChange(index, "homeTeam", e.target.value)
               }
@@ -279,6 +282,7 @@ const AddFixture: React.FC<{ leagueId: number }> = ({ leagueId }) => {
               min="0"
               className="col-span-2 sm:col-span-1 p-2 border border-gray-700 dark:bg-gray-800 bg-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               value={score.homeScore}
+              disabled={isViewer}
               onChange={(e) =>
                 handleInputChange(index, "homeScore", Number(e.target.value))
               }
@@ -289,6 +293,7 @@ const AddFixture: React.FC<{ leagueId: number }> = ({ leagueId }) => {
             <select
               className="col-span-4 sm:col-span-3  p-2 border border-gray-700 dark:bg-gray-800 bg-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               value={score.awayTeam || ""}
+              disabled={isViewer}
               onChange={(e) =>
                 handleInputChange(index, "awayTeam", e.target.value)
               }
@@ -311,6 +316,7 @@ const AddFixture: React.FC<{ leagueId: number }> = ({ leagueId }) => {
               min="0"
               className="col-span-2 sm:col-span-1  p-2 border border-gray-700 dark:bg-gray-800 bg-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               value={score.awayScore}
+              disabled={isViewer}
               onChange={(e) =>
                 handleInputChange(index, "awayScore", Number(e.target.value))
               }
@@ -326,6 +332,7 @@ const AddFixture: React.FC<{ leagueId: number }> = ({ leagueId }) => {
               onChange={(details) =>
                 handleInputChange(index, "homeTeamDetails", details)
               }
+              disabled={isViewer}
             />
 
             {/* Away Team Details */}
@@ -334,14 +341,16 @@ const AddFixture: React.FC<{ leagueId: number }> = ({ leagueId }) => {
               onChange={(details) =>
                 handleInputChange(index, "awayTeamDetails", details)
               }
+              disabled={isViewer}
             />
             <div className="sm:col-span-4" />
           </div>
 
           <div className="flex gap-2 mt-4">
             <button
-              className="w-full sm:w-auto p-2 bg-red-500 text-white rounded-md"
+              className="w-full sm:w-auto p-2 bg-red-500 text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
               onClick={() => handleRemoveConfirmation(index)}
+              disabled={isViewer}
             >
               Remove
             </button>
@@ -349,7 +358,7 @@ const AddFixture: React.FC<{ leagueId: number }> = ({ leagueId }) => {
             <LoadingButton
               onClick={() => handleSave(score)}
               isLoading={isSaving}
-              disabled={!score.homeTeam || !score.awayTeam}
+              disabled={!score.homeTeam || !score.awayTeam || isViewer}
               className="w-full sm:w-auto"
               color="green"
             >
@@ -361,8 +370,9 @@ const AddFixture: React.FC<{ leagueId: number }> = ({ leagueId }) => {
 
       <div className="flex flex-wrap gap-2">
         <button
-          className="w-full sm:w-auto px-4 py-2 bg-blue-500 text-white rounded-md"
+          className="w-full sm:w-auto px-4 py-2 bg-blue-500 text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
           onClick={handleAddScore}
+          disabled={isViewer}
         >
           Add Score
         </button>

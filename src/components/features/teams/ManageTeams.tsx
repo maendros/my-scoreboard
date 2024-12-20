@@ -7,6 +7,7 @@ import ErrorMessage from "@/components/common/ui/ErrorMessage";
 import { toast } from "react-toastify";
 import MultiSelect from "@/components/common/ui/MultiSelect";
 import LeagueTeams from "@/components/features/leagues/LeagueTeams";
+import { useUserAccess } from "@/hooks/useUserAccess";
 
 // GraphQL Queries and Mutations
 const GET_TEAMS_QUERY = gql`
@@ -69,7 +70,7 @@ const ManageTeams: React.FC<{ leagueId: number }> = ({ leagueId }) => {
   } = useQuery(GET_LEAGUE_TEAMS_QUERY, {
     variables: { leagueId },
   });
-
+  const { isViewer } = useUserAccess();
   const [addTeamsToLeague] = useMutation(ADD_TEAMS_TO_LEAGUE_MUTATION);
   const [removeTeamFromLeague] = useMutation(REMOVE_TEAM_FROM_LEAGUE_MUTATION);
 
@@ -145,16 +146,22 @@ const ManageTeams: React.FC<{ leagueId: number }> = ({ leagueId }) => {
           options={availableTeams}
           selected={selectedTeams}
           onChange={setSelectedTeams}
+          disabled={isViewer}
         />
         <button
-          className="mt-4 p-2 bg-green-500 text-white rounded"
+          className="mt-4 p-2 bg-green-500 text-white rounded disabled:opacity-50 disabled:cursor-not-allowed"
           onClick={handleAddTeams}
+          disabled={isViewer}
         >
           Add Teams
         </button>
       </div>
       <hr className="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700" />
-      <LeagueTeams addedTeams={leagueTeams} onRemoveTeam={handleRemoveTeam} />
+      <LeagueTeams
+        addedTeams={leagueTeams}
+        onRemoveTeam={handleRemoveTeam}
+        disabled={isViewer}
+      />
     </div>
   );
 };

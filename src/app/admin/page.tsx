@@ -7,7 +7,7 @@ import AuthGuard from "@/components/common/auth/AuthGuard";
 
 const AdminPage: React.FC = () => {
   return (
-    <AuthGuard allowedRoles={["ADMIN", "EDITOR"]}>
+    <AuthGuard allowedRoles={["ADMIN", "EDITOR", "VIEWER"]}>
       <LeagueManager title="Admin Panel: Manage Fixtures">
         {(leagueId) => <AddFixture leagueId={leagueId} />}
       </LeagueManager>

@@ -8,9 +8,13 @@ import { useQuery, gql } from "@apollo/client";
 // Define menu items with required roles
 const menuItems = [
   { name: "Home", path: "/", roles: ["PUBLIC"] },
-  { name: "Admin Panel", path: "/admin", roles: ["ADMIN"] },
-  { name: "Teams Panel", path: "/teams", roles: ["ADMIN", "EDITOR"] },
-  { name: "League Panel", path: "/leagues", roles: ["ADMIN", "EDITOR"] },
+  { name: "Admin Panel", path: "/admin", roles: ["ADMIN", "EDITOR", "VIEWER"] },
+  { name: "Teams Panel", path: "/teams", roles: ["ADMIN", "EDITOR", "VIEWER"] },
+  {
+    name: "League Panel",
+    path: "/leagues",
+    roles: ["ADMIN", "EDITOR", "VIEWER"],
+  },
 ];
 
 const Menu: React.FC = () => {

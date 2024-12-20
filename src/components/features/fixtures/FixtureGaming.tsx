@@ -15,7 +15,8 @@ const GET_GAMING_TEAMS = gql`
 const FixtureGaming: React.FC<{
   onChange: (details: { chosenTeam?: string }) => void;
   details: { chosenTeam?: string };
-}> = ({ onChange, details }) => {
+  disabled?: boolean;
+}> = ({ onChange, details, disabled }) => {
   const { data, loading, error } = useQuery(GET_GAMING_TEAMS);
 
   const [searchTerm, setSearchTerm] = useState(details.chosenTeam || "");
@@ -61,12 +62,14 @@ const FixtureGaming: React.FC<{
           value={searchTerm}
           onChange={handleInputChange}
           onFocus={() => setIsTyping(true)}
+          disabled={disabled}
         />
         {searchTerm && (
           <button
             className="p-2 text-gray-500 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white"
             onClick={handleClearTeam}
             title="Clear input"
+            disabled={disabled}
           >
             ✕
           </button>

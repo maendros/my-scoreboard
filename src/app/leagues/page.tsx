@@ -4,7 +4,7 @@ import React from "react";
 
 const Admin: React.FC = () => {
   return (
-    <AuthGuard allowedRoles={["ADMIN", "EDITOR"]}>
+    <AuthGuard allowedRoles={["ADMIN", "EDITOR", "VIEWER"]}>
       <Leagues />
     </AuthGuard>
   );

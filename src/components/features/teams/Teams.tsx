@@ -11,6 +11,7 @@ import Link from "next/link";
 import { FaArrowRight } from "react-icons/fa";
 import { FiSave, FiTrash2 } from "react-icons/fi";
 import ConfirmationDialog from "@/components/common/feedback/ConfirmationDialog";
+import { useUserAccess } from "@/hooks/useUserAccess";
 
 const GET_TEAMS_QUERY = gql`
   query GetTeams {
@@ -50,6 +51,7 @@ const DELETE_TEAM_MUTATION = gql`
 
 const Teams: React.FC = () => {
   const { loading, error, data } = useQuery(GET_TEAMS_QUERY);
+  const { isViewer } = useUserAccess();
   const [addTeam] = useMutation(ADD_TEAM_MUTATION);
   const [updateTeam] = useMutation(UPDATE_TEAM_MUTATION);
   const [deleteTeam] = useMutation(DELETE_TEAM_MUTATION);
@@ -204,6 +206,7 @@ const Teams: React.FC = () => {
               <input
                 type="text"
                 value={editedTeam.name}
+                disabled={isViewer}
                 onChange={(e) =>
                   handleInputChange(team.id, "name", e.target.value)
                 }
@@ -216,24 +219,27 @@ const Teams: React.FC = () => {
                   handleInputChange(team.id, "color", newColor)
                 }
                 size={40}
+                disabled={isViewer}
               />
 
               <button
                 className={`ml-2 p-2  ${
-                  editedTeam.name
+                  editedTeam.name && !isViewer
                     ? "text-green-500"
                     : "text-gray-500 cursor-not-allowed"
                 }`}
                 onClick={() => handleUpdateTeam(team.id)}
                 title="Save team to league"
+                disabled={isViewer}
               >
                 <FiSave className="w-6 h-6" />
               </button>
 
               <button
-                className="text-red-500 hover:text-red-700"
+                className="text-red-500 hover:text-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
                 onClick={() => handleDeleteTeam(team.id)}
                 title="Remove team from league"
+                disabled={isViewer}
               >
                 <FiTrash2 className="w-6 h-6" />
               </button>
@@ -258,7 +264,8 @@ const Teams: React.FC = () => {
             placeholder="Name"
             value={newTeam.name}
             onChange={(e) => setNewTeam({ ...newTeam, name: e.target.value })}
-            className="mr-2 p-2 border border-gray-700 dark:bg-gray-800 bg-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500e"
+            className="mr-2 p-2 border border-gray-700 dark:bg-gray-800 bg-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            disabled={isViewer}
           />
           <ColorPicker
             value={newTeam.profile.color}
@@ -267,11 +274,11 @@ const Teams: React.FC = () => {
           />
 
           <button
-            className={`p-2 text-white ${
+            className={`ml-2 p-2 text-white ${
               isAddDisabled ? "bg-gray-500 cursor-not-allowed" : "bg-green-500"
             }`}
             onClick={handleAddTeam}
-            disabled={isAddDisabled}
+            disabled={isAddDisabled || isViewer}
           >
             Add Team
           </button>
