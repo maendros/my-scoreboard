@@ -10,9 +10,10 @@
     "lint:fix": "next lint --fix",
     "migrate": "prisma migrate deploy",
     "fetch-teams": "npx tsx  scripts/cron-fetch-teams.ts",
-    "vercel-build": "prisma migrate deploy && prisma generate && pnpm build",
+    "vercel-build": "prisma migrate deploy && prisma generate && pnpm seed && pnpm build",
     "create-admin": "tsx scripts/create-admin.ts",
-    "generate-jwt-secret": "tsx scripts/generate-jwt-secret.ts"
+    "generate-jwt-secret": "tsx scripts/generate-jwt-secret.ts",
+    "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
     "@apollo/client": "^3.12.0",
